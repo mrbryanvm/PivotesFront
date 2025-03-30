@@ -3,3 +3,5 @@ Las tecnologías que se usarán para su desarrollo son:
     - Next.js
     - React
     - Tailwind
+
+Diferentes grupos trabajaran en características asignadas para el funcionamiento de la aplicación
