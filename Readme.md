@@ -4,6 +4,36 @@ Las tecnologías que se usarán para su desarrollo son:
     - React
     - Tailwind
 
+Si se hizo un clone correcte posiblemente no este instalado el npm install, tienes que acceder a la carpeta my-app con el comando.
+
+```bash
+cd my-app
+```
+y para confirmar que si se instalo ingrese el siguiente comando.
+```bash
+npm run dev
+```
+Si todo esta bien te mostrara un ruta local el cual podras ingresar y confirmar que si se hizo el clone correctamente
+y puedes comenzar con el trabajo.
+
+En caso de que te salga algun error, ejecute el siguiente comando 
+
+```bash
+npm install
+```
+Y para verificar que todo funcione coloque el comando
+```bash
+npm run dev
+```
+Te tiene que salir de la misma forma que se muestra debajo de este texto
+
+Next.js 15.2.4 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.85:3000
+
+
+Por si tienes dudas puedes seguir los siguiente pasos o acceder a la documentación.
+
 Diferentes grupos trabajaran en características asignadas para el funcionamiento de la aplicación
 
 Este es un proyecto de [Next.js](https://nextjs.org) iniciado con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
