@@ -1,44 +1,84 @@
+# RediboBack
+
 Repositorio para el desarrollo Front-end de la aplicación web RediBo. Este proyecto es desarrollado para la materia Ingenieria de Software con la docente Indira Camacho de la Universiad Mayor de San Simón
 Las tecnologías que se usarán para su desarrollo son:
     - Next.js
     - React
     - Tailwind
 
-Si se hizo un clone correcte posiblemente no este instalado el npm install, tienes que acceder a la carpeta my-app con el comando.
+## 🛠 Tecnologías Requeridas
+- [Next.js]
+- [React]
+- [Tailwind]
+- NPM (Node Package Manager)
+
+## Requisitos Previos
+Asegúrate de tener instalado Node.js desde: <https://nodejs.org/en>  
+Verifica que esté instalado ejecutando en la terminal:
+
+```bash
+node -v
+npm -v
+```
+
+## 🚀 Comienzo Rápido
+- Clonar el repositorio correctamente
+
+### - 1. Clonar el repositorio
+
+Ejecuta el siguiente comando para clonar el proyecto en tu máquina:
+
+```bash
+git clone <URL-del-repositorio>
+```
+Una vez clonado el repositorio debera de acceder a la carpeta de **Redibo_Back**
+
+### - 2. Cambiar de rama
+
+Cambiarse de rama a su rama de grupo para hacar su respectivo pull de la rama **develop** a su rama de grupo
+Verificar
+
+### - 3. Pasos
+
+Ya que se encuentre en la carpeta **Redibo_Back** se debera de acceder a la carpeta **my-app**
 
 ```bash
 cd my-app
 ```
-y para confirmar que si se instalo ingrese el siguiente comando.
+Y para confirmar que se hizo clone correctamente ingrese el siguiente comando.
+
 ```bash
 npm run dev
 ```
-Si todo esta bien te mostrara un ruta local el cual podras ingresar y confirmar que si se hizo el clone correctamente
-y puedes comenzar con el trabajo.
 
-En caso de que te salga algun error, ejecute el siguiente comando 
+Si todo esta bien te mostrara una ruta local
+
+Next.js 15.2.4 (Turbopack)
+   - Local:   http://localhost:3000
+   - Network: http://192.168.1.85:3000
+
+El cual podras verificar en tu navegador colocando la ruta <http://localhost:3000>
+
+### - 4. Problemas comunes
+
+1. Si al ejecutar npm run dev te aparece un error, asegúrate de haber corrido primero npm install.
 
 ```bash
 npm install
 ```
-Y para verificar que todo funcione coloque el comando
+2. Si usas PowerShell y ves un error del tipo “la ejecución de scripts está deshabilitada”, puedes usar el comando a continuacion en tu **PowerShell** ejecutado como administrador lo siguiente.
+
 ```bash
-npm run dev
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
-Te tiene que salir de la misma forma que se muestra debajo de este texto
 
-Next.js 15.2.4 (Turbopack)
-   - Local:        http://localhost:3000
-   - Network:      http://192.168.1.85:3000
-
+### - 5. Documentación general
 
 Por si tienes dudas puedes seguir los siguiente pasos o acceder a la documentación.
 
-Diferentes grupos trabajaran en características asignadas para el funcionamiento de la aplicación
-
 Este es un proyecto de [Next.js](https://nextjs.org) iniciado con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Primeros pasos
+#### Primeros pasos
 
 - Instalacion por completo 
 
