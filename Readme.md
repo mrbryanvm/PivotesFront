@@ -114,6 +114,9 @@ pnpm dev
 bun dev
 ```
 
+## instalar axios
+'' npm install axios
+
 Abra [http://localhost:3000](http://localhost:3000) con su navegador para ver el resultado.
 
 Puede comenzar a editar la página modificando `app/page.tsx`. La página se actualiza automáticamente a medida que edita el archivo.
