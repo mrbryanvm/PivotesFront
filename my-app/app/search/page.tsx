@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../lib/authContext';
-import Filters from '../../components/Filters';
-import CarCard from '../../components/CarCard';
+import Filters from '../components/Filters';
+import CarCard from '../components/CarCard';
 import { fetchCars } from '../lib/api';
 
 interface Car {

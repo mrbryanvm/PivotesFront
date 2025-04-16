@@ -18,12 +18,16 @@ interface Car {
     id: number;
     email: string;
   };
-  unavailableDates: string[]; // Nuevo: HU 7
-  extraEquipment: string[];  // Nuevo: HU 8
+  unavailableDates: string[];
+  extraEquipment: string[];
   seats: number;
   transmission: string;
   color: string;
   isAvailable: boolean;
+  kilometers: string; // Agregado
+  licensePlate: string; // Agregado
+  fuelType: string; // Agregado
+  description: string; // Agregado
 }
 
 interface CarsResponse {
@@ -46,8 +50,8 @@ interface Filters {
   sortBy?: string;
   page?: number;
   search?: string;
-  brand?: string; // Nuevo: HU 3
-  model?: string; // Nuevo: HU 3
+  brand?: string;
+  model?: string;
 }
 
 export const fetchCars = async (filters: Filters, token?: string): Promise<CarsResponse> => {
@@ -82,7 +86,6 @@ export const fetchMyCars = async (filters: Filters, token: string): Promise<Cars
   return response.data;
 };
 
-// Nueva función para actualizar fechas de no disponibilidad (HU 7)
 export const updateCarAvailability = async (carId: number, unavailableDates: string[], token: string) => {
   const response = await axios.patch(
     `${API_URL}/cars/${carId}/availability`,
@@ -90,4 +93,24 @@ export const updateCarAvailability = async (carId: number, unavailableDates: str
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
+};
+
+export const fetchCarById = async (id: number, token: string): Promise<Car> => {
+  const response = await axios.get(`${API_URL}/cars/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateCar = async (id: number, data: Partial<Car>, token: string): Promise<Car> => {
+  const response = await axios.put(`${API_URL}/cars/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data.car;
+};
+
+export const deleteCar = async (id: number, token: string): Promise<void> => {
+  await axios.delete(`${API_URL}/cars/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };

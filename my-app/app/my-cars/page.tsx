@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../lib/authContext';
-import MyCarsFilters from '../../components/MyCarsFilters';
-import { fetchMyCars, updateCarAvailability } from '../lib/api';
+import MyCarsFilters from '../components/MyCarsFilters';
+import { fetchMyCars, updateCarAvailability, deleteCar } from '../lib/api'; // Asegúrate de tener deleteCar
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { FaEdit, FaEye, FaTrash } from 'react-icons/fa'; // Importa los íconos
 
 interface Car {
   id: number;
@@ -66,7 +67,7 @@ export default function MyCars() {
   };
 
   const handleDateChange = (date: Date | null) => {
-    if (!date) return; // Ignora si date es null
+    if (!date) return;
     const newDates = unavailableDates.includes(date)
       ? unavailableDates.filter((d) => d.getTime() !== date.getTime())
       : [...unavailableDates, date];
@@ -89,6 +90,22 @@ export default function MyCars() {
       setUnavailableDates([]);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al actualizar la disponibilidad');
+    }
+  };
+
+  // Nueva función para eliminar un auto
+  const handleDeleteCar = async (carId: number) => {
+    if (!token) return;
+
+    try {
+      await deleteCar(carId, token); // Llama a la API para eliminar el auto
+      setCarsResponse((prev) => ({
+        ...prev,
+        cars: prev.cars.filter((car) => car.id !== carId),
+        totalCars: prev.totalCars - 1,
+      }));
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Error al eliminar el auto');
     }
   };
 
@@ -167,19 +184,39 @@ export default function MyCars() {
               <p className="text-sm text-gray-600">Tipo: {car.category}</p>
               <p className="text-sm text-gray-600">Precio por día: ${car.pricePerDay}</p>
               <p className="text-sm text-gray-600">Transmisión: {car.transmission}</p>
-              {/* Equipamientos Extras (HU 8) */}
               {car.extraEquipment.length > 0 && (
                 <p className="text-sm text-gray-600">
                   Equipamientos: {car.extraEquipment.join(', ')}
                 </p>
               )}
-              {/* Botón para gestionar disponibilidad (HU 7) */}
-              <button
-                onClick={() => handleOpenCalendar(car)}
-                className="mt-2 bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600"
-              >
-                Gestionar Disponibilidad
-              </button>
+              <div className="flex gap-2 mt-2">
+                {/* Botón para gestionar disponibilidad */}
+                <button
+                  onClick={() => handleOpenCalendar(car)}
+                  className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600"
+                >
+                  Gestionar Disponibilidad
+                </button>
+                {/* Botón para ver detalles */}
+                <Link href={`/car-details/${car.id}`}>
+                  <button className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600">
+                    <FaEye />
+                  </button>
+                </Link>
+                {/* Botón para editar */}
+                <Link href={`/edit-car/${car.id}`}>
+                  <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                    <FaEdit />
+                  </button>
+                </Link>
+                {/* Botón para eliminar */}
+                <button
+                  onClick={() => handleDeleteCar(car.id)}
+                  className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                >
+                  <FaTrash />
+                </button>
+              </div>
             </div>
           ))}
         </div>
