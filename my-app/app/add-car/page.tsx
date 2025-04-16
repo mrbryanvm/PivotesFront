@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/authContext';
-import axios from 'axios';
 
 export default function AddCar() {
   const [formData, setFormData] = useState({
@@ -20,273 +19,331 @@ export default function AddCar() {
     fuelType: '',
     seats: '',
     description: '',
+    photoUrls: ['', '', ''], // Mínimo 3 fotos
+    extraEquipment: [] as string[], // Nuevo: HU 8
   });
-  const [photos, setPhotos] = useState<File[]>([]);
+  const [equipmentInput, setEquipmentInput] = useState(''); // Para manejar la entrada de equipamientos
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
   const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const data = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value) data.append(key, value);
-      });
-
-      photos.forEach((photo) => {
-        data.append('photos', photo);
-      });
-
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/cars`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.success) {
-        router.push('/my-cars');
-      } else {
-        throw new Error('Error al agregar el auto');
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al agregar el auto');
-    }
-  };
+  const { token } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoUrlChange = (index: number, value: string) => {
+    const newPhotoUrls = [...formData.photoUrls];
+    newPhotoUrls[index] = value;
+    setFormData((prev) => ({ ...prev, photoUrls: newPhotoUrls }));
+  };
+
+  // Manejar la adición de equipamientos (HU 8)
+  const handleAddEquipment = () => {
+    if (equipmentInput.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        extraEquipment: [...prev.extraEquipment, equipmentInput.trim()],
+      }));
+      setEquipmentInput('');
+    }
+  };
+
+  // Manejar la eliminación de equipamientos (HU 8)
+  const handleRemoveEquipment = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      extraEquipment: prev.extraEquipment.filter((_, i) => i !== index),
     }));
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      if (files.length < 3 || files.length > 5) {
-        setError('Debes subir entre 3 y 5 fotos');
-        return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!token) {
+      setError('Debes iniciar sesión para añadir un auto');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/cars', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al añadir el auto');
       }
-      setPhotos(files);
-      setError(null);
+
+      router.push('/my-cars');
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Primera columna - INFORMACIÓN */}
-        <div className="md:col-span-1">
-          <h2 className="text-xl font-bold mb-4 uppercase">Información</h2>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Ubicación *</label>
-            <input
-              type="text"
-              name="location"
-              placeholder="Cochabamba"
-              value={formData.location}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-600 mb-1">Marca *</label>
-              <input
-                type="text"
-                name="brand"
-                placeholder="Toyota"
-                value={formData.brand}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-600 mb-1">Modelo</label>
-              <input
-                type="text"
-                name="model"
-                placeholder="Corolla"
-                value={formData.model}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Tipo de auto</label>
-            <input
-              type="text"
-              name="carType"
-              placeholder="Mediano"
-              value={formData.carType}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-600 mb-1">Color</label>
-              <input
-                type="text"
-                name="color"
-                placeholder="Blanco"
-                value={formData.color}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-600 mb-1">Año *</label>
-              <input
-                type="number"
-                name="year"
-                placeholder="2022"
-                value={formData.year}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
-                required
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Tarifa/Día *</label>
-            <input
-              type="number"
-              name="pricePerDay"
-              placeholder="50"
-              value={formData.pricePerDay}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-600 mb-1">Kilometraje *</label>
-              <input
-                type="text"
-                name="kilometers"
-                placeholder="35,000 km"
-                value={formData.kilometers}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-600 mb-1">Placa *</label>
-              <input
-                type="text"
-                name="licensePlate"
-                placeholder="XYZ-1234"
-                value={formData.licensePlate}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
-                required
-              />
-            </div>
-          </div>
+      <h1 className="text-2xl font-bold mb-4">Añadir Auto</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="location" className="block text-sm font-medium">
+            Ubicación
+          </label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
         </div>
-
-        {/* Segunda columna - EQUIPAMIENTO */}
-        <div className="md:col-span-1">
-          <h2 className="text-xl font-bold mb-4 uppercase">Equipamiento</h2>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Transmisión *</label>
+        <div>
+          <label htmlFor="brand" className="block text-sm font-medium">
+            Marca
+          </label>
+          <input
+            type="text"
+            id="brand"
+            name="brand"
+            value={formData.brand}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="model" className="block text-sm font-medium">
+            Modelo
+          </label>
+          <input
+            type="text"
+            id="model"
+            name="model"
+            value={formData.model}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="year" className="block text-sm font-medium">
+            Año
+          </label>
+          <input
+            type="number"
+            id="year"
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="carType" className="block text-sm font-medium">
+            Tipo de Auto
+          </label>
+          <select
+            id="carType"
+            name="carType"
+            value={formData.carType}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+          >
+            <option value="">Selecciona un tipo</option>
+            <option value="Mediano">Mediano</option>
+            <option value="Grande">Grande</option>
+            <option value="SUV">SUV</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="color" className="block text-sm font-medium">
+            Color
+          </label>
+          <input
+            type="text"
+            id="color"
+            name="color"
+            value={formData.color}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="pricePerDay" className="block text-sm font-medium">
+            Precio por Día
+          </label>
+          <input
+            type="number"
+            id="pricePerDay"
+            name="pricePerDay"
+            value={formData.pricePerDay}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="kilometers" className="block text-sm font-medium">
+            Kilómetros
+          </label>
+          <input
+            type="text"
+            id="kilometers"
+            name="kilometers"
+            value={formData.kilometers}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="licensePlate" className="block text-sm font-medium">
+            Placa
+          </label>
+          <input
+            type="text"
+            id="licensePlate"
+            name="licensePlate"
+            value={formData.licensePlate}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="transmission" className="block text-sm font-medium">
+            Transmisión
+          </label>
+          <select
+            id="transmission"
+            name="transmission"
+            value={formData.transmission}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          >
+            <option value="">Selecciona una transmisión</option>
+            <option value="manual">Manual</option>
+            <option value="automático">Automático</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="fuelType" className="block text-sm font-medium">
+            Tipo de Combustible
+          </label>
+          <select
+            id="fuelType"
+            name="fuelType"
+            value={formData.fuelType}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          >
+            <option value="">Selecciona un combustible</option>
+            <option value="Gas">Gas</option>
+            <option value="Gasolina">Gasolina</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="seats" className="block text-sm font-medium">
+            Asientos
+          </label>
+          <input
+            type="number"
+            id="seats"
+            name="seats"
+            value={formData.seats}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium">
+            Descripción
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border rounded"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Fotos (mínimo 3, máximo 5 URLs)</label>
+          {formData.photoUrls.map((url, index) => (
             <input
+              key={index}
               type="text"
-              name="transmission"
-              placeholder="Automático"
-              value={formData.transmission}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
-              required
+              value={url}
+              onChange={(e) => handlePhotoUrlChange(index, e.target.value)}
+              placeholder={`URL de la foto ${index + 1}`}
+              className="mt-1 block w-full p-2 border rounded mb-2"
+              required={index < 3}
             />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Consumo *</label>
-            <input
-              type="text"
-              name="fuelType"
-              placeholder="Gasolina"
-              value={formData.fuelType}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Capacidad *</label>
-            <select
-              name="seats"
-              value={formData.seats}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
-              required
+          ))}
+          {formData.photoUrls.length < 5 && (
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, photoUrls: [...prev.photoUrls, ''] }))}
+              className="text-orange-500"
             >
-              <option value="">Seleccionar</option>
-              <option value="2">2 personas</option>
-              <option value="4">4 personas</option>
-              <option value="5">5 personas</option>
-              <option value="7">7 personas</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Descripción</label>
-            <textarea
-              name="description"
-              placeholder="Descubre el Toyota Corolla 2022, un sedán compacto diseñado para ofrecer comodidad, eficiencia y tecnología en cada viaje..."
-              value={formData.description}
-              onChange={handleChange}
-              className="border p-3 rounded w-full h-40"
+              + Agregar otra foto
+            </button>
+          )}
+        </div>
+        {/* Equipamientos Extras (HU 8) */}
+        <div>
+          <label className="block text-sm font-medium">Equipamientos Extras</label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={equipmentInput}
+              onChange={(e) => setEquipmentInput(e.target.value)}
+              placeholder="Ej: Tanque lleno, GPS, Silla para niños"
+              className="mt-1 block w-full p-2 border rounded"
             />
+            <button
+              type="button"
+              onClick={handleAddEquipment}
+              className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+            >
+              Añadir
+            </button>
           </div>
+          <ul className="list-disc pl-5">
+            {formData.extraEquipment.map((equipment, index) => (
+              <li key={index} className="flex justify-between items-center">
+                {equipment}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveEquipment(index)}
+                  className="text-red-500 ml-2"
+                >
+                  Eliminar
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* Tercera columna - FOTOS */}
-        <div className="md:col-span-1">
-          <div className="border rounded p-6 flex flex-col items-center justify-center h-64">
-            <div className="text-center">
-              <h3 className="font-bold mb-2">Añadir fotos</h3>
-              <p className="text-gray-600 mb-4">PNG/JPG (mín 3, máx 5)</p>
-              <input
-                type="file"
-                name="photos"
-                accept="image/png, image/jpeg"
-                multiple
-                onChange={handlePhotoChange}
-                className="border p-3 rounded w-full"
-              />
-            </div>
-          </div>
-        </div>
-      </form>
-
-      {/* Botones de acción */}
-      <div className="flex justify-end gap-4 mt-6">
-        <button
-          type="button"
-          className="border border-orange-500 text-orange-500 px-8 py-2 rounded"
-          onClick={() => router.push('/my-cars')}
-        >
-          Cancelar
-        </button>
+        {error && <p className="text-red-500">{error}</p>}
         <button
           type="submit"
-          className="bg-orange-500 text-white px-8 py-2 rounded"
-          onClick={handleSubmit}
+          className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
         >
-          Guardar
+          Añadir Auto
         </button>
-      </div>
-
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      </form>
     </div>
   );
 }

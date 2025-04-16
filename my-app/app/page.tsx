@@ -2,9 +2,23 @@
 
 import Link from 'next/link';
 import { useAuth } from './lib/authContext';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const { token, logout } = useAuth();
+  const { token, role, logout } = useAuth();
+  const router = useRouter();
+
+  // Redirigir según el rol si el usuario está autenticado
+  useEffect(() => {
+    if (token) {
+      if (role === 'host') {
+        router.push('/my-cars');
+      } else if (role === 'guest') {
+        router.push('/search');
+      }
+    }
+  }, [token, role, router]);
 
   return (
     <div className="text-center p-4">

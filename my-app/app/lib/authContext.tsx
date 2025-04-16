@@ -1,77 +1,57 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface User {
-  id: number;
-  email: string;
-  role: string;
-}
-
 interface AuthContextType {
-  user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  role: string | null; // Nuevo: Agregamos el rol
+  login: (token: string, userRole: string) => void; // Actualizamos login para incluir el rol
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null); // Nuevo: Estado para el rol
   const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser) {
+    const storedRole = localStorage.getItem('role'); // Nuevo: Obtenemos el rol del localStorage
+    if (storedToken) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      setRole(storedRole);
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        email,
-        password,
-      });
-      if (response.data.success) {
-        setToken(response.data.token);
-        setUser(response.data.user);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        router.push('/my-cars');
-      } else {
-        throw new Error(response.data.error || 'Error al iniciar sesión');
-      }
-    } catch (error: any) {
-      throw new Error(error.response?.data?.error || 'Error al iniciar sesión');
-    }
+  const login = (newToken: string, userRole: string) => {
+    setToken(newToken);
+    setRole(userRole); // Nuevo: Guardamos el rol
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('role', userRole); // Nuevo: Guardamos el rol en localStorage
   };
 
   const logout = () => {
     setToken(null);
-    setUser(null);
+    setRole(null); // Nuevo: Limpiamos el rol
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    router.push('/');
+    localStorage.removeItem('role'); // Nuevo: Eliminamos el rol del localStorage
+    router.push('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ token, role, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}
