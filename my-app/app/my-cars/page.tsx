@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../lib/authContext';
-import MyCarsFilters from '../components/MyCarsFilters';
 import { fetchMyCars, updateCarAvailability, deleteCar } from '../lib/api'; // Asegúrate de tener deleteCar
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -149,11 +148,7 @@ export default function MyCars() {
               Añadir Auto
             </button>
           </Link>
-          <Link href="/">
-            <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-              Volver al Inicio
-            </button>
-          </Link>
+          
           <button
             onClick={logout}
             className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
@@ -162,9 +157,6 @@ export default function MyCars() {
           </button>
         </div>
       </div>
-
-      {/* Filtros y Ordenamiento (HU 3) */}
-      <MyCarsFilters filters={filters} onFilterChange={handleFilterChange} />
 
       {/* Lista de Autos */}
       <div>
