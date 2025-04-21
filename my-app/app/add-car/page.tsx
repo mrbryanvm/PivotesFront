@@ -222,7 +222,7 @@ export default function AddCar() {
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Tarifa/Día</label>
             <input
-              type="text"
+              type="number"
               name="pricePerDay"
               placeholder="$15"
               value={formData.pricePerDay}
