@@ -57,6 +57,16 @@ export default function AddCar() {
     }));
   };
 
+  const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currentYear = new Date().getFullYear();
+    if (parseInt(e.target.value) > currentYear) return;
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -138,14 +148,16 @@ export default function AddCar() {
             Año
           </label>
           <input
-            type="number"
-            id="year"
-            name="year"
-            value={formData.year}
-            onChange={handleChange}
+            type="text"
+            id="location"
+            name="location"
+            min = "2000"
+            value={formData.location}
+            onChange={validacionAño}
             className="mt-1 block w-full p-2 border rounded"
             required
           />
+
         </div>
         <div>
           <label htmlFor="carType" className="block text-sm font-medium">
@@ -232,8 +244,8 @@ export default function AddCar() {
             required
           >
             <option value="">Selecciona una transmisión</option>
-            <option value="manual">Manual</option>
-            <option value="automático">Automático</option>
+            <option value="Manual">Manual</option>
+            <option value="Automático">Automático</option>
           </select>
         </div>
         <div>
