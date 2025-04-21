@@ -232,7 +232,7 @@ export default function AddCar() {
             required
           >
             <option value="">Selecciona una transmisión</option>
-            <option value="manual">Manual</option>
+            <option value="Manual">Manual</option>
             <option value="automático">Automático</option>
           </select>
         </div>

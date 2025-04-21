@@ -28,6 +28,7 @@ export default function Login() {
       if (!response.ok) {
         throw new Error(data.error || 'Error al iniciar sesión');
       }
+      
 
       login(data.token, data.role); // Pasamos el rol al login
 
