@@ -28,6 +28,7 @@ export default function AddCar() {
   const router = useRouter();
   const { token } = useAuth();
 
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -60,15 +61,33 @@ export default function AddCar() {
     }));
   };
 
+  const [yearError, setYearError] = useState('');
   const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const year = parseInt(value);
     const currentYear = new Date().getFullYear();
-    if (parseInt(e.target.value) > currentYear) return;
+
+    // Permite escribir mientras sea un número
+    if (!isNaN(year)) {
+      if (year < 1900) {
+        setYearError('El año no puede ser menor a 1900');
+      } else if (year > currentYear) {
+        setYearError(`El año no puede ser mayor a ${currentYear}`);
+      } else {
+        setYearError('');
+      }
+    } else {
+      setYearError('Ingresa un año válido');
+    }
 
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
   };
+
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,14 +192,20 @@ export default function AddCar() {
               <label className="block text-gray-600 mb-1">Año</label>
               <input
                 type="number"
+                id="year"
                 name="year"
-                placeholder="Año"
                 value={formData.year}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
+                onChange={validacionAño}
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
                 required
+                min="1900"
+                max={new Date().getFullYear()}
               />
+              {yearError && (
+                <p className="text-red-500 text-sm mt-1">{yearError}</p>
+              )}
             </div>
+
             <div>
               <label className="block text-gray-600 mb-1">Color</label>
               <input
@@ -246,8 +271,8 @@ export default function AddCar() {
               required
             >
               <option value="">Seleccionar</option>
-              <option value="manual">Manual</option>
-              <option value="automático">Automático</option>
+              <option value="Manual">Manual</option>
+              <option value="Automático">Automático</option>
             </select>
           </div>
           <div className="mb-4">
