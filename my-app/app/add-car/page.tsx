@@ -64,10 +64,13 @@ export default function AddCar() {
   const [yearError, setYearError] = useState('');
   const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // Evita que se escriban más de 4 caracteres
+    if (value.length > 4) return;
+
     const year = parseInt(value);
     const currentYear = new Date().getFullYear();
 
-    // Permite escribir mientras sea un número
     if (!isNaN(year)) {
       if (year < 1900) {
         setYearError('El año no puede ser menor a 1900');
@@ -85,6 +88,7 @@ export default function AddCar() {
       [e.target.name]: value,
     });
   };
+
 
 
 
@@ -196,6 +200,11 @@ export default function AddCar() {
                 name="year"
                 value={formData.year}
                 onChange={validacionAño}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-"].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
                 required
                 min="1900"
@@ -204,6 +213,7 @@ export default function AddCar() {
               {yearError && (
                 <p className="text-red-500 text-sm mt-1">{yearError}</p>
               )}
+
             </div>
 
             <div>
