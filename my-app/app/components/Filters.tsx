@@ -31,6 +31,37 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     setShowFuelTypeOptions(false);
   };
 
+  const handleResetFilters = () => {
+    onFilterChange({
+      location: '',
+      startDate: '',
+      endDate: '',
+      hostId: undefined,
+      carType: '',
+      transmission: '',
+      fuelType: '',
+      minPrice: undefined,
+      maxPrice: undefined,
+      sortBy: 'relevance',
+    });
+    setShowFuelTypeOptions(false);
+  };  
+
+  const hayFiltrosActivos = () => {
+    return (
+      filters.location ||
+      filters.startDate ||
+      filters.endDate ||
+      filters.hostId ||
+      filters.carType ||
+      filters.transmission ||
+      filters.fuelType ||
+      filters.minPrice !== undefined ||
+      filters.maxPrice !== undefined ||
+      (filters.sortBy && filters.sortBy !== 'relevance')
+    );
+  };
+
   return (
     <div className="flex gap-4 mb-4 flex-wrap">
       {/* Filtro de Ubicación */}
@@ -158,6 +189,23 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           <option value="rentalCount">Cantidad de Rentas</option>
         </select>
       </div>
+
+      {/* Botón solo si hay filtros activos */}
+      
+      {hayFiltrosActivos() && (
+        
+        <button
+        type="button"
+        onClick={handleResetFilters}
+        className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 3h6a1 1 0 011 1v1H8V4a1 1 0 011-1z" />
+          </svg>
+        
+        </button>
+      )}
+      
     </div>
   );
 }
