@@ -108,11 +108,6 @@ export default function Search() {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-end gap-4 mb-4">
-        <Link href="/">
-          <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-            Volver al Inicio
-          </button>
-        </Link>
         <button
           onClick={logout}
           className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
