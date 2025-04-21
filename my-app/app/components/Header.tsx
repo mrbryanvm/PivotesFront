@@ -1,3 +1,4 @@
+'use Client';
 import Link from 'next/link';
 
 export default function Header() {
@@ -15,6 +16,8 @@ export default function Header() {
             <span className="text-orange-500">👤</span>
           </div>
         </Link>
+
+        
       </div>
     </header>
   );

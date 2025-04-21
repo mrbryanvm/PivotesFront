@@ -81,12 +81,6 @@ export default function Login() {
             Iniciar Sesión
           </button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          ¿No tienes una cuenta?{' '}
-          <Link href="/register" className="text-orange-500 hover:underline">
-            Regístrate aquí
-          </Link>
-        </p>
       </div>
     </div>
   );
