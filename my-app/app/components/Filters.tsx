@@ -14,6 +14,7 @@ interface FiltersProps {
     minPrice?: number;
     maxPrice?: number;
     sortBy?: string;
+    search?: string;
   };
   onFilterChange: (filters: FiltersProps['filters']) => void;
 }
@@ -105,6 +106,18 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             />
           </svg>
         </button>
+      </div>
+
+      {/* 🔍 BARRA DE BÚSQUEDA */}
+      <div className="flex justify-center">
+        <input
+          type="text"
+          name="search"
+          placeholder="Buscar"
+          value={filters.search || ''}
+          onChange={handleChange}
+          className="mt-4 w-full max-w-4xl px-4 py-2 border rounded bg-[#F9F1E7] text-gray-800 placeholder-gray-400"
+        />
       </div>
 
       {/* FILTROS EN FILA */}
