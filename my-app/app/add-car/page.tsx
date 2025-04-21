@@ -163,13 +163,18 @@ export default function AddCar() {
               />
             </div>
             <div>
-              <label className="block text-gray-600 mb-1">Modelo</label>
+              <label className="block text-gray-600 mb-1">Modelo</label>   
               <input
                 type="text"
                 name="model"
                 placeholder="Modelo"
                 value={formData.model}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const onlyLetters = /^[a-zA-Z\s]*$/;
+                  if (onlyLetters.test(e.target.value)) {
+                    setFormData({ ...formData, model: e.target.value });
+                  }
+                }}
                 className="border p-3 rounded w-full"
               />
             </div>
