@@ -64,37 +64,50 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 mb-6">
+    <div className="flex flex-col items-center gap-4 mb-6">
       {/* FILA SUPERIOR: Ubicación, De, Hasta */}
-      <div className="bg-white shadow rounded-full px-6 py-3 flex items-center justify-between gap-6 max-w-4xl mx-auto">
-        <select
-          name="location"
-          value={filters.location || ''}
-          onChange={handleChange}
-          className="flex-1 bg-transparent border-none focus:outline-none text-sm"
-        >
-          <option value="">Ubicación</option>
-          <option value="Santa Cruz">Santa Cruz</option>
-          <option value="Cochabamba">Cochabamba</option>
-          <option value="La Paz">La Paz</option>
-        </select>
+      <div className="flex items-center justify-between bg-white rounded-full px-6 py-3 shadow-md w-full max-w-4xl">
+        {/* Ubicación */}
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-black-500">Ubicación</span>
+          <select
+            name="location"
+            value={filters.location || ''}
+            onChange={handleChange}
+            className="flex-1 bg-transparent border-none focus:outline-none text-xs font-medium text-gray-500"
+          >
+            <option value="">Ubicación</option>
+            <option value="Santa Cruz">Santa Cruz</option>
+            <option value="Cochabamba">Cochabamba</option>
+            <option value="La Paz">La Paz</option>
+          </select>
+        </div>
 
-        <input
-          type="date"
-          name="startDate"
-          value={filters.startDate || ''}
-          onChange={handleChange}
-          className="flex-1 bg-transparent border-none focus:outline-none text-sm"
-        />
+        {/* Fecha Inicio */}
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-black-500">De</span>
+          <input
+            type="date"
+            name="startDate"
+            value={filters.startDate || ''}
+            onChange={handleChange}
+            className="flex-1 bg-transparent border-none focus:outline-none text-xs font-medium text-gray-500"
+          />
+        </div>
 
-        <input
-          type="date"
-          name="endDate"
-          value={filters.endDate || ''}
-          onChange={handleChange}
-          className="flex-1 bg-transparent border-none focus:outline-none text-sm"
-        />
+        {/* Fecha Fin */}
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-black-500">Hasta</span>
+          <input
+            type="date"
+            name="endDate"
+            value={filters.endDate || ''}
+            onChange={handleChange}
+            className="flex-1 bg-transparent border-none focus:outline-none text-xs font-medium text-gray-500"
+          />
+        </div>
 
+        {/* Botón lupa */}
         <button type="button" className="text-orange-500 hover:text-orange-600">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path
@@ -109,14 +122,24 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       </div>
 
       {/* 🔍 BARRA DE BÚSQUEDA */}
-      <div className="flex justify-center">
+      <div className="w-full max-w-4xl mt-4 flex rounded overflow-hidden border border-gray-300">
+        {/* Botón de búsqueda */}
+        <button
+          type="button"
+          onClick={() => console.log('Buscar:', filters.search)}
+          className="bg-[#FBE7C2] px-6 py-2 font-semibold text-xs text-gray-700"
+        >
+          Buscar
+        </button>
+
+        {/* Campo de texto */}
         <input
           type="text"
           name="search"
           placeholder="Buscar"
           value={filters.search || ''}
           onChange={handleChange}
-          className="mt-4 w-full max-w-4xl px-4 py-2 border rounded bg-[#F9F1E7] text-gray-800 placeholder-gray-400"
+          className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
         />
       </div>
 
