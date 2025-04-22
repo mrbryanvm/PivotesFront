@@ -1,5 +1,5 @@
 "use client";
-
+import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../lib/authContext';
@@ -341,7 +341,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
       if (!response.ok) {
         throw new Error(data.error || "Error al añadir el auto");
       }
-  
+      toast.success("¡Se guardo correctamente!");
       router.push("/my-cars");
     } catch (err: any) {
       setError(err.message);

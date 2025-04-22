@@ -1,5 +1,5 @@
 'use client';
-
+import toast from "react-hot-toast";
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchCarById, updateCar } from '../../lib/api';
@@ -129,16 +129,20 @@ export default function EditCar() {
     // Actualizar los datos del formulario
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
+    
     try {
       await updateCar(Number(id), formData, token);
+      toast.success("¡Se guardo correctamente!");
       router.push('/my-cars');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al actualizar el auto');
     }
+    
   };
 
   const isFormValid = Object.values(formErrors).every((error) => !error);
