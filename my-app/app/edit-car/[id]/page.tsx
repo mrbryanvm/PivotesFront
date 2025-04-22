@@ -36,6 +36,7 @@ export default function EditCar() {
     color: '',
   });
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);  // Nuevo estado para el mensaje de éxito
 
   useEffect(() => {
     const loadCar = async () => {
@@ -55,35 +56,45 @@ export default function EditCar() {
   // Funciones de validación
   const validateTextField = (name: string, value: string) => {
     if (!value.trim()) {
-      if(name === "brand"){
-        return `La marca es obligatorio`;
-      }else{
-        return `El modelo  es obligatorio`;
+      if (name === "brand") {
+        return `La marca es obligatoria`;
+      } else {
+        return `El modelo es obligatorio`;
       }
     }
-    // Validar que no contenga números ni caracteres especiales
-    if (/\d/.test(value)) {
-      if(name === "brand"){
+  
+    // Validar que no contenga números ni caracteres especiales solo para la "marca"
+    if (name === "brand") {
+      if (/\d/.test(value)) {
         return `La marca no puede contener números`;
-      }else{
-        return `El modelo no puede contener números`;
+      }
+      if (/[^a-zA-Z\s]/.test(value)) {
+        return `La marca no puede contener caracteres especiales`;
       }
     }
-    if (/[^a-zA-Z\s]/.test(value)) {
-      if(name === "brand"){
-        return `La marca no puede contener caracteres especiales`;
-      }else{
+  
+    // Validar que no contenga caracteres especiales para el "modelo"
+    if (name === "model") {
+      if (/[^a-zA-Z0-9\s]/.test(value)) {
         return `El modelo no puede contener caracteres especiales`;
       }
     }
   
     return '';
   };
+  
 
   const validateYear = (value: number) => {
     const currentYear = new Date().getFullYear();
+    
+    // Verificar si el valor tiene exactamente 4 dígitos
+    if (value.toString().length !== 4) {
+      return 'El año debe tener exactamente 4 dígitos';
+    }
+  
     if (value < 1900) return 'El año no puede ser menor a 1900';
     if (value > currentYear) return `El año no puede ser mayor a ${currentYear}`;
+    
     return '';
   };
 
@@ -100,12 +111,41 @@ export default function EditCar() {
   const validateColor = (value: string) => {
     if (!value.trim()) return 'El color es obligatorio';
     if (/\d/.test(value)) return 'El color no puede contener números';
+    if (/[^a-zA-Z\s]/.test(value)) return 'El color no puede contener caracteres especiales';
     return '';
   };
+  
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target as HTMLInputElement;
+    const target = e.target as HTMLInputElement | HTMLSelectElement; // Aseguramos que e.target es un input o select
+    //const name = target.name; // Ahora podemos acceder a `name` de forma segura
+  
+    if (name === 'brand' || name === 'model') {
+      const allowedChars = /^[a-zA-Z\s]*$/; // Solo letras y espacios
+      if (!allowedChars.test(e.key)) {
+        e.preventDefault();  // Bloquear tecla no permitida
+      }
+    }
+    if (name === 'year') {
+      // Si el valor ya tiene 4 dígitos, bloquear la tecla (no permitir más caracteres)
+      if (value.length >= 4) {
+        e.preventDefault();
+      }
+    }
+  };
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
+  
+    // Si el campo es 'color', bloquear números y caracteres especiales en tiempo real
+    if (name === 'color') {
+      if (/\d/.test(value) || /[^a-zA-Z\s]/.test(value)) {
+        return; // No actualizar el estado si contiene números o caracteres especiales
+      }
+    }
+  
     // Validar cada campo según su tipo
     let errorMessage = '';
     if (name === 'brand' || name === 'model') {
@@ -119,13 +159,13 @@ export default function EditCar() {
     } else if (name === 'color') {
       errorMessage = validateColor(value);
     }
-
+  
     // Actualizar el estado de los errores
     setFormErrors((prev) => ({
       ...prev,
       [name]: errorMessage,
     }));
-
+  
     // Actualizar los datos del formulario
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -161,6 +201,7 @@ export default function EditCar() {
             name="brand"
             value={formData.brand || ''}
             onChange={handleChange}
+            onKeyDown={handleKeyDown} 
             className="border p-2 rounded w-full"
           />
           {formErrors.brand && <p className="text-red-500 text-sm mt-1">{formErrors.brand}</p>}
@@ -183,6 +224,7 @@ export default function EditCar() {
             name="year"
             value={formData.year || ''}
             onChange={handleChange}
+            onKeyDown={handleKeyDown} 
             className="border p-2 rounded w-full"
           />
           {formErrors.year && <p className="text-red-500 text-sm mt-1">{formErrors.year}</p>}
@@ -193,6 +235,7 @@ export default function EditCar() {
             name="category"
             value={formData.category || ''}
             onChange={handleChange}
+            onKeyDown={handleKeyDown} 
             className="border p-2 rounded w-full"
           >
             <option value="Mediano">Mediano</option>
@@ -230,6 +273,7 @@ export default function EditCar() {
             name="color"
             value={formData.color || ''}
             onChange={handleChange}
+            onKeyDown={handleKeyDown} 
             className="border p-2 rounded w-full"
           />
           {formErrors.color && <p className="text-red-500 text-sm mt-1">{formErrors.color}</p>}
