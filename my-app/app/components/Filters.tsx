@@ -64,7 +64,10 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
   return (
     <div className="flex gap-4 mb-4 flex-wrap">
+
       {/* Filtro de Ubicación */}
+
+      {!filters.location ? (
       <div>
         <select
           name="location"
@@ -78,6 +81,19 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           <option value="La Paz">La Paz</option>
         </select>
       </div>
+      ) : (
+        <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1">
+          <span>{filters.location}</span>
+          <button
+            onClick={() => onFilterChange({ ...filters, location: '' })}
+            className="ml-2 text-white hover:text-gray-200 font-bold"
+          >
+            ×
+
+          </button>
+        </div>
+      )}
+          
 
       {/* Filtro de Fechas */}
       <div className="flex gap-2">
@@ -98,6 +114,8 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       </div>
 
       {/* Filtro de Host */}
+
+      {!filters.hostId ? (
       <div>
         <select
           name="hostId"
@@ -111,7 +129,22 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         </select>
       </div>
 
+      ) : (
+        <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1">
+          <span>{filters.hostId}</span>
+          <button
+            onClick={() => onFilterChange({ ...filters, hostId: '' })}
+            className="ml-2 text-white hover:text-gray-200 font-bold"
+          >
+            ×
+
+          </button>
+        </div>
+      )}
+
       {/* Filtro de Tipo de Auto */}
+
+      {!filters.carType ? (
       <div>
         <select
           name="carType"
@@ -125,22 +158,50 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           <option value="SUV">SUV</option>
         </select>
       </div>
+      ) : (
+        <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1">
+          <span>{filters.carType}</span>
+          <button
+            onClick={() => onFilterChange({ ...filters, carType: '' })}
+            className="ml-2 text-white hover:text-gray-200 font-bold"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
-      {/* Filtro de Transmisión */}
+    {/* Transmisión */}
+    
+    {!filters.transmission ? (
+      
       <div>
         <select
-          name="transmission"
-          value={filters.transmission || ''}
-          onChange={handleChange}
-          className="border p-2 rounded"
+         name="transmission"
+         value={filters.transmission || ''}
+         onChange={handleChange}
+         className="border p-2 rounded"
         >
-          <option value="">Transmisión</option>
-          <option value="manual">Manual</option>
-          <option value="automático">Automático</option>
-        </select>
-      </div>
+         <option value="">Transmisión</option>
+         <option value="manual">Manual</option>
+         <option value="automático">Automático</option>
+
+       </select>
+     </div>
+     ) : (
+     <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1">
+     <span>{filters.transmission}</span>
+       <button
+         onClick={() => onFilterChange({ ...filters, transmission: '' })}
+         className="ml-2 text-white hover:text-gray-200 font-bold"
+         >
+          ×
+         </button>
+        </div>
+      )}
+
 
       {/* Filtro de Consumo (Combustible) */}
+      {!filters.fuelType ? (
       <div className="relative">
         <button
           type="button"
@@ -173,8 +234,26 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           </div>
         )}
       </div>
+      ) : (
+        <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1">
+          <span>{filters.fuelType}</span>
+          <button
+            onClick={() => onFilterChange({ ...filters, fuelType: '' })}
+            className="ml-2 text-white hover:text-gray-200 font-bold"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Filtro de precio*/}
+
+      
+        
 
       {/* Ordenamiento */}
+
+      {!filters.sortBy ? (
       <div>
         <select
           name="sortBy"
@@ -189,6 +268,18 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           <option value="rentalCount">Cantidad de Rentas</option>
         </select>
       </div>
+      ) : (
+        <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1">
+          <span>{filters.sortBy}</span>
+          <button
+            onClick={() => onFilterChange({ ...filters, sortBy: '' })}
+            className="ml-2 text-white hover:text-gray-200 font-bold"
+          >
+            ×
+            </button>
+
+        </div>
+      )}
 
       {/* Botón solo si hay filtros activos */}
       
@@ -206,6 +297,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         </button>
       )}
       
-    </div>
-  );
-}
+  
+   </div>
+   
+)} 
