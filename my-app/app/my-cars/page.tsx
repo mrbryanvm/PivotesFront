@@ -176,16 +176,15 @@ export default function MyCars() {
               <p className="bg-gray-100 text-center text-sm mt-1 mb-3 py-1 rounded font-semibold">
                 ${car.pricePerDay} / día
               </p>
-              
+
               <img
                 src={car.imageUrl}
                 alt={`${car.brand} ${car.model}`}
                 className="w-full h-65 object-contain rounded"
               />
               <p className="text-green-600 text-sm font-medium mt-2">
-                Disponible
+                🟢 Disponible
               </p>
-              
             </div>
 
             {/* Información a la derecha */}
@@ -207,24 +206,36 @@ export default function MyCars() {
               )}
 
               {/* Acciones */}
-              <div className="flex gap-3 mt-3 text-sm">
-                
-                <Link href={`/car-details/${car.id}`}>
-                  <button className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600">
-                    <FaEye />
+              <div className="flex gap-6 mt-4 text-sm text-center">
+                {/* Info */}
+                <div className="flex flex-col items-center">
+                  <Link href={`/car-details/${car.id}`}>
+                    <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
+                      <FaEye />
+                    </button>
+                  </Link>
+                  <span className="text-gray-700 mt-1">Info</span>
+                </div>
+
+                {/* Editar */}
+                <div className="flex flex-col items-center">
+                  <Link href={`/edit-car/${car.id}`}>
+                    <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 ml-5">
+                      <FaEdit />
+                    </button>
+                  </Link>
+                  <span className="text-gray-700 mt-1 ml-5">Editar</span>
+                </div>
+
+                {/* Eliminar */}
+                <div className="flex flex-col items-center">
+                  <button
+                    onClick={() => handleDeleteCar(car.id)}
+                    className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5">
+                    <FaTrash />
                   </button>
-                </Link>
-                <Link href={`/edit-car/${car.id}`}>
-                  <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-                    <FaEdit />
-                  </button>
-                </Link>
-                <button
-                  onClick={() => handleDeleteCar(car.id)}
-                  className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                >
-                  <FaTrash />
-                </button>
+                  <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
+                </div>
               </div>
             </div>
           </div>
