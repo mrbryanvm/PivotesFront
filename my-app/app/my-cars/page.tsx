@@ -161,7 +161,7 @@ export default function MyCars() {
       {/* Lista de Autos */}
       <div>
         <p className="text-gray-600 mb-4">{carsResponse.totalCars} autos</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {carsResponse.cars.map((car) => (
             <div key={car.id} className="border rounded-lg shadow-md p-4 bg-white">
               <img
