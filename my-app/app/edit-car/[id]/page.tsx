@@ -55,12 +55,28 @@ export default function EditCar() {
   // Funciones de validación
   const validateTextField = (name: string, value: string) => {
     if (!value.trim()) {
-      return `${name} es obligatorio`;
+      if(name === "brand"){
+        return `La marca es obligatorio`;
+      }else{
+        return `El modelo  es obligatorio`;
+      }
     }
     // Validar que no contenga números ni caracteres especiales
     if (/\d/.test(value)) {
-      return `${name} no puede contener números`;
+      if(name === "brand"){
+        return `La marca no puede contener números`;
+      }else{
+        return `El modelo no puede contener números`;
+      }
     }
+    if (/[^a-zA-Z\s]/.test(value)) {
+      if(name === "brand"){
+        return `La marca no puede contener caracteres especiales`;
+      }else{
+        return `El modelo no puede contener caracteres especiales`;
+      }
+    }
+  
     return '';
   };
 

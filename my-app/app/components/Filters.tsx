@@ -7,7 +7,7 @@ interface FiltersProps {
     location?: string;
     startDate?: string;
     endDate?: string;
-    hostId?: number;
+    hostId?: String;
     carType?: string;
     transmission?: string;
     fuelType?: string;
@@ -121,7 +121,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         </button>
       </div>
 
-      {/* 🔍 BARRA DE BÚSQUEDA */}
+
+      {/* BARRA DE BÚSQUEDA */}
+
       <div className="w-full max-w-4xl mt-4 flex rounded overflow-hidden border border-gray-300">
         {/* Botón de búsqueda */}
         <button
@@ -143,67 +145,183 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         />
       </div>
 
-      {/* FILTROS EN FILA */}
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
-        <div className="w-40">
-          <select name="hostId" value={filters.hostId || ''} onChange={handleChange} className="border p-2 rounded w-full">
-            <option value="">Host</option>
-            <option value="1">host1@example.com</option>
-            <option value="2">host2@example.com</option>
-          </select>
-        </div>
+       {/* FILTROS EN FILA */}
+ 
+      <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
 
-        <div className="w-40">
-          <select name="carType" value={filters.carType || ''} onChange={handleChange} className="border p-2 rounded w-full">
-            <option value="">Tipo de Auto</option>
-            <option value="Mediano">Mediano</option>
-            <option value="Grande">Grande</option>
-            <option value="SUV">SUV</option>
-          </select>
-        </div>
+      {/* HOST */}
 
-        <div className="w-40">
-          <select name="transmission" value={filters.transmission || ''} onChange={handleChange} className="border p-2 rounded w-full">
+      {filters.hostId ? (
+      <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+      <span className="truncate">{filters.hostId === '1' ? 'host1@example.com' : 'host2@example.com'}</span>
+      <button
+        onClick={() => onFilterChange({ ...filters, hostId: '' })}
+        className="ml-2 text-white hover:text-gray-200 font-bold"
+      >
+        ×
+        </button>
+      </div>
+    ) : (
+    <div className="w-40">
+      <select
+         name="hostId"
+         value={filters.hostId || ''}
+         onChange={handleChange}
+         className="border p-2 rounded w-full"
+      >
+         <option value="">Host</option>
+         <option value="1">host1@example.com</option>
+         <option value="2">host2@example.com</option>
+         </select>
+     </div>
+      )}
+
+      
+      {/*TIPO DE AUTO */}
+      {filters.carType ? (
+
+     <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+        <span className="truncate capitalize">{filters.carType}</span>
+        <button
+          onClick={() => onFilterChange({ ...filters, carType: '' })}
+          className="ml-2 text-white hover:text-gray-200 font-bold"
+        >
+           ×
+         </button>
+       </div>
+    ) : (
+      <div className="w-40">
+          <select
+                name="carType"
+                value={filters.carType || ''}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+           >
+              <option value="">Tipo de Auto</option>
+              <option value="Mediano">Mediano</option>
+              <option value="Grande">Grande</option>
+              <option value="SUV">SUV</option>
+            </select>
+          </div>
+        )}
+
+        {/* TRANSMISION */}
+
+        {filters.transmission ? (
+           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+            <span className="truncate capitalize">
+        {{
+             manual: 'Manual',
+             automático: 'Automático',
+        }[filters.transmission]}
+        </span>
+        <button
+          onClick={() => onFilterChange({ ...filters, transmission: '' })}
+          className="ml-2 text-white hover:text-gray-200 font-bold"
+        >
+           ×
+        </button>
+     </div>
+        ) : (
+          <div className="w-40">
+          <select
+            name="transmission"
+            value={filters.transmission || ''}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          >
             <option value="">Transmisión</option>
             <option value="manual">Manual</option>
             <option value="automático">Automático</option>
           </select>
-        </div>
 
-        <div className="w-40 relative">
-          <button
-            type="button"
-            onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
-            className="border p-2 rounded flex items-center justify-between w-full"
-          >
-            {filters.fuelType || 'Consumo'}
-            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          {showFuelTypeOptions && (
-            <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
+       </div>
+      )}
+        
+      {/*CONSUMO */}
+
+      {filters.fuelType ? (
+
+     <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+     <span className="truncate capitalize">{filters.fuelType}</span>
+     <button
+         onClick={() => onFilterChange({ ...filters, fuelType: '' })}
+         className="ml-2 text-white hover:text-gray-200 font-bold"
+      >
+        ×
+       </button>
+     </div>
+   ) : (
+       <div className="w-40 relative">
+        <button
+         type="button"
+         onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
+         className="border p-2 rounded flex items-center justify-between w-full"
+        >
+       {filters.fuelType || 'Consumo'}
+           <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+       {showFuelTypeOptions && (
+         <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
+           <label className="flex items-center gap-2">
+             <input
+                  type="checkbox"
+                  checked={filters.fuelType === 'Gas'}
+                  onChange={() => handleFuelTypeChange('Gas')}
+             />
+               Gas
+             </label>
               <label className="flex items-center gap-2">
-                <input type="checkbox" checked={filters.fuelType === 'Gas'} onChange={() => handleFuelTypeChange('Gas')} />
-                Gas
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={filters.fuelType === 'Gasolina'} onChange={() => handleFuelTypeChange('Gasolina')} />
-                Gasolina
-              </label>
-            </div>
+              <input
+                  type="checkbox"
+                  checked={filters.fuelType === 'Gasolina'}
+                  onChange={() => handleFuelTypeChange('Gasolina')}
+              />
+               Gasolina
+             </label>
+           </div>
           )}
-        </div>
+         </div>
+       )}
 
-        <div className="w-40">
-          <select name="sortBy" value={filters.sortBy || 'relevance'} onChange={handleChange} className="border p-2 rounded w-full">
-            <option value="relevance">Relevancia</option>
-            <option value="priceAsc">Precio (Menor a Mayor)</option>
-            <option value="priceDesc">Precio (Mayor a Menor)</option>
-            <option value="rating">Calificación</option>
-            <option value="rentalCount">Cantidad de Rentas</option>
-          </select>
+      {/* RELEVANCIA */}
+
+        {filters.sortBy && filters.sortBy !== 'relevance' ? (
+         <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+          <span className="truncate">{{
+           relevance: 'Relevancia',
+           priceAsc: 'Precio (Menor a Mayor)',
+           priceDesc: 'Precio (Mayor a Menor)',
+           rating: 'Calificación',
+           rentalCount: 'Cantidad de Rentas'
+        }[filters.sortBy]}</span>
+
+        <button
+        onClick={() => onFilterChange({ ...filters, sortBy: 'relevance' })}
+        className="ml-2 text-white hover:text-gray-200 font-bold"
+        >
+          ×
+        </button>
+     </div>
+         ) : (
+          <div className="w-40">
+          <select
+          name="sortBy"
+          value={filters.sortBy || 'relevance'}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+          >
+         <option value="relevance">Relevancia</option>
+         <option value="priceAsc">Precio (Menor a Mayor)</option>
+         <option value="priceDesc">Precio (Mayor a Menor)</option>
+         <option value="rating">Calificación</option>
+         <option value="rentalCount">Cantidad de Rentas</option>
+         </select>
         </div>
+         )}
+
 
         {/* Botón solo si hay filtros activos */}
       
