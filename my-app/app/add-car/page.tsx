@@ -39,8 +39,6 @@ export default function AddCar() {
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
   
-  
-
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -71,17 +69,14 @@ export default function AddCar() {
     const { name, value } = e.target;
 
     if (name === "licensePlate") {
-      // Eliminar todo lo que no sea letra o número
       const raw = value.replace(/[^a-zA-Z0-9]/g, '');
 
       let formatted = raw;
 
-      // Si tiene más de 4 caracteres, insertamos el guion
       if (raw.length > 4) {
         formatted = raw.slice(0, 4) + '-' + raw.slice(4, 7); // Solo permitimos 3 letras máximo después del guion
       }
 
-      // Limitar la longitud total a 8 caracteres (4 números + 1 guion + 3 letras)
       if (formatted.length > 8) return;
 
       setFormData((prevData) => ({
@@ -89,7 +84,6 @@ export default function AddCar() {
         [name]: formatted.toUpperCase(), // Convierte a mayúsculas automáticamente
       }));
     } else {
-      // Para los demás campos
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -97,6 +91,115 @@ export default function AddCar() {
     }
   };
 
+const [brandError, setBrandError] = useState('');
+const [modelError, setModelError] = useState('');
+const [kilometersError, setKilometersError] = useState('');
+const [plateError, setPlateError] = useState('');
+const [transmissionError, setTransmissionError] = useState('');
+const [fuelTypeError, setFuelTypeError] = useState('');
+const [photoError, setPhotoError] = useState('');
+const [carTypeError, setCarTypeError] = useState<string>('');
+
+
+  const validarCamposObligatorios = () => {
+    let errores = false;
+  
+    if (!formData.carType) {
+      setCarTypeError('El tipo de auto es obligatorio');
+      errores = true;
+    } else {
+      setCarTypeError('');
+    }
+    if (!formData.location) {
+      setLocationError('La ubicación es obligatoria');
+      errores = true;
+    } else {
+      setLocationError('');
+    }
+  
+    if (!formData.brand) {
+      setBrandError('La marca es obligatoria');
+      errores = true;
+    } else {
+      setBrandError('');
+    }
+  
+    if (!formData.model) {
+      setModelError('El modelo es obligatorio');
+      errores = true;
+    } else {
+      setModelError('');
+    }
+  
+    if (!formData.year) {
+      setYearError('El año es obligatorio');
+      errores = true;
+    } else {
+      setYearError('');
+    }
+  
+    if (!formData.color || colorError) {
+      setColorError('El color es obligatorio');
+      errores = true;
+    } else {
+      setColorError('');
+    }
+  
+    if (!formData.pricePerDay) {
+      setPriceError('La tarifa por día es obligatoria');
+      errores = true;
+    } else {
+      setPriceError('');
+    }
+  
+    if (!formData.seats) {
+      setSeatsError('La capacidad es obligatoria');
+      errores = true;
+    } else {
+      setSeatsError('');
+    }
+  
+    if (!formData.transmission) {
+      setTransmissionError('La transmisión es obligatoria');
+      errores = true;
+    } else {
+      setTransmissionError('');
+    }
+  
+    if (!formData.fuelType) {
+      setFuelTypeError('El tipo de combustible es obligatorio');
+      errores = true;
+    } else {
+      setFuelTypeError('');
+    }
+  
+    if (!formData.kilometers || parseInt(formData.kilometers.toString()) <= 0) {
+      setKilometersError('Kilometraje inválido');
+      errores = true;
+    } else {
+      setKilometersError('');
+    }
+  
+    if (!formData.licensePlate) {
+      setPlateError('La placa es obligatoria');
+      errores = true;
+    } else {
+      setPlateError('');
+    }
+  
+    const validPhotos = formData.photoUrls.filter((url) => url.trim() !== '');
+    if (validPhotos.length < 3) {
+      setPhotoError('Debes proporcionar al menos 3 URLs de fotos');
+      errores = true;
+    } else {
+      setPhotoError('');
+    }
+  
+    return !errores;
+  };
+  
+  
+  
 
   const handleRemoveEquipment = (index: number) => {
     setFormData((prev) => ({
@@ -135,22 +238,20 @@ export default function AddCar() {
 
   const [colorError, setColorError] = useState<string>('');
 
-  // Función para manejar el cambio de valor del color
   const controlarColor = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    const soloLetras = /^[a-zA-Z]*$/;
 
-    if (name === "color") {
-      // Validación: Permitir solo letras y espacios
-      const soloLetras = /^[a-zA-Z\s]*$/;
-      if (!soloLetras.test(value)) {
-        setColorError('El color solo puede contener letras y espacios');
-        return; // Si la validación falla, no actualizamos el valor
-      } else {
-        setColorError(''); // Limpiamos el error si la validación es exitosa
-      }
+    if (!soloLetras.test(value)) {
+      setColorError('El color solo puede contener letras sin espacios ni caracteres especiales');
+      return;
+    } else if (value.length > 10) {
+      setColorError('El color no puede tener más de 15 caracteres');
+      return;
+    } else {
+      setColorError('');
     }
 
-    // Actualizamos el estado del formulario con el nuevo valor
     setFormData({ ...formData, [name]: value });
   };
 
@@ -160,8 +261,6 @@ export default function AddCar() {
   const [seatsError, setSeatsError] = useState('');
   const limiteAsientos = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // Evita que escriban cualquier cosa que no sean números enteros
     if (!/^\d*$/.test(value)) return;  // Solo números enteros
 
     const number = parseInt(value);
@@ -171,7 +270,7 @@ export default function AddCar() {
         setSeatsError('La capacidad máxima es 20');
         return; // No actualizamos el valor en el estado
       } else {
-        setSeatsError(''); // Limpia el mensaje de error si todo está bien
+        setSeatsError(''); 
       }
     } else {
       setSeatsError('Ingrese un número válido');
@@ -209,20 +308,24 @@ export default function AddCar() {
 
 
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
+    const camposValidos = validarCamposObligatorios();
+    if (!camposValidos) {
+      return;
+    }
+  
     if (!token) {
       setError("Debes iniciar sesión para añadir un auto");
       return;
     }
-
+  
     if (formData.photoUrls.filter((url) => url.trim() !== "").length < 3) {
       setError("Debes proporcionar al menos 3 URLs de fotos");
       return;
     }
+  
     try {
       const response = await fetch("http://localhost:5000/api/cars", {
         method: "POST",
@@ -232,18 +335,19 @@ export default function AddCar() {
         },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.error || "Error al añadir el auto");
       }
-
+  
       router.push("/my-cars");
     } catch (err: any) {
       setError(err.message);
     }
   };
+  
 
   return (
     <div className="container mx-auto p-4">
@@ -286,10 +390,20 @@ export default function AddCar() {
                 name="brand"
                 placeholder="Marca"
                 value={formData.brand}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
+                onChange={(e) => {
+                  const onlyLetters = /^[a-zA-Z\s]*$/;
+                  const value = e.target.value;
+                  if (onlyLetters.test(value) && value.length <= 20) {
+                    setFormData({ ...formData, brand: value });
+                  }
+                }}
+                
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
                 required
               />
+              {brandError && (
+              <p className="text-red-500 text-sm mt-1">{brandError}</p>
+            )}
             </div>
             <div>
               <label className="block text-gray-600 mb-1">Modelo</label>
@@ -299,14 +413,18 @@ export default function AddCar() {
                 placeholder="Modelo"
                 value={formData.model}
                 onChange={(e) => {
-                  const onlyLetters = /^[a-zA-Z\s]*$/;
-                  if (onlyLetters.test(e.target.value)) {
-                    setFormData({ ...formData, model: e.target.value });
+                  const value = e.target.value;
+                  if (value.length <= 30) {
+                    setFormData({ ...formData, model: value });
                   }
                 }}
+                
                 maxLength={30}
-                className="border p-3 rounded w-full"
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {modelError && (
+              <p className="text-red-500 text-sm mt-1">{modelError}</p>
+            )}
             </div>
           </div>
 
@@ -316,7 +434,7 @@ export default function AddCar() {
               name="carType"
               value={formData.carType}
               onChange={handleChange}
-              className="border p-3 rounded w-full"
+              className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
               required
             >
               <option value="">Seleccionar</option>
@@ -324,6 +442,9 @@ export default function AddCar() {
               <option value="Grande">Grande</option>
               <option value="SUV">SUV</option>
             </select>
+            { carTypeError && (
+              <p className="text-red-500 text-sm mt-1">{carTypeError}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -403,9 +524,12 @@ export default function AddCar() {
                 placeholder="5000 km/h"
                 value={formData.kilometers}
                 onChange={handleChange}
-                className="border p-3 rounded w-full"
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
                 required
               />
+              { kilometersError && (
+              <p className="text-red-500 text-sm mt-1">{kilometersError}</p>
+            )}
             </div>
             <div>
               <label className="block text-gray-600 mb-1">Placa</label>
@@ -415,8 +539,11 @@ export default function AddCar() {
                 placeholder="0000-AAA"
                 value={formData.licensePlate}
                 onChange={placa}
-                className="border p-3 rounded w-full"
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
               />
+              { plateError && (
+              <p className="text-red-500 text-sm mt-1">{plateError}</p>
+            )}
             </div>
           </div>
         </div>
@@ -429,13 +556,16 @@ export default function AddCar() {
               name="transmission"
               value={formData.transmission}
               onChange={handleChange}
-              className="border p-3 rounded w-full"
+              className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
               required
             >
               <option value="">Seleccionar</option>
               <option value="Manual">Manual</option>
               <option value="Automático">Automático</option>
             </select>
+            { transmissionError && (
+              <p className="text-red-500 text-sm mt-1">{transmissionError}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Combustible</label>
@@ -443,13 +573,16 @@ export default function AddCar() {
               name="fuelType"
               value={formData.fuelType}
               onChange={handleChange}
-              className="border p-3 rounded w-full"
+              className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
               required
             >
               <option value="">Seleccionar</option>
               <option value="Gas">Gas</option>
               <option value="Gasolina">Gasolina</option>
             </select>
+            { fuelTypeError && (
+              <p className="text-red-500 text-sm mt-1">{fuelTypeError}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Capacidad (asientos)</label>
@@ -486,7 +619,7 @@ export default function AddCar() {
                 value={url}
                 onChange={(e) => handlePhotoUrlChange(idx, e.target.value)}
                 placeholder={`URL de la foto ${idx + 1}`}
-                className="border p-2 rounded w-full"
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
                 required={idx < 3}
               />
             </div>
@@ -502,6 +635,9 @@ export default function AddCar() {
               + Agregar otra foto
             </button>
           )}
+          { photoError && (
+              <p className="text-red-500 text-sm mt-1">{photoError}</p>
+            )}
         </div>
       </form>
 
