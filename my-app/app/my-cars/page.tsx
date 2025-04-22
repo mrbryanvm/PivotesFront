@@ -172,7 +172,7 @@ export default function MyCars() {
         }}
       />
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 ">
         <h1 className="text-2xl font-bold">Mis Autos</h1>
         <div className="flex gap-4">
           <Link href="/add-car">
@@ -191,83 +191,90 @@ export default function MyCars() {
       </div>
 
       {/* Lista de Autos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {carsResponse.cars.map((car) => (
-          <div
-            key={car.id}
-            className="border rounded-lg shadow-md p-4 bg-white flex items-center gap-4"
-          >
-            {/* Imagen a la izquierda */}
-            <div className="w-1/3">
-              <p className="bg-gray-100 text-center text-sm mt-1 mb-3 py-1 rounded font-semibold">
-                ${car.pricePerDay} / día
-              </p>
-
-              <img
-                src={car.imageUrl}
-                alt={`${car.brand} ${car.model}`}
-                className="w-full h-65 object-contain rounded"
-              />
-              <p className="text-green-600 text-sm font-medium mt-2">
-                🟢 Disponible
-              </p>
-            </div>
-
-            {/* Información a la derecha */}
-            <div className="w-2/3">
-              <h2 className="text-lg font-semibold mb-1">
-                {car.brand} {car.model}
-              </h2>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>Año: {car.year}</p>
-                <p>{car.seats} plazas</p>
-                <p>Transmisión: {car.transmission}</p>
-                <p>Categoría: {car.category}</p>
-                <p>Color: {car.color}</p>
-              </div>
-              {car.extraEquipment.length > 0 && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Equipamiento: {car.extraEquipment.join(", ")}
+      {carsResponse.cars.length === 0 ? (
+        <p className="text-center text-gray-500 mt-10 text-xl">
+          No tienes autos Registrados <br/>
+          ¡Agrega uno ahora!
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {carsResponse.cars.map((car) => (
+            <div
+              key={car.id}
+              className="border rounded-lg shadow-md p-4 bg-white flex items-center gap-4"
+            >
+              {/* Imagen a la izquierda */}
+              <div className="w-1/3">
+                <p className="bg-gray-100 text-center text-sm mt-1 mb-3 py-1 rounded font-semibold">
+                  ${car.pricePerDay} / día
                 </p>
-              )}
 
-              {/* Acciones */}
-              <div className="flex gap-6 mt-4 text-sm text-center">
-                {/* Info */}
-                <div className="flex flex-col items-center">
-                  <Link href={`/car-details/${car.id}`}>
-                    <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
-                      <FaEye />
-                    </button>
-                  </Link>
-                  <span className="text-gray-700 mt-1">Info</span>
+                <img
+                  src={car.imageUrl}
+                  alt={`${car.brand} ${car.model}`}
+                  className="w-full h-65 object-contain rounded"
+                />
+                <p className="text-green-600 text-sm font-medium mt-2">
+                  🟢 Disponible
+                </p>
+              </div>
+
+              {/* Información a la derecha */}
+              <div className="w-2/3">
+                <h2 className="text-lg font-semibold mb-1">
+                  {car.brand} {car.model}
+                </h2>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>Año: {car.year}</p>
+                  <p>{car.seats} plazas</p>
+                  <p>Transmisión: {car.transmission}</p>
+                  <p>Categoría: {car.category}</p>
+                  <p>Color: {car.color}</p>
                 </div>
+                {car.extraEquipment.length > 0 && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Equipamiento: {car.extraEquipment.join(", ")}
+                  </p>
+                )}
 
-                {/* Editar */}
-                <div className="flex flex-col items-center">
-                  <Link href={`/edit-car/${car.id}`}>
-                    <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 ml-5">
-                      <FaEdit />
+                {/* Acciones */}
+                <div className="flex gap-6 mt-4 text-sm text-center">
+                  {/* Info */}
+                  <div className="flex flex-col items-center">
+                    <Link href={`/car-details/${car.id}`}>
+                      <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
+                        <FaEye />
+                      </button>
+                    </Link>
+                    <span className="text-gray-700 mt-1">Info</span>
+                  </div>
+
+                  {/* Editar */}
+                  <div className="flex flex-col items-center">
+                    <Link href={`/edit-car/${car.id}`}>
+                      <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 ml-5">
+                        <FaEdit />
+                      </button>
+                    </Link>
+                    <span className="text-gray-700 mt-1 ml-5">Editar</span>
+                  </div>
+
+                  {/* Eliminar */}
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => handleDeleteCar(car.id)}
+                      className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5"
+                    >
+                      <FaTrash />
                     </button>
-                  </Link>
-                  <span className="text-gray-700 mt-1 ml-5">Editar</span>
-                </div>
-
-                {/* Eliminar */}
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => handleDeleteCar(car.id)}
-                    className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5"
-                  >
-                    <FaTrash />
-                  </button>
-                  <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
+                    <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal para el Calendario (HU 7) */}
       {selectedCarId && (
