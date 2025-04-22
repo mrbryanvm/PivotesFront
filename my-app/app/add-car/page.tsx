@@ -165,7 +165,6 @@ export default function AddCar() {
       setError("Debes proporcionar al menos 3 URLs de fotos");
       return;
     }
-
     try {
       const response = await fetch("http://localhost:5000/api/cars", {
         method: "POST",
@@ -246,6 +245,7 @@ export default function AddCar() {
                     setFormData({ ...formData, model: e.target.value });
                   }
                 }}
+                maxLength={30}
                 className="border p-3 rounded w-full"
               />
             </div>
