@@ -54,6 +54,37 @@ export default function AddCar() {
     }
   };
 
+  const placa = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "licensePlate") {
+      // Eliminar todo lo que no sea letra o número
+      const raw = value.replace(/[^a-zA-Z0-9]/g, '');
+
+      let formatted = raw;
+
+      // Si tiene más de 4 caracteres, insertamos el guion
+      if (raw.length > 4) {
+        formatted = raw.slice(0, 4) + '-' + raw.slice(4, 7); // Solo permitimos 3 letras máximo después del guion
+      }
+
+      // Limitar la longitud total a 8 caracteres (4 números + 1 guion + 3 letras)
+      if (formatted.length > 8) return;
+
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: formatted.toUpperCase(), // Convierte a mayúsculas automáticamente
+      }));
+    } else {
+      // Para los demás campos
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
+
   const handleRemoveEquipment = (index: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -87,12 +118,29 @@ export default function AddCar() {
     });
   };
 
+
+
+  const controlarColor = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "color") {
+      // Permitir solo letras y espacios
+      const soloLetras = /^[a-zA-Z\s]*$/;
+      if (!soloLetras.test(value)) return; // ignora entrada inválida
+    }
+
+    setFormData({ ...formData, [name]: value });
+  };
+
+
+
+
   const [seatsError, setSeatsError] = useState('');
   const limiteAsientos = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
-    // Evita que escriban letras o valores vacíos
-    if (!/^\d*$/.test(value)) return;
+    // Evita que escriban cualquier cosa que no sean números enteros
+    if (!/^\d*$/.test(value)) return;  // Solo números enteros
 
     const number = parseInt(value);
 
@@ -101,7 +149,7 @@ export default function AddCar() {
         setSeatsError('La capacidad máxima es 20');
         return; // No actualizamos el valor en el estado
       } else {
-        setSeatsError('');
+        setSeatsError(''); // Limpia el mensaje de error si todo está bien
       }
     } else {
       setSeatsError('Ingrese un número válido');
@@ -113,12 +161,13 @@ export default function AddCar() {
     });
   };
 
+
   const [locationError, setLocationError] = useState('');
   const validarCaracteres = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  
+
 
   const [priceError, setPriceError] = useState('');
   const validaTarifa = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,6 +227,7 @@ export default function AddCar() {
   return (
     <div className="container mx-auto p-4">
       <form
+        id="formulario"
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
@@ -264,7 +314,7 @@ export default function AddCar() {
                 value={formData.year}
                 onChange={validacionAño}
                 onKeyDown={(e) => {
-                  if (["e", "E", "+", "-"].includes(e.key)) {
+                  if (["e", "E", "+", "-", "."].includes(e.key)) {
                     e.preventDefault();
                   }
                 }}
@@ -286,10 +336,14 @@ export default function AddCar() {
                 name="color"
                 placeholder="Color"
                 value={formData.color}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
+                onChange={controlarColor}
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {yearError && (
+                <p className="text-red-500 text-sm mt-1">{yearError}</p>
+              )}
             </div>
+
           </div>
 
           <div className="mb-4">
@@ -336,9 +390,9 @@ export default function AddCar() {
               <input
                 type="text"
                 name="licensePlate"
-                placeholder="Placa"
+                placeholder="0000-AAA"
                 value={formData.licensePlate}
-                onChange={handleChange}
+                onChange={placa}
                 className="border p-3 rounded w-full"
               />
             </div>
@@ -378,7 +432,7 @@ export default function AddCar() {
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Capacidad (asientos)</label>
             <input
-              type="number"
+              type="text" // Cambié de "number" a "text" para controlar la entrada
               name="seats"
               value={formData.seats}
               onChange={limiteAsientos}
@@ -390,7 +444,6 @@ export default function AddCar() {
               <p className="text-red-500 text-sm mt-1">{seatsError}</p>
             )}
           </div>
-
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Descripción</label>
             <textarea
@@ -439,6 +492,7 @@ export default function AddCar() {
           Cancelar
         </button>
         <button
+          form="formulario"
           type="submit"
           className="bg-orange-500 text-white px-8 py-2 rounded"
           onClick={handleSubmit}
