@@ -114,20 +114,11 @@ export default function AddCar() {
   };
 
   const [locationError, setLocationError] = useState('');
-  const validarCaracteres = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]*$/;
-
-    if (regex.test(value)) {
-      setFormData({
-        ...formData,
-        location: value,
-      });
-      setLocationError('');
-    } else {
-      setLocationError('Solo se permiten letras sin espacios ni números');
-    }
+  const validarCaracteres = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
+  
 
   const [priceError, setPriceError] = useState('');
   const validaTarifa = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,19 +185,26 @@ export default function AddCar() {
           <h2 className="text-xl font-bold mb-4 uppercase">Información</h2>
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Ubicación</label>
-            <input
-              type="text"
+            <select
               name="location"
-              placeholder="Ubicación"
               value={formData.location}
               onChange={validarCaracteres}
               className={`border p-3 rounded w-full ${locationError ? 'border-red-500' : 'border-gray-300'}`}
               required
-            />
+            >
+              <option value="">Selecciona una ubicación</option>
+              <option value="Santa Cruz">Santa Cruz</option>
+              <option value="Cochabamba">Cochabamba</option>
+              <option value="La Paz">La Paz</option>
+              {/* <option value="Trujillo">Trujillo</option>
+              <option value="Piura">Piura</option> */}
+              {/* Agrega más ubicaciones aquí */}
+            </select>
             {locationError && (
               <p className="text-red-500 text-sm mt-1">{locationError}</p>
             )}
           </div>
+
 
 
           <div className="grid grid-cols-2 gap-4 mb-4">
