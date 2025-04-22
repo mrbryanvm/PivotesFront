@@ -145,7 +145,7 @@ export default function MyCars() {
         <div className="flex gap-4">
           <Link href="/add-car">
             <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-              Añadir Auto
+              Agregar nuevo Auto 
             </button>
           </Link>
           
@@ -187,7 +187,7 @@ export default function MyCars() {
                   onClick={() => handleOpenCalendar(car)}
                   className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600"
                 >
-                  Gestionar Disponibilidad
+                  Disponibilidad
                 </button>
                 {/* Botón para ver detalles */}
                 <Link href={`/car-details/${car.id}`}>
