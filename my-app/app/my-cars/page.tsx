@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useAuth } from '../lib/authContext';
-import { fetchMyCars, updateCarAvailability, deleteCar } from '../lib/api'; // Asegúrate de tener deleteCar
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { FaEdit, FaEye, FaTrash } from 'react-icons/fa'; // Importa los íconos
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useAuth } from "../lib/authContext";
+import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api"; // Asegúrate de tener deleteCar
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; // Importa los íconos
 
 interface Car {
   id: number;
@@ -40,11 +40,11 @@ export default function MyCars() {
     totalPages: 0,
   });
   const [filters, setFilters] = useState({
-    brand: '',
-    model: '',
-    carType: '',
-    transmission: '',
-    sortBy: '',
+    brand: "",
+    model: "",
+    carType: "",
+    transmission: "",
+    sortBy: "",
     page: 1,
   });
   const [error, setError] = useState<string | null>(null);
@@ -77,18 +77,24 @@ export default function MyCars() {
     if (!selectedCarId || !token) return;
 
     try {
-      const formattedDates = unavailableDates.map((date) => date.toISOString().split('T')[0]);
+      const formattedDates = unavailableDates.map(
+        (date) => date.toISOString().split("T")[0]
+      );
       await updateCarAvailability(selectedCarId, formattedDates, token);
       setCarsResponse((prev) => ({
         ...prev,
         cars: prev.cars.map((car) =>
-          car.id === selectedCarId ? { ...car, unavailableDates: formattedDates } : car
+          car.id === selectedCarId
+            ? { ...car, unavailableDates: formattedDates }
+            : car
         ),
       }));
       setSelectedCarId(null);
       setUnavailableDates([]);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al actualizar la disponibilidad');
+      setError(
+        err.response?.data?.error || "Error al actualizar la disponibilidad"
+      );
     }
   };
 
@@ -104,26 +110,26 @@ export default function MyCars() {
         totalCars: prev.totalCars - 1,
       }));
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al eliminar el auto');
+      setError(err.response?.data?.error || "Error al eliminar el auto");
     }
   };
 
   useEffect(() => {
-    if (!token || role !== 'host') return;
+    if (!token || role !== "host") return;
 
     const loadCars = async () => {
       try {
         const response = await fetchMyCars(filters, token);
         setCarsResponse(response);
       } catch (err: any) {
-        setError(err.response?.data?.error || 'Error al cargar los autos');
+        setError(err.response?.data?.error || "Error al cargar los autos");
       }
     };
 
     loadCars();
   }, [filters, token, role]);
 
-  if (!token || role !== 'host') {
+  if (!token || role !== "host") {
     return (
       <div className="text-center p-4">
         <h1 className="text-2xl font-bold mb-4">Acceso restringido</h1>
@@ -145,10 +151,10 @@ export default function MyCars() {
         <div className="flex gap-4">
           <Link href="/add-car">
             <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-              Añadir Auto
+              Agregar nuevo Auto
             </button>
           </Link>
-          
+
           <button
             onClick={logout}
             className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
@@ -159,66 +165,90 @@ export default function MyCars() {
       </div>
 
       {/* Lista de Autos */}
-      <div>
-        <p className="text-gray-600 mb-4">{carsResponse.totalCars} autos</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {carsResponse.cars.map((car) => (
-            <div key={car.id} className="border rounded-lg shadow-md p-4 bg-white">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {carsResponse.cars.map((car) => (
+          <div
+            key={car.id}
+            className="border rounded-lg shadow-md p-4 bg-white flex items-center gap-4"
+          >
+            {/* Imagen a la izquierda */}
+            <div className="w-1/3">
+              <p className="bg-gray-100 text-center text-sm mt-1 mb-3 py-1 rounded font-semibold">
+                ${car.pricePerDay} / día
+              </p>
+
               <img
                 src={car.imageUrl}
                 alt={`${car.brand} ${car.model}`}
-                className="w-full h-40 object-contain rounded mb-4"
+                className="w-full h-65 object-contain rounded"
               />
-              <h2 className="text-xl font-semibold">
+              <p className="text-green-600 text-sm font-medium mt-2">
+                🟢 Disponible
+              </p>
+            </div>
+
+            {/* Información a la derecha */}
+            <div className="w-2/3">
+              <h2 className="text-lg font-semibold mb-1">
                 {car.brand} {car.model}
               </h2>
-              <p className="text-sm text-gray-600">Año: {car.year}</p>
-              <p className="text-sm text-gray-600">Tipo: {car.category}</p>
-              <p className="text-sm text-gray-600">Precio por día: ${car.pricePerDay}</p>
-              <p className="text-sm text-gray-600">Transmisión: {car.transmission}</p>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>Año: {car.year}</p>
+                <p>{car.seats} plazas</p>
+                <p>Transmisión: {car.transmission}</p>
+                <p>Categoría: {car.category}</p>
+                <p>Color: {car.color}</p>
+              </div>
               {car.extraEquipment.length > 0 && (
-                <p className="text-sm text-gray-600">
-                  Equipamientos: {car.extraEquipment.join(', ')}
+                <p className="text-sm text-gray-600 mt-2">
+                  Equipamiento: {car.extraEquipment.join(", ")}
                 </p>
               )}
-              <div className="flex gap-2 mt-2">
-                {/* Botón para gestionar disponibilidad */}
-                <button
-                  onClick={() => handleOpenCalendar(car)}
-                  className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600"
-                >
-                  Gestionar Disponibilidad
-                </button>
-                {/* Botón para ver detalles */}
-                <Link href={`/car-details/${car.id}`}>
-                  <button className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600">
-                    <FaEye />
+
+              {/* Acciones */}
+              <div className="flex gap-6 mt-4 text-sm text-center">
+                {/* Info */}
+                <div className="flex flex-col items-center">
+                  <Link href={`/car-details/${car.id}`}>
+                    <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
+                      <FaEye />
+                    </button>
+                  </Link>
+                  <span className="text-gray-700 mt-1">Info</span>
+                </div>
+
+                {/* Editar */}
+                <div className="flex flex-col items-center">
+                  <Link href={`/edit-car/${car.id}`}>
+                    <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 ml-5">
+                      <FaEdit />
+                    </button>
+                  </Link>
+                  <span className="text-gray-700 mt-1 ml-5">Editar</span>
+                </div>
+
+                {/* Eliminar */}
+                <div className="flex flex-col items-center">
+                  <button
+                    onClick={() => handleDeleteCar(car.id)}
+                    className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5">
+                    <FaTrash />
                   </button>
-                </Link>
-                {/* Botón para editar */}
-                <Link href={`/edit-car/${car.id}`}>
-                  <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-                    <FaEdit />
-                  </button>
-                </Link>
-                {/* Botón para eliminar */}
-                <button
-                  onClick={() => handleDeleteCar(car.id)}
-                  className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                >
-                  <FaTrash />
-                </button>
+                  <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       {/* Modal para el Calendario (HU 7) */}
       {selectedCarId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Seleccionar Fechas de No Disponibilidad</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Seleccionar Fechas de No Disponibilidad
+            </h2>
             <DatePicker
               selected={null}
               onChange={handleDateChange}
@@ -257,7 +287,9 @@ export default function MyCars() {
           >
             ←
           </button>
-          <span>Página {carsResponse.currentPage} de {carsResponse.totalPages}</span>
+          <span>
+            Página {carsResponse.currentPage} de {carsResponse.totalPages}
+          </span>
           <button
             onClick={() => handlePageChange(carsResponse.currentPage + 1)}
             disabled={carsResponse.currentPage === carsResponse.totalPages}
