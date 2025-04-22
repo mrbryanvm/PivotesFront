@@ -27,6 +27,14 @@ export default function EditCar() {
   const { token } = useAuth();
   const [car, setCar] = useState<Car | null>(null);
   const [formData, setFormData] = useState<Partial<Car>>({});
+  const [formErrors, setFormErrors] = useState({
+    brand: '',
+    model: '',
+    year: '',
+    pricePerDay: '',
+    seats: '',
+    color: '',
+  });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -44,8 +52,65 @@ export default function EditCar() {
     loadCar();
   }, [id, token]);
 
+  // Funciones de validación
+  const validateTextField = (name: string, value: string) => {
+    if (!value.trim()) {
+      return `${name} es obligatorio`;
+    }
+    // Validar que no contenga números ni caracteres especiales
+    if (/\d/.test(value)) {
+      return `${name} no puede contener números`;
+    }
+    return '';
+  };
+
+  const validateYear = (value: number) => {
+    const currentYear = new Date().getFullYear();
+    if (value < 1900) return 'El año no puede ser menor a 1900';
+    if (value > currentYear) return `El año no puede ser mayor a ${currentYear}`;
+    return '';
+  };
+
+  const validatePricePerDay = (value: number) => {
+    if (value <= 0) return 'El precio debe ser mayor a 0';
+    return '';
+  };
+
+  const validateSeats = (value: number) => {
+    if (value < 1 || value > 20) return 'La capacidad debe ser entre 1 y 20 asientos';
+    return '';
+  };
+
+  const validateColor = (value: string) => {
+    if (!value.trim()) return 'El color es obligatorio';
+    if (/\d/.test(value)) return 'El color no puede contener números';
+    return '';
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+
+    // Validar cada campo según su tipo
+    let errorMessage = '';
+    if (name === 'brand' || name === 'model') {
+      errorMessage = validateTextField(name, value);
+    } else if (name === 'year') {
+      errorMessage = validateYear(Number(value));
+    } else if (name === 'pricePerDay') {
+      errorMessage = validatePricePerDay(Number(value));
+    } else if (name === 'seats') {
+      errorMessage = validateSeats(Number(value));
+    } else if (name === 'color') {
+      errorMessage = validateColor(value);
+    }
+
+    // Actualizar el estado de los errores
+    setFormErrors((prev) => ({
+      ...prev,
+      [name]: errorMessage,
+    }));
+
+    // Actualizar los datos del formulario
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -59,6 +124,8 @@ export default function EditCar() {
       setError(err.response?.data?.error || 'Error al actualizar el auto');
     }
   };
+
+  const isFormValid = Object.values(formErrors).every((error) => !error);
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (!car) return <p className="text-center">Cargando...</p>;
@@ -76,6 +143,7 @@ export default function EditCar() {
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />
+          {formErrors.brand && <p className="text-red-500 text-sm mt-1">{formErrors.brand}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Modelo</label>
@@ -86,6 +154,7 @@ export default function EditCar() {
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />
+          {formErrors.model && <p className="text-red-500 text-sm mt-1">{formErrors.model}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Año</label>
@@ -96,6 +165,7 @@ export default function EditCar() {
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />
+          {formErrors.year && <p className="text-red-500 text-sm mt-1">{formErrors.year}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Categoría</label>
@@ -119,6 +189,7 @@ export default function EditCar() {
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />
+          {formErrors.pricePerDay && <p className="text-red-500 text-sm mt-1">{formErrors.pricePerDay}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Transmisión</label>
@@ -141,6 +212,7 @@ export default function EditCar() {
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />
+          {formErrors.color && <p className="text-red-500 text-sm mt-1">{formErrors.color}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Asientos</label>
@@ -151,19 +223,26 @@ export default function EditCar() {
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />
+          {formErrors.seats && <p className="text-red-500 text-sm mt-1">{formErrors.seats}</p>}
         </div>
         <div className="flex gap-4">
           <button
             type="submit"
             className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+            disabled={!isFormValid}
           >
             Guardar Cambios
           </button>
-          <a href="/my-cars">
-            <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-              Cancelar
-            </button>
-          </a>
+          <button
+            type="button"
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            onClick={() => {
+              if (car) setFormData(car); // Restaurar valores originales
+              router.push('/my-cars');   // Redirigir
+            }}
+          >
+            Cancelar
+          </button>
         </div>
       </form>
     </div>

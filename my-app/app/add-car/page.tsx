@@ -1,10 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../lib/authContext';
 
 export default function AddCar() {
+
+  
+  const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
+  
+
   const [formData, setFormData] = useState({
     location: "",
     brand: "",
@@ -25,8 +37,10 @@ export default function AddCar() {
 
   const [equipmentInput, setEquipmentInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const { token } = useAuth();
+  
+  
+
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -53,12 +67,148 @@ export default function AddCar() {
     }
   };
 
+  const placa = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "licensePlate") {
+      // Eliminar todo lo que no sea letra o número
+      const raw = value.replace(/[^a-zA-Z0-9]/g, '');
+
+      let formatted = raw;
+
+      // Si tiene más de 4 caracteres, insertamos el guion
+      if (raw.length > 4) {
+        formatted = raw.slice(0, 4) + '-' + raw.slice(4, 7); // Solo permitimos 3 letras máximo después del guion
+      }
+
+      // Limitar la longitud total a 8 caracteres (4 números + 1 guion + 3 letras)
+      if (formatted.length > 8) return;
+
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: formatted.toUpperCase(), // Convierte a mayúsculas automáticamente
+      }));
+    } else {
+      // Para los demás campos
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
+
   const handleRemoveEquipment = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       extraEquipment: prev.extraEquipment.filter((_, i) => i !== index),
     }));
   };
+
+  const [yearError, setYearError] = useState('');
+  const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length > 4) return;
+
+    const year = parseInt(value);
+    const currentYear = new Date().getFullYear();
+
+    if (!isNaN(year)) {
+      if (year < 1900) {
+        setYearError('El año no puede ser menor a 1900');
+      } else if (year > currentYear) {
+        setYearError(`El año no puede ser mayor a ${currentYear}`);
+      } else {
+        setYearError('');
+      }
+    } else {
+      setYearError('Ingresa un año válido');
+    }
+
+    setFormData({
+      ...formData,
+      [e.target.name]: value,
+    });
+  };
+
+
+
+  const [colorError, setColorError] = useState<string>('');
+
+  // Función para manejar el cambio de valor del color
+  const controlarColor = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "color") {
+      // Validación: Permitir solo letras y espacios
+      const soloLetras = /^[a-zA-Z\s]*$/;
+      if (!soloLetras.test(value)) {
+        setColorError('El color solo puede contener letras y espacios');
+        return; // Si la validación falla, no actualizamos el valor
+      } else {
+        setColorError(''); // Limpiamos el error si la validación es exitosa
+      }
+    }
+
+    // Actualizamos el estado del formulario con el nuevo valor
+    setFormData({ ...formData, [name]: value });
+  };
+
+
+
+
+  const [seatsError, setSeatsError] = useState('');
+  const limiteAsientos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Evita que escriban cualquier cosa que no sean números enteros
+    if (!/^\d*$/.test(value)) return;  // Solo números enteros
+
+    const number = parseInt(value);
+
+    if (!isNaN(number)) {
+      if (number > 20) {
+        setSeatsError('La capacidad máxima es 20');
+        return; // No actualizamos el valor en el estado
+      } else {
+        setSeatsError(''); // Limpia el mensaje de error si todo está bien
+      }
+    } else {
+      setSeatsError('Ingrese un número válido');
+    }
+
+    setFormData({
+      ...formData,
+      [e.target.name]: value,
+    });
+  };
+
+
+  const [locationError, setLocationError] = useState('');
+  const validarCaracteres = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+
+  const [priceError, setPriceError] = useState('');
+  const validaTarifa = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d{0,3}$/.test(value)) {
+      setFormData({
+        ...formData,
+        pricePerDay: value,
+      });
+      setPriceError('');
+    } else {
+      setPriceError('Solo se permiten hasta 3 dígitos positivos');
+    }
+  };
+
+
+
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +223,6 @@ export default function AddCar() {
       setError("Debes proporcionar al menos 3 URLs de fotos");
       return;
     }
-
     try {
       const response = await fetch("http://localhost:5000/api/cars", {
         method: "POST",
@@ -99,6 +248,7 @@ export default function AddCar() {
   return (
     <div className="container mx-auto p-4">
       <form
+        id="formulario"
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
@@ -106,16 +256,28 @@ export default function AddCar() {
           <h2 className="text-xl font-bold mb-4 uppercase">Información</h2>
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Ubicación</label>
-            <input
-              type="text"
+            <select
               name="location"
-              placeholder="Ubicación"
               value={formData.location}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
+              onChange={validarCaracteres}
+              className={`border p-3 rounded w-full ${locationError ? 'border-red-500' : 'border-gray-300'}`}
               required
-            />
+            >
+              <option value="">Selecciona una ubicación</option>
+              <option value="Santa Cruz">Santa Cruz</option>
+              <option value="Cochabamba">Cochabamba</option>
+              <option value="La Paz">La Paz</option>
+              {/* <option value="Trujillo">Trujillo</option>
+              <option value="Piura">Piura</option> */}
+              {/* Agrega más ubicaciones aquí */}
+            </select>
+            {locationError && (
+              <p className="text-red-500 text-sm mt-1">{locationError}</p>
+            )}
           </div>
+
+
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-gray-600 mb-1">Marca</label>
@@ -136,7 +298,13 @@ export default function AddCar() {
                 name="model"
                 placeholder="Modelo"
                 value={formData.model}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const onlyLetters = /^[a-zA-Z\s]*$/;
+                  if (onlyLetters.test(e.target.value)) {
+                    setFormData({ ...formData, model: e.target.value });
+                  }
+                }}
+                maxLength={30}
                 className="border p-3 rounded w-full"
               />
             </div>
@@ -163,14 +331,26 @@ export default function AddCar() {
               <label className="block text-gray-600 mb-1">Año</label>
               <input
                 type="number"
+                id="year"
                 name="year"
-                placeholder="Año"
                 value={formData.year}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
+                onChange={validacionAño}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-", "."].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
                 required
+                min="1900"
+                max={new Date().getFullYear()}
               />
+              {yearError && (
+                <p className="text-red-500 text-sm mt-1">{yearError}</p>
+              )}
+
             </div>
+
             <div>
               <label className="block text-gray-600 mb-1">Color</label>
               <input
@@ -178,24 +358,41 @@ export default function AddCar() {
                 name="color"
                 placeholder="Color"
                 value={formData.color}
-                onChange={handleChange}
-                className="border p-3 rounded w-full"
+                onChange={controlarColor}
+                className={`mt-1 block w-full p-2 border rounded ${colorError ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {yearError && (
+                <p className="text-red-500 text-sm mt-1">{colorError}</p>
+              )}
             </div>
+
           </div>
 
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Tarifa/Día</label>
             <input
-              type="text"
+              type="number"
               name="pricePerDay"
               placeholder="$15"
               value={formData.pricePerDay}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
+              onChange={validaTarifa}
+              onKeyDown={(e) => {
+                const invalidChars = ['-', '+', 'e', '.', ',', 'E'];
+                if (invalidChars.includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              className={`border p-3 rounded w-full ${priceError ? 'border-red-500' : 'border-gray-300'}`}
               required
+              min="0"
+              max="999"
             />
+            {priceError && (
+              <p className="text-red-500 text-sm mt-1">{priceError}</p>
+            )}
           </div>
+
+
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -215,9 +412,9 @@ export default function AddCar() {
               <input
                 type="text"
                 name="licensePlate"
-                placeholder="Placa"
+                placeholder="0000-AAA"
                 value={formData.licensePlate}
-                onChange={handleChange}
+                onChange={placa}
                 className="border p-3 rounded w-full"
               />
             </div>
@@ -236,8 +433,8 @@ export default function AddCar() {
               required
             >
               <option value="">Seleccionar</option>
-              <option value="manual">Manual</option>
-              <option value="automático">Automático</option>
+              <option value="Manual">Manual</option>
+              <option value="Automático">Automático</option>
             </select>
           </div>
           <div className="mb-4">
@@ -257,13 +454,17 @@ export default function AddCar() {
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Capacidad (asientos)</label>
             <input
-              type="number"
+              type="text" // Cambié de "number" a "text" para controlar la entrada
               name="seats"
               value={formData.seats}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
+              onChange={limiteAsientos}
+              className={`border p-3 rounded w-full ${seatsError ? 'border-red-500' : 'border-gray-300'}`}
+              max="20"
               required
             />
+            {seatsError && (
+              <p className="text-red-500 text-sm mt-1">{seatsError}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Descripción</label>
@@ -313,6 +514,7 @@ export default function AddCar() {
           Cancelar
         </button>
         <button
+          form="formulario"
           type="submit"
           className="bg-orange-500 text-white px-8 py-2 rounded"
           onClick={handleSubmit}
