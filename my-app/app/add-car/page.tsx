@@ -64,8 +64,6 @@ export default function AddCar() {
   const [yearError, setYearError] = useState('');
   const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // Evita que se escriban más de 4 caracteres
     if (value.length > 4) return;
 
     const year = parseInt(value);
@@ -88,6 +86,63 @@ export default function AddCar() {
       [e.target.name]: value,
     });
   };
+
+  const [seatsError, setSeatsError] = useState('');
+  const limiteAsientos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Evita que escriban letras o valores vacíos
+    if (!/^\d*$/.test(value)) return;
+
+    const number = parseInt(value);
+
+    if (!isNaN(number)) {
+      if (number > 20) {
+        setSeatsError('La capacidad máxima es 20');
+        return; // No actualizamos el valor en el estado
+      } else {
+        setSeatsError('');
+      }
+    } else {
+      setSeatsError('Ingrese un número válido');
+    }
+
+    setFormData({
+      ...formData,
+      [e.target.name]: value,
+    });
+  };
+
+  const [locationError, setLocationError] = useState('');
+  const validarCaracteres = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]*$/;
+
+    if (regex.test(value)) {
+      setFormData({
+        ...formData,
+        location: value,
+      });
+      setLocationError('');
+    } else {
+      setLocationError('Solo se permiten letras sin espacios ni números');
+    }
+  };
+
+  const [priceError, setPriceError] = useState('');
+  const validaTarifa = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d{0,3}$/.test(value)) {
+      setFormData({
+        ...formData,
+        pricePerDay: value,
+      });
+      setPriceError('');
+    } else {
+      setPriceError('Solo se permiten hasta 3 dígitos positivos');
+    }
+  };
+
 
 
 
@@ -144,11 +199,16 @@ export default function AddCar() {
               name="location"
               placeholder="Ubicación"
               value={formData.location}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
+              onChange={validarCaracteres}
+              className={`border p-3 rounded w-full ${locationError ? 'border-red-500' : 'border-gray-300'}`}
               required
             />
+            {locationError && (
+              <p className="text-red-500 text-sm mt-1">{locationError}</p>
+            )}
           </div>
+
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-gray-600 mb-1">Marca</label>
@@ -163,7 +223,7 @@ export default function AddCar() {
               />
             </div>
             <div>
-              <label className="block text-gray-600 mb-1">Modelo</label>   
+              <label className="block text-gray-600 mb-1">Modelo</label>
               <input
                 type="text"
                 name="model"
@@ -241,11 +301,24 @@ export default function AddCar() {
               name="pricePerDay"
               placeholder="$15"
               value={formData.pricePerDay}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
+              onChange={validaTarifa}
+              onKeyDown={(e) => {
+                const invalidChars = ['-', '+', 'e', '.', ',', 'E'];
+                if (invalidChars.includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              className={`border p-3 rounded w-full ${priceError ? 'border-red-500' : 'border-gray-300'}`}
               required
+              min="0"
+              max="999"
             />
+            {priceError && (
+              <p className="text-red-500 text-sm mt-1">{priceError}</p>
+            )}
           </div>
+
+
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -310,11 +383,16 @@ export default function AddCar() {
               type="number"
               name="seats"
               value={formData.seats}
-              onChange={handleChange}
-              className="border p-3 rounded w-full"
+              onChange={limiteAsientos}
+              className={`border p-3 rounded w-full ${seatsError ? 'border-red-500' : 'border-gray-300'}`}
+              max="20"
               required
             />
+            {seatsError && (
+              <p className="text-red-500 text-sm mt-1">{seatsError}</p>
+            )}
           </div>
+
           <div className="mb-4">
             <label className="block text-gray-600 mb-1">Descripción</label>
             <textarea

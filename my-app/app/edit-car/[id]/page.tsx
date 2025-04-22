@@ -159,12 +159,15 @@ export default function EditCar() {
           >
             Guardar Cambios
           </button>
-          <a href="/my-cars">
-            <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-              Cancelar
-            </button>
-          </a>
+          <div>
+            <a href="/my-cars">
+              <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                Cancelar
+              </button>
+            </a>
+          </div>
         </div>
+
       </form>
     </div>
   );
