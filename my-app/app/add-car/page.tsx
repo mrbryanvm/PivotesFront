@@ -1,10 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../lib/authContext';
 
 export default function AddCar() {
+
+  
+  const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
+  
+
   const [formData, setFormData] = useState({
     location: "",
     brand: "",
@@ -25,8 +37,9 @@ export default function AddCar() {
 
   const [equipmentInput, setEquipmentInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const { token } = useAuth();
+  
+  
 
 
   const handleChange = (
