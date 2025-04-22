@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface FiltersProps {
   filters: {
@@ -21,6 +21,18 @@ interface FiltersProps {
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowSuggestions(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -46,7 +58,40 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       sortBy: 'relevance',
     });
     setShowFuelTypeOptions(false);
-  };  
+  }; 
+  
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    onFilterChange({ ...filters, search: value });
+  
+    const saved = localStorage.getItem('searchHistory');
+    const previousSearches = saved ? JSON.parse(saved) as string[] : [];
+  
+    const normalized = value.trim().toLowerCase();
+  
+    const matched = previousSearches.filter(item =>
+      item.toLowerCase().includes(normalized)
+    );
+  
+    if (value && !previousSearches.includes(value)) {
+      matched.unshift(value);
+    }
+  
+    setSuggestions(matched);
+    setShowSuggestions(true);
+  };
+
+  const handleSelectSuggestion = (value: string) => {
+    onFilterChange({ ...filters, search: value });
+    setShowSuggestions(false);
+  
+    const saved = localStorage.getItem('searchHistory');
+    const previousSearches = saved ? JSON.parse(saved) as string[] : [];
+  
+    const updatedSearches = [value, ...previousSearches.filter(v => v !== value)];
+  
+    localStorage.setItem('searchHistory', JSON.stringify(updatedSearches.slice(0, 10)));
+  };
 
   const hayFiltrosActivos = () => {
     return (
@@ -121,31 +166,48 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         </button>
       </div>
 
-
       {/* BARRA DE BÚSQUEDA */}
-
-      <div className="w-full max-w-4xl mt-4 flex rounded overflow-hidden border border-gray-300">
-        {/* Botón de búsqueda */}
-        <button
-          type="button"
-          onClick={() => console.log('Buscar:', filters.search)}
-          className="bg-[#FBE7C2] px-6 py-2 font-semibold text-xs text-gray-700"
-        >
-          Buscar
-        </button>
+      <div className="relative w-full max-w-4xl mt-4">
+        <div className="flex rounded overflow-hidden border border-gray-300">
+          {/* Botón de búsqueda */}
+          <button
+            type="button"
+            onClick={() => console.log('Buscar:', filters.search)}
+            className="bg-[#FBE7C2] px-6 py-2 font-semibold text-xs text-gray-700"
+          >
+            Buscar
+          </button>
 
         {/* Campo de texto */}
-        <input
-          type="text"
-          name="search"
-          placeholder="Buscar"
-          value={filters.search || ''}
-          onChange={handleChange}
-          className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
-        />
+          <input
+            type="text"
+            name="search"
+            placeholder="Buscar"
+            value={filters.search || ''}
+            onChange={handleSearchInput}
+            className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
+          />
+        </div>
+
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="absolute top-full left-0 w-full bg-white border mt-1 z-50 shadow-lg max-h-60 overflow-y-auto rounded-md">
+            {suggestions.map((item, index) => (
+              <li
+                key={index}
+                onClick={() => handleSelectSuggestion(item)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                className={`px-4 py-2 text-sm cursor-pointer hover:bg-orange-100 ${
+                  index === hoveredIndex ? 'bg-orange-100' : ''
+                }`}
+              >
+                {item}
+              </li>
+              ))}
+          </ul>
+        )}
       </div>
 
-       {/* FILTROS EN FILA */}
+      {/* FILTROS EN FILA */}
  
       <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
 
@@ -176,7 +238,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
      </div>
       )}
 
-      
       {/*TIPO DE AUTO */}
       {filters.carType ? (
 
@@ -206,7 +267,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         )}
 
         {/* TRANSMISION */}
-
         {filters.transmission ? (
            <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
             <span className="truncate capitalize">
@@ -239,7 +299,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       )}
         
       {/*CONSUMO */}
-
       {filters.fuelType ? (
 
      <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
@@ -287,7 +346,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
        )}
 
       {/* RELEVANCIA */}
-
         {filters.sortBy && filters.sortBy !== 'relevance' ? (
          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
           <span className="truncate">{{
@@ -324,7 +382,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
 
         {/* Botón solo si hay filtros activos */}
-      
         {hayFiltrosActivos() && (
         
           <button
