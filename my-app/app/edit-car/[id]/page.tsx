@@ -136,6 +136,31 @@ export default function EditCar() {
   };
   
 
+  const [yearError, setYearError] = useState('');
+  const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length > 4) return;
+
+    const year = parseInt(value);
+    const currentYear = new Date().getFullYear();
+
+    if (!isNaN(year)) {
+      if (year < 1900) {
+        setYearError('El año no puede ser menor a 1900');
+      } else if (year > currentYear) {
+        setYearError(`El año no puede ser mayor a ${currentYear}`);
+      } else {
+        setYearError('');
+      }
+    } else {
+      setYearError('Ingresa un año válido');
+    }
+
+    setFormData({
+      ...formData,
+      [e.target.name]: value,
+    });
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
   
@@ -220,14 +245,24 @@ export default function EditCar() {
         <div className="mb-4">
           <label className="block text-sm font-medium">Año</label>
           <input
-            type="number"
-            name="year"
-            value={formData.year || ''}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown} 
-            className="border p-2 rounded w-full"
-          />
-          {formErrors.year && <p className="text-red-500 text-sm mt-1">{formErrors.year}</p>}
+                type="number"
+                id="year"
+                name="year"
+                value={formData.year}
+                onChange={validacionAño}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-", "."].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                required
+                min="1900"
+                max={new Date().getFullYear()}
+              />
+              {yearError && (
+                <p className="text-red-500 text-sm mt-1">{yearError}</p>
+              )}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Categoría</label>
@@ -251,6 +286,12 @@ export default function EditCar() {
             value={formData.pricePerDay || ''}
             onChange={handleChange}
             className="border p-2 rounded w-full"
+            onKeyDown={(e) => {
+              if (e.key === '.' || e.key === ',') {
+                e.preventDefault();
+              }
+            }}
+            step="1"
           />
           {formErrors.pricePerDay && <p className="text-red-500 text-sm mt-1">{formErrors.pricePerDay}</p>}
         </div>
