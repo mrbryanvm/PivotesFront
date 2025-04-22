@@ -133,15 +133,24 @@ export default function AddCar() {
 
 
 
+  const [colorError, setColorError] = useState<string>('');
+
+  // Función para manejar el cambio de valor del color
   const controlarColor = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     if (name === "color") {
-      // Permitir solo letras y espacios
+      // Validación: Permitir solo letras y espacios
       const soloLetras = /^[a-zA-Z\s]*$/;
-      if (!soloLetras.test(value)) return; // ignora entrada inválida
+      if (!soloLetras.test(value)) {
+        setColorError('El color solo puede contener letras y espacios');
+        return; // Si la validación falla, no actualizamos el valor
+      } else {
+        setColorError(''); // Limpiamos el error si la validación es exitosa
+      }
     }
 
+    // Actualizamos el estado del formulario con el nuevo valor
     setFormData({ ...formData, [name]: value });
   };
 
@@ -350,10 +359,10 @@ export default function AddCar() {
                 placeholder="Color"
                 value={formData.color}
                 onChange={controlarColor}
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 block w-full p-2 border rounded ${colorError ? 'border-red-500' : 'border-gray-300'}`}
               />
               {yearError && (
-                <p className="text-red-500 text-sm mt-1">{yearError}</p>
+                <p className="text-red-500 text-sm mt-1">{colorError}</p>
               )}
             </div>
 
