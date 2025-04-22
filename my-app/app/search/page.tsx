@@ -107,16 +107,9 @@ export default function Search() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-end gap-4 mb-4">
-        <button
-          onClick={logout}
-          className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-        >
-          Cerrar Sesión
-        </button>
-      </div>
 
       {/* Filtros y Búsqueda */}
+      
       <Filters filters={filters} onFilterChange={handleFilterChange} />
 
       {/* Lista de Autos */}
