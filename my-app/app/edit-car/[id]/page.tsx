@@ -159,15 +159,18 @@ export default function EditCar() {
           >
             Guardar Cambios
           </button>
-          <div>
-            <a href="/my-cars">
-              <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                Cancelar
-              </button>
-            </a>
-          </div>
+          
+          <button
+            type="button"
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            onClick={() => {
+              if (car) setFormData(car); // Restaurar valores originales
+              router.push('/my-cars');   // Redirigir
+            }}
+          >
+            Cancelar
+          </button>
         </div>
-
       </form>
     </div>
   );
