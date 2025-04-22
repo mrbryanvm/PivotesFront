@@ -1,6 +1,6 @@
 "use client";
 
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../lib/authContext";
@@ -102,20 +102,20 @@ export default function MyCars() {
   // función para eliminar un auto
   const handleDeleteCar = async (carId: number) => {
     if (!token) return;
-  
+
     try {
-      await deleteCar(carId, token); 
+      await deleteCar(carId, token);
       setCarsResponse((prev) => ({
         ...prev,
         cars: prev.cars.filter((car) => car.id !== carId),
         totalCars: prev.totalCars - 1,
       }));
-  
+
       // Mensaje de éxito después de eliminar
-      toast.success('¡Auto eliminado exitosamente!');
+      toast.success("¡Auto eliminado exitosamente!");
     } catch (err: any) {
       setError(err.response?.data?.error || "Error al eliminar el auto");
-      toast.error('Error al eliminar el auto');
+      toast.error("Error al eliminar el auto");
     }
   };
 
@@ -150,48 +150,45 @@ export default function MyCars() {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    
     <div className="container mx-auto p-4">
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          success: {
+            icon: null,
+            style: {
+              background: "#FED7AA",
+              color: "#374151",
+            },
+          },
+          error: {
+            icon: null,
+            style: {
+              background: "#FECACA",
+              color: "#374151",
+            },
+          },
+        }}
+      />
 
-     <Toaster
-      position="top-center"
-      reverseOrder={false}
-      toastOptions={{
-        success: {
-          icon: null,
-          style: {
-            background: '#FED7AA',
-            color: '#374151',
-          },
-        },
-        error: {
-          icon: null,
-          style: {
-            background: '#FECACA',
-            color: '#374151',
-          },
-        },
-      }}
-    />
-    
-    <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl font-bold">Mis Autos</h1>
-      <div className="flex gap-4">
-        <Link href="/add-car">
-          <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-            Agregar nuevo Auto
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Mis Autos</h1>
+        <div className="flex gap-4">
+          <Link href="/add-car">
+            <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+              Agregar nuevo Auto
+            </button>
+          </Link>
+
+          <button
+            onClick={logout}
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+          >
+            Cerrar Sesión
           </button>
-        </Link>
-
-        <button
-          onClick={logout}
-          className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-        >
-          Cerrar Sesión
-        </button>
+        </div>
       </div>
-     </div>
-    
 
       {/* Lista de Autos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -260,7 +257,8 @@ export default function MyCars() {
                 <div className="flex flex-col items-center">
                   <button
                     onClick={() => handleDeleteCar(car.id)}
-                    className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5">
+                    className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5"
+                  >
                     <FaTrash />
                   </button>
                   <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
