@@ -198,9 +198,6 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     return !errores;
   };
   
-  
-  
-
   const handleRemoveEquipment = (index: number) => {
     setFormData((prev) => ({
       ...prev,

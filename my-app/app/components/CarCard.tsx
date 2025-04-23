@@ -25,7 +25,7 @@ interface CarCardProps {
 
 export default function CarCard({ car }: CarCardProps) {
   return (
-    <Link href={`/car/${car.id}`}>
+    <Link href={`/car-details/${car.id}`}>
       <div className="border rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition-shadow">
         <img
           src={car.imageUrl}
