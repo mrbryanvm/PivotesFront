@@ -180,13 +180,6 @@ export default function MyCars() {
               Agregar nuevo Auto
             </button>
           </Link>
-
-          <button
-            onClick={logout}
-            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-          >
-            Cerrar Sesión
-          </button>
         </div>
       </div>
 
