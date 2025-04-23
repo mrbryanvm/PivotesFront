@@ -44,7 +44,7 @@ export default function Search() {
     location: string;
     startDate: string;
     endDate: string;
-    hostId?: number;
+    hostId?: string;
     carType: string;
     transmission: string;
     fuelType: string;
@@ -80,7 +80,14 @@ export default function Search() {
   useEffect(() => {
     const loadCars = async () => {
       try {
-        const response = await fetchCars(filters, token ?? undefined);
+        const cleanFilters = {
+          ...filters,
+          hostId: filters.hostId ? parseInt(filters.hostId, 10) : undefined,
+          search: filters.search.trim().toLowerCase(),
+        };
+        
+        const response = await fetchCars(cleanFilters, token ?? undefined);
+        
         setCarsResponse(response);
       } catch (err: any) {
         setError(err.response?.data?.error || 'Error al cargar los autos');
@@ -109,13 +116,12 @@ export default function Search() {
     <div className="container mx-auto p-4">
 
       {/* Filtros y Búsqueda */}
-      
       <Filters filters={filters} onFilterChange={handleFilterChange} />
 
       {/* Lista de Autos */}
       <div>
-        <p className="text-gray-600 mb-4">{carsResponse.totalCars} resultados</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <p className="text-gray-600 mb-4 px-8">{carsResponse.totalCars} resultados</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8">
           {carsResponse.cars.map((car) => (
             <CarCard key={car.id} car={car} />
           ))}

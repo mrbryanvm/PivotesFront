@@ -7,7 +7,7 @@ interface FiltersProps {
     location?: string;
     startDate?: string;
     endDate?: string;
-    hostId?: String;
+    hostId?: string;
     carType?: string;
     transmission?: string;
     fuelType?: string;
@@ -73,9 +73,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       item.toLowerCase().includes(normalized)
     );
   
-    if (value && !previousSearches.includes(value)) {
+    if (value && !previousSearches.map(v => v.toLowerCase()).includes(normalized)) {
       matched.unshift(value);
-    }
+    }    
   
     setSuggestions(matched);
     setShowSuggestions(true);
