@@ -6,6 +6,7 @@ import { useAuth } from '../lib/authContext';
 import Filters from '../components/Filters';
 import CarCard from '../components/CarCard';
 import { fetchCars } from '../lib/api';
+import NoResultModal from '../components/NoResultModal';
 
 interface Car {
   id: number;
@@ -40,6 +41,9 @@ export default function Search() {
     currentPage: 1,
     totalPages: 0,
   });
+
+  const [showNoResults, setShowNoResults] = useState(false);
+  
   const [filters, setFilters] = useState<{
     location: string;
     startDate: string;
@@ -67,6 +71,7 @@ export default function Search() {
     page: 1,
     search: '',
   });
+
   const [error, setError] = useState<string | null>(null);
 
   const handleFilterChange = (newFilters: Partial<typeof filters>) => {
@@ -78,46 +83,36 @@ export default function Search() {
   };
 
   useEffect(() => {
-    const loadCars = async () => {
-      try {
-        const cleanFilters = {
-          ...filters,
-          hostId: filters.hostId ? parseInt(filters.hostId, 10) : undefined,
-          search: filters.search.trim().toLowerCase(),
-        };
-        
-        const response = await fetchCars(cleanFilters, token ?? undefined);
-        
-        setCarsResponse(response);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Error al cargar los autos');
+    const fetchFilteredCars = async () => {
+      const adaptedFilters = {
+        ...filters,
+        hostId: filters.hostId ? parseInt(filters.hostId) : undefined,
+      };
+      
+      const response = await fetchCars(adaptedFilters);
+      
+      setCarsResponse(response);
+  
+      // Si no hay autos, mostramos el modal
+      if (response.cars.length === 0) {
+        setShowNoResults(true);
+      } else {
+        setShowNoResults(false);
       }
     };
+  
+    fetchFilteredCars();
+  }, [filters]);
 
-    loadCars();
-  }, [filters, token]);
-
-  if (!token) {
-    return (
-      <div className="text-center p-4">
-        <h1 className="text-2xl font-bold mb-4">Debes iniciar sesión para buscar autos</h1>
-        <Link href="/login">
-          <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-            Iniciar Sesión
-          </button>
-        </Link>
-      </div>
-    );
-  }
+  
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-4">
-
       {/* Filtros y Búsqueda */}
       <Filters filters={filters} onFilterChange={handleFilterChange} />
-
+  
       {/* Lista de Autos */}
       <div>
         <p className="text-gray-600 mb-4 px-8">{carsResponse.totalCars} resultados</p>
@@ -127,7 +122,7 @@ export default function Search() {
           ))}
         </div>
       </div>
-
+  
       {/* Paginación */}
       {carsResponse.totalPages > 1 && (
         <div className="flex justify-center gap-4 mt-6">
@@ -148,6 +143,9 @@ export default function Search() {
           </button>
         </div>
       )}
+  
+      {/* MODAL de no resultados */}
+      {showNoResults && <NoResultModal onClose={() => setShowNoResults(false)} />}
     </div>
-  );
+  );  
 }
