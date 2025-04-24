@@ -4,10 +4,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../lib/authContext";
-import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api"; // Asegúrate de tener deleteCar
+import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; // Importa los íconos
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; 
 
 interface Car {
   id: number;
