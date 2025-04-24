@@ -57,6 +57,7 @@ export default function Search() {
     sortBy: string;
     page: number;
     search: string;
+    rating: number;
   }>({
     location: '',
     startDate: '',
@@ -70,6 +71,7 @@ export default function Search() {
     sortBy: 'relevance',
     page: 1,
     search: '',
+    rating: 0,
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -81,20 +83,31 @@ export default function Search() {
   const handlePageChange = (newPage: number) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
-
+  const hayFiltrosEspecificos = () => {
+    return (
+      filters.minPrice !== undefined ||
+      filters.maxPrice !== undefined ||
+      filters.rating > 0 ||
+      filters.hostId ||
+      filters.carType ||
+      filters.transmission ||
+      filters.fuelType
+    );
+  };
+  
   useEffect(() => {
     const fetchFilteredCars = async () => {
       const adaptedFilters = {
         ...filters,
         hostId: filters.hostId ? parseInt(filters.hostId) : undefined,
       };
-      
+  
       const response = await fetchCars(adaptedFilters);
-      
+  
       setCarsResponse(response);
   
-      // Si no hay autos, mostramos el modal
-      if (response.cars.length === 0) {
+      // Mostrar el modal solo si no hay resultados Y hay filtros específicos (no solo búsqueda por texto)
+      if (response.cars.length === 0 && hayFiltrosEspecificos()) {
         setShowNoResults(true);
       } else {
         setShowNoResults(false);
@@ -102,9 +115,7 @@ export default function Search() {
     };
   
     fetchFilteredCars();
-  }, [filters]);
-
-  
+  }, [filters]);  
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
