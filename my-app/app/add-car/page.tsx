@@ -597,6 +597,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               <option value="">Seleccionar</option>
               <option value="Gas">Gas</option>
               <option value="Gasolina">Gasolina</option>
+              <option value="Eléctrico">Eléctrico</option>
             </select>
             { fuelTypeError && (
               <p className="text-red-500 text-sm mt-1">{fuelTypeError}</p>

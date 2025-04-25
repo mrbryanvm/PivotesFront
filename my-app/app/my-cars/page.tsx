@@ -4,10 +4,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../lib/authContext";
-import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api"; // Asegúrate de tener deleteCar
+import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; // Importa los íconos
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; 
 
 interface Car {
   id: number;
@@ -47,6 +47,7 @@ export default function MyCars() {
     transmission: "",
     sortBy: "",
     page: 1,
+    limit: 4,
   });
   const [error, setError] = useState<string | null>(null);
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
@@ -182,6 +183,10 @@ export default function MyCars() {
           </Link>
         </div>
       </div>
+      <p className="text-orange-500 font-semibold text-lg mb-4">
+        {carsResponse.totalCars} autos registrados
+      </p>
+
 
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (

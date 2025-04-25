@@ -270,12 +270,15 @@ export default function EditCar() {
             name="category"
             value={formData.category || ''}
             onChange={handleChange}
-            onKeyDown={handleKeyDown} 
+            onKeyDown={handleKeyDown}
             className="border p-2 rounded w-full"
           >
-            <option value="Mediano">Mediano</option>
-            <option value="Grande">Grande</option>
+            <option value="">Selecciona una categoría</option>
+            <option value="Sedan">Sedán</option>
+            <option value="Camioneta">Camioneta</option>
             <option value="SUV">SUV</option>
+            <option value="Deportivo">Deportivo</option>
+            <option value="Eléctrico">Eléctrico</option>
           </select>
         </div>
         <div className="mb-4">

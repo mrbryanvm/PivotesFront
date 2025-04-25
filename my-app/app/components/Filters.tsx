@@ -11,6 +11,7 @@ interface FiltersProps {
     hostId?: string;
     carType?: string;
     transmission?: string;
+    consumo?: string;
     fuelType?: string;
     minPrice?: number;
     maxPrice?: number;
@@ -29,7 +30,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
   const [showRatingOptions, setShowRatingOptions] = useState(false);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
-
+  const [showConsumoOptions, setShowConsumoOptions] = useState(false);
   const [showPriceOptions, setShowPriceOptions] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
 
@@ -68,6 +69,11 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     setShowRatingOptions(false);
   };
 
+  const handleConsumoChange = (consumo: string) => {
+    onFilterChange({ ...filters, consumo });
+    setShowConsumoOptions(false);
+  };
+
   const handleResetFilters = () => {
     onFilterChange({
       location: "",
@@ -76,6 +82,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       hostId: undefined,
       carType: "",
       transmission: "",
+      consumo: "",
       fuelType: "",
       minPrice: undefined,
       maxPrice: undefined,
@@ -84,6 +91,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     });
     setShowFuelTypeOptions(false);
     setShowTransmissionOptions(false);
+    setShowConsumoOptions(false);
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
   };
@@ -138,6 +146,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       filters.hostId ||
       filters.carType ||
       filters.transmission ||
+      filters.consumo ||
       filters.fuelType ||
       filters.minPrice !== undefined ||
       filters.maxPrice !== undefined ||
@@ -231,6 +240,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             value={filters.search || ""}
             onChange={handleSearchInput}
             className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
+            maxLength={50} // Limita a 50 caracteres
           />
         </div>
 
@@ -254,7 +264,11 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
       {/* FILTROS EN FILA */}
 
-      <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
+      <div className="flex flex-col items-center gap-4 mb-6">
+
+       <div className="overflow-x-auto w-full max-h-20">
+         <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
+
         {/* PRECIO */}
         {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between">
@@ -275,7 +289,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             </button>
           </div>
         ) : (
-          <div className="w-48 relative">
+          <div className="w-40">
             <button
               type="button"
               onClick={() => setShowPriceOptions(!showPriceOptions)}
@@ -358,7 +372,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             </button>
           </div>
         ) : (
-          <div className="w-40 relative">
+          <div className="w-40 ">
             <button
               type="button"
               onClick={() => setShowRatingOptions(!showRatingOptions)}
@@ -381,7 +395,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             </button>
 
             {showRatingOptions && (
-              <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-10 w-full">
+              <div className="absolute mt-1 bg-white border rounded p-5 shadow-lg z-9 w-auto">
                 <div className="flex justify-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -455,7 +469,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             </button>
           </div>
         ) : (
-          <div className="w-40 relative">
+          <div className="w-40">
             <button
               type="button"
               onClick={() => setShowCarTypeOptions(!showCarTypeOptions)}
@@ -526,7 +540,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         {/* TRANSMISIÓN */}
         {filters.transmission ? (
           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-            <span className="truncate capitalize">{filters.transmission}</span>
+            <span className="truncate cpitalize">{filters.transmission}</span>
             <button
               onClick={() => onFilterChange({ ...filters, transmission: "" })}
               className="ml-2 text-white hover:text-gray-200 font-bold"
@@ -535,7 +549,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             </button>
           </div>
         ) : (
-          <div className="w-40 relative">
+          <div className="w-40">
             <button
               type="button"
               onClick={() =>
@@ -581,59 +595,72 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           </div>
         )}
 
-        {/*CONSUMO */}
+        {/* CONSUMO */}
         {filters.fuelType ? (
-          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
             <span className="truncate capitalize">{filters.fuelType}</span>
-            <button
+           <button
               onClick={() => onFilterChange({ ...filters, fuelType: "" })}
               className="ml-2 text-white hover:text-gray-200 font-bold"
-            >
-              ×
+          >
+            ×
             </button>
-          </div>
-        ) : (
-          <div className="w-40 relative">
-            <button
-              type="button"
-              onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
-              className="border p-2 rounded flex items-center justify-between w-full"
-            >
-              {filters.fuelType || "Consumo"}
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+         </div>
+       ) : (
+         <div className="w-40">
+         <button
+            type="button"
+            onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
+            className="border p-2 rounded flex items-center justify-between w-full"
+       >
+          {filters.fuelType || "Consumo"}
+          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+       </button>
+        {showFuelTypeOptions && (
+         <div className="absolute mt-2 bg-white border rounded p-1 shadow-lg z-10 w-auto max-w-max">
+      
+        <label
+          className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFuelTypeChange("Gas")}
+        >
+          <span
+            className={`w-4 h-4 rounded-sm border ${
+              filters.fuelType === "Gas" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+            }`}
+          />
+          <span className="ml-2">Gas</span>
+        </label>
+
+          {/* Opción Gasolina */}
+          <label
+          className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFuelTypeChange("Gasolina")}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-            {showFuelTypeOptions && (
-              <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.fuelType === "Gas"}
-                    onChange={() => handleFuelTypeChange("Gas")}
-                  />
-                  Gas
+               <span
+            className={`w-4 h-4 rounded-sm border ${
+              filters.fuelType === "Gasolina" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+            }`}
+            />
+              <span className="ml-2">Gasolina</span>
                 </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.fuelType === "Gasolina"}
-                    onChange={() => handleFuelTypeChange("Gasolina")}
+
+                {/* Opción Eléctrico */}
+                <label
+                  className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                  onClick={() => handleFuelTypeChange("Eléctrico")}
+                >
+                  <span
+                    className={`w-4 h-4 rounded-sm border ${
+                      filters.fuelType === "Eléctrico" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+                    }`}
                   />
-                  Gasolina
+                  <span className="ml-2">Eléctrico</span>
                 </label>
-              </div>
-            )}
+
+               </div>
+              )}
           </div>
         )}
 
@@ -660,7 +687,11 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             </svg>
           </button>
         )}
+
+          </div>
+        </div>
       </div>
-    </div>
+
+      </div>
   );
 }
