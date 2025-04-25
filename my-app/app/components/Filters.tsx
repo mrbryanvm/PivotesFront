@@ -247,15 +247,41 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               maxLength={50}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.75rem] text-orange-500">
-              {filters.search?.length || 0}/50
+              
             </span>
-          </div>
 
-          {/* </div> */}
-
-
-
-        </div>
+            
+      {/* Botón "X" para borrar el texto */}
+      {filters.search && (
+        
+        <button
+          type="button"
+          onClick={() => {
+            // Limpiar búsqueda y ocultar sugerencias
+            onFilterChange({ ...filters, search: "" });
+            setShowSuggestions(false);  
+          }}
+          className="absolute right-0.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] px-6 py-2 text-gray-900 hover:bg-[#FBE7C2] cursor-pointer rounded-md"
+          style={{ padding: '11px 20px' }}
+        >
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               className="h-4 w-4"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+             >
+               <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+                 />
+                 </svg>
+               </button>
+              )}
+           </div>
+       </div>
 
         {showSuggestions && suggestions.length > 0 && (
           <ul className="absolute top-full left-0 w-full bg-white border mt-1 z-50 shadow-lg max-h-60 overflow-y-auto rounded-md">
@@ -653,18 +679,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                           }`}
                       />
                       <span className="ml-2">Gasolina</span>
-                    </label>
-
-                    {/* Opción Eléctrico */}
-                    <label
-                      className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
-                      onClick={() => handleFuelTypeChange("Eléctrico")}
-                    >
-                      <span
-                        className={`w-4 h-4 rounded-sm border ${filters.fuelType === "Eléctrico" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
-                          }`}
-                      />
-                      <span className="ml-2">Eléctrico</span>
                     </label>
 
                   </div>
