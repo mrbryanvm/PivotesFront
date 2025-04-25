@@ -538,8 +538,8 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={filters.carType === "Electrico"}
-                        onChange={() => handleCarTypeChange("Electrico")}
+                        checked={filters.carType === "Eléctrico"}
+                        onChange={() => handleCarTypeChange("Eléctrico")}
                       />
                       Eléctrico
                     </label>
