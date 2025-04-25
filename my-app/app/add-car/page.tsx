@@ -137,6 +137,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     } else {
       setYearError('');
     }
+    
   
     if (!formData.color || colorError) {
       setColorError('El color es obligatorio');
@@ -302,6 +303,8 @@ const [carTypeError, setCarTypeError] = useState<string>('');
   };
 
 
+  
+  
 
 
 
@@ -324,6 +327,18 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     }
   
     try {
+      const yearGreaterThan = parseInt(formData.year) > new Date().getFullYear();
+      const yearLessThan = parseInt(formData.year) < 1900;
+      if (yearGreaterThan) {
+        toast.error('El año no puede ser mayor al actual')
+        throw new Error('El año no puede ser mayor al actual')
+      }
+
+      if (yearLessThan) {
+        toast.error('El año no puede ser menor a 1900')
+        throw new Error('El año no puede ser menor a 1900')
+      }
+
       const response = await fetch("http://localhost:5000/api/cars", {
         method: "POST",
         headers: {
