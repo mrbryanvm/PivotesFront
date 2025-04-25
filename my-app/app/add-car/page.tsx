@@ -369,9 +369,12 @@ const [carTypeError, setCarTypeError] = useState<string>('');
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         <div className="md:col-span-1">
-          <h2 className="text-xl font-bold mb-4 uppercase">Información</h2>
+          <h2 className="text-xl font-bold mb-4 uppercase">Información
+          </h2>
           <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Ubicación</label>
+            <label className="block text-gray-600 mb-1">Ubicación <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+            </label>
             <select
               name="location"
               value={formData.location}
@@ -400,7 +403,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-gray-600 mb-1">Marca</label>
+              <label className="block text-gray-600 mb-1">Marca <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+              </label>
               <input
                 type="text"
                 name="brand"
@@ -422,7 +427,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
             )}
             </div>
             <div>
-              <label className="block text-gray-600 mb-1">Modelo</label>
+              <label className="block text-gray-600 mb-1">Modelo <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+              </label>
               <input
                 type="text"
                 name="model"
@@ -445,7 +452,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Tipo de Auto</label>
+            <label className="block text-gray-600 mb-1">Tipo de Auto <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+            </label>
             <select
               name="carType"
               value={formData.carType}
@@ -467,7 +476,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-gray-600 mb-1">Año</label>
+              <label className="block text-gray-600 mb-1">Año <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+              </label>
               <input
                 type="number"
                 id="year"
@@ -491,7 +502,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
             </div>
 
             <div>
-              <label className="block text-gray-600 mb-1">Color</label>
+              <label className="block text-gray-600 mb-1">Color <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+              </label>
               <input
                 type="text"
                 name="color"
@@ -508,7 +521,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Tarifa/Día</label>
+            <label className="block text-gray-600 mb-1">Tarifa/Día <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+            </label>
             <input
               type="number"
               name="pricePerDay"
@@ -535,7 +550,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-gray-600 mb-1">Kilometraje</label>
+              <label className="block text-gray-600 mb-1">Kilometraje <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+              </label>
               <input
                 type="number"
                 name="kilometers"
@@ -550,7 +567,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
             )}
             </div>
             <div>
-              <label className="block text-gray-600 mb-1">Placa</label>
+              <label className="block text-gray-600 mb-1">Placa <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+              </label>
               <input
                 type="text"
                 name="licensePlate"
@@ -569,7 +588,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
         <div className="md:col-span-1">
           <h2 className="text-xl font-bold mb-4 uppercase">Equipamiento</h2>
           <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Transmisión</label>
+            <label className="block text-gray-600 mb-1">Transmisión <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+            </label>
             <select
               name="transmission"
               value={formData.transmission}
@@ -586,7 +607,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Combustible</label>
+            <label className="block text-gray-600 mb-1">Combustible <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+            </label>
             <select
               name="fuelType"
               value={formData.fuelType}
@@ -604,7 +627,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Capacidad (asientos)</label>
+            <label className="block text-gray-600 mb-1">Capacidad (asientos) <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+            </label>
             <input
               type="text" // Cambié de "number" a "text" para controlar la entrada
               name="seats"
@@ -630,7 +655,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
         </div>
 
         <div className="md:col-span-1">
-          <h2 className="text-xl font-bold mb-4 uppercase">Fotos (URL)</h2>
+          <h2 className="text-xl font-bold mb-4 uppercase">Fotos (URL) <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
+
+          </h2>
           {formData.photoUrls.map((url, idx) => (
             <div className="mb-2" key={idx}>
               <input
