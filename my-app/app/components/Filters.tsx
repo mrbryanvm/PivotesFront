@@ -240,6 +240,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             value={filters.search || ""}
             onChange={handleSearchInput}
             className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
+            maxLength={50} // Limita a 50 caracteres
           />
         </div>
 
