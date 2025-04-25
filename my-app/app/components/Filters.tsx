@@ -246,42 +246,32 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               className="w-full px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
               maxLength={50}
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.75rem] text-orange-500">
-              
-            </span>
 
-            
-      {/* Botón "X" para borrar el texto */}
-      {filters.search && (
-        
-        <button
-          type="button"
-          onClick={() => {
-            // Limpiar búsqueda y ocultar sugerencias
-            onFilterChange({ ...filters, search: "" });
-            setShowSuggestions(false);  
-          }}
-          className="absolute right-0.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] px-6 py-2 text-gray-900 hover:bg-[#FBE7C2] cursor-pointer rounded-md"
-          style={{ padding: '11px 20px' }}
-        >
-            <svg
-               xmlns="http://www.w3.org/2000/svg"
-               className="h-4 w-4"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke="currentColor"
-             >
-               <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-                 />
-                 </svg>
-               </button>
-              )}
-           </div>
-       </div>
+            {filters.search && (
+              <button
+                onClick={() => {
+                  onFilterChange({ ...filters, search: "" });
+                }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 hover:text-gray-700 px-1"
+                aria-label="Borrar búsqueda"
+              >
+                {filters.search && (
+                  <button
+                    onClick={() => {
+                      onFilterChange({ ...filters, search: "" });
+                    }}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] hover:bg-[#f3dcae] text-gray-800 font-bold rounded px-2 py-1 text-xs shadow-sm"
+                    aria-label="Borrar búsqueda"
+                  >
+                    ×
+                  </button>
+                )}
+              </button>
+            )}
+
+          </div>
+          {/* </div> */}
+        </div>
 
         {showSuggestions && suggestions.length > 0 && (
           <ul className="absolute top-full left-0 w-full bg-white border mt-1 z-50 shadow-lg max-h-60 overflow-y-auto rounded-md">
@@ -392,7 +382,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               </div>
             )}
 
-            {/* CALIFICACIÓN */}
+           {/* CALIFICACIÓN 
             {filters.rating > 0 ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
                 <div className="flex gap-1">
@@ -461,7 +451,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                   </div>
                 )}
               </div>
-            )}
+            )}*/}
 
             {/* HOST */}
 
@@ -564,8 +554,8 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={filters.carType === "Electrico"}
-                        onChange={() => handleCarTypeChange("Electrico")}
+                        checked={filters.carType === "Eléctrico"}
+                        onChange={() => handleCarTypeChange("Eléctrico")}
                       />
                       Eléctrico
                     </label>
