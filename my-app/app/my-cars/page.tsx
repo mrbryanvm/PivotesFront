@@ -47,6 +47,7 @@ export default function MyCars() {
     transmission: "",
     sortBy: "",
     page: 1,
+    limit: 4,
   });
   const [error, setError] = useState<string | null>(null);
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
