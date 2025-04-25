@@ -645,6 +645,20 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             />
               <span className="ml-2">Gasolina</span>
                 </label>
+
+                {/* Opción Eléctrico */}
+                <label
+                  className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                  onClick={() => handleFuelTypeChange("Eléctrico")}
+                >
+                  <span
+                    className={`w-4 h-4 rounded-sm border ${
+                      filters.fuelType === "Eléctrico" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+                    }`}
+                  />
+                  <span className="ml-2">Eléctrico</span>
+                </label>
+
                </div>
               )}
           </div>
