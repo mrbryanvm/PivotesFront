@@ -233,15 +233,26 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           </button>
 
           {/* Campo de texto */}
-          <input
-            type="text"
-            name="search"
-            placeholder="Buscar"
-            value={filters.search || ""}
-            onChange={handleSearchInput}
-            className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
-            maxLength={50} // Limita a 50 caracteres
-          />
+          {/* <div className="flex flex-col space-y-1"> */}
+          <div className="relative w-full">
+            <input
+              type="text"
+              name="search"
+              placeholder="Buscar"
+              value={filters.search || ""}
+              onChange={handleSearchInput}
+              className="w-full px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
+              maxLength={50}
+            />
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.75rem] text-orange-500">
+              {filters.search?.length || 0}/50
+            </span>
+          </div>
+
+          {/* </div> */}
+
+
+
         </div>
 
         {showSuggestions && suggestions.length > 0 && (
@@ -251,9 +262,8 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                 key={index}
                 onClick={() => handleSelectSuggestion(item)}
                 onMouseEnter={() => setHoveredIndex(index)}
-                className={`px-4 py-2 text-sm cursor-pointer hover:bg-orange-100 ${
-                  index === hoveredIndex ? "bg-orange-100" : ""
-                }`}
+                className={`px-4 py-2 text-sm cursor-pointer hover:bg-orange-100 ${index === hoveredIndex ? "bg-orange-100" : ""
+                  }`}
               >
                 {item}
               </li>
@@ -266,432 +276,428 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
       <div className="flex flex-col items-center gap-4 mb-6">
 
-       <div className="overflow-x-auto w-full max-h-20">
-         <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
+        <div className="overflow-x-auto w-full max-h-20">
+          <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
 
-        {/* PRECIO */}
-        {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
-          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between">
-            <span className="truncate">
-              ${filters.minPrice} - ${filters.maxPrice} /día
-            </span>
-            <button
-              onClick={() =>
-                onFilterChange({
-                  ...filters,
-                  minPrice: undefined,
-                  maxPrice: undefined,
-                })
-              }
-              className="ml-2 text-white hover:text-gray-200 font-bold"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="w-40">
-            <button
-              type="button"
-              onClick={() => setShowPriceOptions(!showPriceOptions)}
-              className="border p-2 rounded flex items-center justify-between w-full"
-            >
-              Precio
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {showPriceOptions && (
-              <div className="absolute mt-2 bg-white border rounded p-4 shadow-lg z-10 w-64">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ${priceRange[0]} - ${priceRange[1]} /por día
-                </label>
-                <input
-                  type="range"
-                  min={15}
-                  max={100}
-                  value={priceRange[0]}
-                  onChange={(e) =>
-                    setPriceRange([+e.target.value, priceRange[1]])
-                  }
-                  className="w-full mb-2"
-                />
-                <input
-                  type="range"
-                  min={15}
-                  max={100}
-                  value={priceRange[1]}
-                  onChange={(e) =>
-                    setPriceRange([priceRange[0], +e.target.value])
-                  }
-                  className="w-full"
-                />
+            {/* PRECIO */}
+            {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between">
+                <span className="truncate">
+                  ${filters.minPrice} - ${filters.maxPrice} /día
+                </span>
                 <button
-                  onClick={() => {
+                  onClick={() =>
                     onFilterChange({
                       ...filters,
-                      minPrice: priceRange[0],
-                      maxPrice: priceRange[1],
-                    });
-                    setShowPriceOptions(false);
-                  }}
-                  className="mt-2 w-full bg-orange-500 text-white py-1 rounded hover:bg-orange-600 text-sm"
+                      minPrice: undefined,
+                      maxPrice: undefined,
+                    })
+                  }
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
                 >
-                  Aplicar
+                  ×
                 </button>
               </div>
-            )}
-          </div>
-        )}
+            ) : (
+              <div className="w-40">
+                <button
+                  type="button"
+                  onClick={() => setShowPriceOptions(!showPriceOptions)}
+                  className="border p-2 rounded flex items-center justify-between w-full"
+                >
+                  Precio
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-        {/* CALIFICACIÓN */}
-        {filters.rating > 0 ? (
-          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-            <div className="flex gap-1">
-              {[...Array(filters.rating)].map((_, idx) => (
-                <span key={idx} className="text-white text-lg">
-                  ★
-                </span>
-              ))}
-            </div>
-            <button
-              onClick={() => onFilterChange({ ...filters, rating: 0 })}
-              className="ml-2 text-white hover:text-gray-200 font-bold"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="w-40 ">
-            <button
-              type="button"
-              onClick={() => setShowRatingOptions(!showRatingOptions)}
-              className="border p-2 rounded flex items-center justify-between w-full"
-            >
-              Calificación
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {showRatingOptions && (
-              <div className="absolute mt-1 bg-white border rounded p-5 shadow-lg z-9 w-auto">
-                <div className="flex justify-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
+                {showPriceOptions && (
+                  <div className="absolute mt-2 bg-white border rounded p-4 shadow-lg z-10 w-64">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      ${priceRange[0]} - ${priceRange[1]} /por día
+                    </label>
+                    <input
+                      type="range"
+                      min={15}
+                      max={100}
+                      value={priceRange[0]}
+                      onChange={(e) =>
+                        setPriceRange([+e.target.value, priceRange[1]])
+                      }
+                      className="w-full mb-2"
+                    />
+                    <input
+                      type="range"
+                      min={15}
+                      max={100}
+                      value={priceRange[1]}
+                      onChange={(e) =>
+                        setPriceRange([priceRange[0], +e.target.value])
+                      }
+                      className="w-full"
+                    />
                     <button
-                      key={star}
-                      type="button"
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(null)}
                       onClick={() => {
-                        handleRatingChange(star);
-                        setShowRatingOptions(false);
+                        onFilterChange({
+                          ...filters,
+                          minPrice: priceRange[0],
+                          maxPrice: priceRange[1],
+                        });
+                        setShowPriceOptions(false);
                       }}
-                      className="focus:outline-none"
+                      className="mt-2 w-full bg-orange-500 text-white py-1 rounded hover:bg-orange-600 text-sm"
                     >
-                      <span
-                        className={`text-2xl ${
-                          (hoverRating ?? filters.rating) >= star
-                            ? "text-orange-500"
-                            : "text-gray-300"
-                        }`}
-                      >
-                        ★
-                      </span>
+                      Aplicar
                     </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* CALIFICACIÓN */}
+            {filters.rating > 0 ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+                <div className="flex gap-1">
+                  {[...Array(filters.rating)].map((_, idx) => (
+                    <span key={idx} className="text-white text-lg">
+                      ★
+                    </span>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* HOST */}
-
-        {filters.hostId ? (
-          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-            <span className="truncate">
-              {filters.hostId === "1"
-                ? "host1@example.com"
-                : "host2@example.com"}
-            </span>
-            <button
-              onClick={() => onFilterChange({ ...filters, hostId: "" })}
-              className="ml-2 text-white hover:text-gray-200 font-bold"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="w-40">
-            <select
-              name="hostId"
-              value={filters.hostId || ""}
-              onChange={handleChange}
-              className="border p-2 rounded w-full"
-            >
-              <option value="">Host</option>
-              <option value="1">host1@example.com</option>
-              <option value="2">host2@example.com</option>
-            </select>
-          </div>
-        )}
-
-        {/* TIPO DE AUTO */}
-        {filters.carType ? (
-          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-            <span className="truncate capitalize">{filters.carType}</span>
-            <button
-              onClick={() => onFilterChange({ ...filters, carType: "" })}
-              className="ml-2 text-white hover:text-gray-200 font-bold"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="w-40">
-            <button
-              type="button"
-              onClick={() => setShowCarTypeOptions(!showCarTypeOptions)}
-              className="border p-2 rounded flex items-center justify-between w-full"
-            >
-              {filters.carType || "Tipo de Auto"}
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-            {showCarTypeOptions && (
-              <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.carType === "Sedan"}
-                    onChange={() => handleCarTypeChange("Sedan")}
-                  />
-                  Sedán
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.carType === "Camioneta"}
-                    onChange={() => handleCarTypeChange("Camioneta")}
-                  />
-                  Camioneta
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.carType === "SUV"}
-                    onChange={() => handleCarTypeChange("SUV")}
-                  />
-                  SUV
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.carType === "Deportivo"}
-                    onChange={() => handleCarTypeChange("Deportivo")}
-                  />
-                  Deportivo
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.carType === "Electrico"}
-                    onChange={() => handleCarTypeChange("Electrico")}
-                  />
-                  Eléctrico
-                </label>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TRANSMISIÓN */}
-        {filters.transmission ? (
-          <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-            <span className="truncate cpitalize">{filters.transmission}</span>
-            <button
-              onClick={() => onFilterChange({ ...filters, transmission: "" })}
-              className="ml-2 text-white hover:text-gray-200 font-bold"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="w-40">
-            <button
-              type="button"
-              onClick={() =>
-                setShowTransmissionOptions(!showTransmissionOptions)
-              }
-              className="border p-2 rounded flex items-center justify-between w-full"
-            >
-              {filters.transmission || "Transmisión"}
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-            {showTransmissionOptions && (
-              <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.transmission === "Manual"}
-                    onChange={() => handleTransmissionChange("Manual")}
-                  />
-                  Manual
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.transmission === "Automático"}
-                    onChange={() => handleTransmissionChange("Automático")}
-                  />
-                  Automático
-                </label>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* CONSUMO */}
-        {filters.fuelType ? (
-           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-            <span className="truncate capitalize">{filters.fuelType}</span>
-           <button
-              onClick={() => onFilterChange({ ...filters, fuelType: "" })}
-              className="ml-2 text-white hover:text-gray-200 font-bold"
-          >
-            ×
-            </button>
-         </div>
-       ) : (
-         <div className="w-40">
-         <button
-            type="button"
-            onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
-            className="border p-2 rounded flex items-center justify-between w-full"
-       >
-          {filters.fuelType || "Consumo"}
-          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-          </svg>
-       </button>
-        {showFuelTypeOptions && (
-         <div className="absolute mt-2 bg-white border rounded p-1 shadow-lg z-10 w-auto max-w-max">
-      
-        <label
-          className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
-          onClick={() => handleFuelTypeChange("Gas")}
-        >
-          <span
-            className={`w-4 h-4 rounded-sm border ${
-              filters.fuelType === "Gas" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
-            }`}
-          />
-          <span className="ml-2">Gas</span>
-        </label>
-
-          {/* Opción Gasolina */}
-          <label
-          className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
-          onClick={() => handleFuelTypeChange("Gasolina")}
-              >
-               <span
-            className={`w-4 h-4 rounded-sm border ${
-              filters.fuelType === "Gasolina" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
-            }`}
-            />
-              <span className="ml-2">Gasolina</span>
-                </label>
-
-                {/* Opción Eléctrico */}
-                <label
-                  className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
-                  onClick={() => handleFuelTypeChange("Eléctrico")}
+                <button
+                  onClick={() => onFilterChange({ ...filters, rating: 0 })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
                 >
-                  <span
-                    className={`w-4 h-4 rounded-sm border ${
-                      filters.fuelType === "Eléctrico" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
-                    }`}
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className="w-40 ">
+                <button
+                  type="button"
+                  onClick={() => setShowRatingOptions(!showRatingOptions)}
+                  className="border p-2 rounded flex items-center justify-between w-full"
+                >
+                  Calificación
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {showRatingOptions && (
+                  <div className="absolute mt-1 bg-white border rounded p-5 shadow-lg z-9 w-auto">
+                    <div className="flex justify-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(null)}
+                          onClick={() => {
+                            handleRatingChange(star);
+                            setShowRatingOptions(false);
+                          }}
+                          className="focus:outline-none"
+                        >
+                          <span
+                            className={`text-2xl ${(hoverRating ?? filters.rating) >= star
+                              ? "text-orange-500"
+                              : "text-gray-300"
+                              }`}
+                          >
+                            ★
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* HOST */}
+
+            {filters.hostId ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+                <span className="truncate">
+                  {filters.hostId === "1"
+                    ? "host1@example.com"
+                    : "host2@example.com"}
+                </span>
+                <button
+                  onClick={() => onFilterChange({ ...filters, hostId: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className="w-40">
+                <select
+                  name="hostId"
+                  value={filters.hostId || ""}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full"
+                >
+                  <option value="">Host</option>
+                  <option value="1">host1@example.com</option>
+                  <option value="2">host2@example.com</option>
+                </select>
+              </div>
+            )}
+
+            {/* TIPO DE AUTO */}
+            {filters.carType ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+                <span className="truncate capitalize">{filters.carType}</span>
+                <button
+                  onClick={() => onFilterChange({ ...filters, carType: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className="w-40">
+                <button
+                  type="button"
+                  onClick={() => setShowCarTypeOptions(!showCarTypeOptions)}
+                  className="border p-2 rounded flex items-center justify-between w-full"
+                >
+                  {filters.carType || "Tipo de Auto"}
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {showCarTypeOptions && (
+                  <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.carType === "Sedan"}
+                        onChange={() => handleCarTypeChange("Sedan")}
+                      />
+                      Sedán
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.carType === "Camioneta"}
+                        onChange={() => handleCarTypeChange("Camioneta")}
+                      />
+                      Camioneta
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.carType === "SUV"}
+                        onChange={() => handleCarTypeChange("SUV")}
+                      />
+                      SUV
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.carType === "Deportivo"}
+                        onChange={() => handleCarTypeChange("Deportivo")}
+                      />
+                      Deportivo
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.carType === "Electrico"}
+                        onChange={() => handleCarTypeChange("Electrico")}
+                      />
+                      Eléctrico
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TRANSMISIÓN */}
+            {filters.transmission ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+                <span className="truncate cpitalize">{filters.transmission}</span>
+                <button
+                  onClick={() => onFilterChange({ ...filters, transmission: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className="w-40">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowTransmissionOptions(!showTransmissionOptions)
+                  }
+                  className="border p-2 rounded flex items-center justify-between w-full"
+                >
+                  {filters.transmission || "Transmisión"}
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {showTransmissionOptions && (
+                  <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.transmission === "Manual"}
+                        onChange={() => handleTransmissionChange("Manual")}
+                      />
+                      Manual
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={filters.transmission === "Automático"}
+                        onChange={() => handleTransmissionChange("Automático")}
+                      />
+                      Automático
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* CONSUMO */}
+            {filters.fuelType ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
+                <span className="truncate capitalize">{filters.fuelType}</span>
+                <button
+                  onClick={() => onFilterChange({ ...filters, fuelType: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className="w-40">
+                <button
+                  type="button"
+                  onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
+                  className="border p-2 rounded flex items-center justify-between w-full"
+                >
+                  {filters.fuelType || "Consumo"}
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {showFuelTypeOptions && (
+                  <div className="absolute mt-2 bg-white border rounded p-1 shadow-lg z-10 w-auto max-w-max">
+
+                    <label
+                      className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                      onClick={() => handleFuelTypeChange("Gas")}
+                    >
+                      <span
+                        className={`w-4 h-4 rounded-sm border ${filters.fuelType === "Gas" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+                          }`}
+                      />
+                      <span className="ml-2">Gas</span>
+                    </label>
+
+                    {/* Opción Gasolina */}
+                    <label
+                      className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                      onClick={() => handleFuelTypeChange("Gasolina")}
+                    >
+                      <span
+                        className={`w-4 h-4 rounded-sm border ${filters.fuelType === "Gasolina" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+                          }`}
+                      />
+                      <span className="ml-2">Gasolina</span>
+                    </label>
+
+                    {/* Opción Eléctrico */}
+                    <label
+                      className="flex items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                      onClick={() => handleFuelTypeChange("Eléctrico")}
+                    >
+                      <span
+                        className={`w-4 h-4 rounded-sm border ${filters.fuelType === "Eléctrico" ? "bg-orange-500 border-orange-500" : "bg-white border-gray-400"
+                          }`}
+                      />
+                      <span className="ml-2">Eléctrico</span>
+                    </label>
+
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Botón solo si hay filtros activos */}
+            {hayFiltrosActivos() && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 3h6a1 1 0 011 1v1H8V4a1 1 0 011-1z"
                   />
-                  <span className="ml-2">Eléctrico</span>
-                </label>
-
-               </div>
-              )}
-          </div>
-        )}
-
-        {/* Botón solo si hay filtros activos */}
-        {hayFiltrosActivos() && (
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 3h6a1 1 0 011 1v1H8V4a1 1 0 011-1z"
-              />
-            </svg>
-          </button>
-        )}
+                </svg>
+              </button>
+            )}
 
           </div>
         </div>
       </div>
 
-      </div>
+    </div>
   );
 }
