@@ -182,6 +182,10 @@ export default function MyCars() {
           </Link>
         </div>
       </div>
+      <p className="text-orange-500 font-semibold text-lg mb-4">
+        {carsResponse.totalCars} autos registrados
+      </p>
+
 
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (
