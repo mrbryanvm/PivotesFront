@@ -58,6 +58,7 @@ export default function Search() {
     page: number;
     search: string;
     rating: number;
+    limit: number,
   }>({
     location: '',
     startDate: '',
@@ -72,6 +73,7 @@ export default function Search() {
     page: 1,
     search: '',
     rating: 0,
+    limit: 6,
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -144,7 +146,9 @@ export default function Search() {
           >
             ←
           </button>
-          <span>Página {carsResponse.currentPage} de {carsResponse.totalPages}</span>
+          <span>
+            Página {carsResponse.currentPage} de {carsResponse.totalPages}
+          </span>
           <button
             onClick={() => handlePageChange(carsResponse.currentPage + 1)}
             disabled={carsResponse.currentPage === carsResponse.totalPages}
