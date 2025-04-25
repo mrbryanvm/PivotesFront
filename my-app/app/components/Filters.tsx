@@ -95,25 +95,27 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
   };
-
+  const [searchInput, setSearchInput] = useState(filters.search || ""); // Estado local para el input
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    onFilterChange({ ...filters, search: value });
+    const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
+    setSearchInput(sanitizedValue); // Actualiza el estado local
+    onFilterChange({ ...filters, search: sanitizedValue });
 
     const saved = localStorage.getItem("searchHistory");
     const previousSearches = saved ? (JSON.parse(saved) as string[]) : [];
 
-    const normalized = value.trim().toLowerCase();
+    const normalized = sanitizedValue.trim().toLowerCase();
 
     const matched = previousSearches.filter((item) =>
       item.toLowerCase().includes(normalized)
     );
 
     if (
-      value &&
+      sanitizedValue &&
       !previousSearches.map((v) => v.toLowerCase()).includes(normalized)
     ) {
-      matched.unshift(value);
+      matched.unshift(sanitizedValue);
     }
 
     setSuggestions(matched);
@@ -237,7 +239,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             type="text"
             name="search"
             placeholder="Buscar"
-            value={filters.search || ""}
+            value={searchInput}
             onChange={handleSearchInput}
             className="flex-1 px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
             maxLength={50} // Limita a 50 caracteres
