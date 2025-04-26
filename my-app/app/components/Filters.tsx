@@ -39,7 +39,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const hosts = [
     { id: "1", email: "host1@example.com" },
     { id: "2", email: "host2@example.com" },
-    // Puedes agregar todos los que quieras
+   
   ];
  
   const filteredHosts = hosts.filter((host) =>
@@ -96,7 +96,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       try {
         const response = await fetch(`/api/hosts?search=${query}`);
         const data = await response.json();
-        setHostResults(data); // data debe ser un array de hosts [{id,email}]
+        setHostResults(data); 
       } catch (error) {
         console.error("Error buscando hosts:", error);
         setHostResults([]);
@@ -274,32 +274,42 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               className="w-full px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
               maxLength={50}
             />
-
-            {filters.search && (
-              <button
-                onClick={() => {
-                  onFilterChange({ ...filters, search: "" });
-                }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 hover:text-gray-700 px-1"
-                  aria-label="Borrar búsqueda"
-              >
-                {filters.search && (
-                  <button
-                    onClick={() => {
-                      onFilterChange({ ...filters, search: "" });
-                    }}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#FBE7C2] hover:bg-[#f3dcae] text-gray-800 font-bold rounded px-2 py-1 text-xs shadow-sm"
-                    aria-label="Borrar búsqueda"
-                  >
-                    ×
-                  </button>
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.75rem] text-orange-500">
+              
+              </span>
+  
+              
+        {/* Botón "X" para borrar el texto */}
+        {filters.search && (
+          
+          <button
+            type="button"
+            onClick={() => {
+              // Limpiar búsqueda y ocultar sugerencias
+              onFilterChange({ ...filters, search: "" });
+              setShowSuggestions(false);  
+            }}
+            className="absolute right-0.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] px-6 py-2 text-gray-900 hover:bg-[#FBE7C2] cursor-pointer rounded-md"
+            style={{ padding: '11px 20px' }}
+          >
+              <svg
+                 xmlns="http://www.w3.org/2000/svg"
+                 className="h-4 w-4"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+               >
+                 <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                   />
+                   </svg>
+                 </button>
                 )}
-              </button>
-            )}
-
-          </div>
-          {/* </div> */}
-        </div>
+             </div>
+         </div>
 
         {showSuggestions && suggestions.length > 0 && (
           <ul className="absolute top-full left-0 w-full bg-white border mt-1 z-50 shadow-lg max-h-60 overflow-y-auto rounded-md">
