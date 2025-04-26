@@ -30,9 +30,21 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
   const [showRatingOptions, setShowRatingOptions] = useState(false);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const [showConsumoOptions, setShowConsumoOptions] = useState(false);
   const [showPriceOptions, setShowPriceOptions] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
+  const [showHostOptions, setShowHostOptions] = useState(false);
+  const [hostSearch, setHostSearch] = useState("");
+  const [hostResults, setHostResults] = useState<{ id: string; email: string }[]>([]); 
+  
+  const hosts = [
+    { id: "1", email: "host1@example.com" },
+    { id: "2", email: "host2@example.com" },
+    // Puedes agregar todos los que quieras
+  ];
+ 
+  const filteredHosts = hosts.filter((host) =>
+    host.email.toLowerCase().includes(hostSearch.toLowerCase())
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -69,10 +81,27 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     setShowRatingOptions(false);
   };
 
-  const handleConsumoChange = (consumo: string) => {
-    onFilterChange({ ...filters, consumo });
-    setShowConsumoOptions(false);
-  };
+  const handleHostChange = (hostId: string) => {
+    onFilterChange({ ...filters, hostId });
+    setShowHostOptions(false);
+    setHostSearch("");
+    };
+
+    async function searchHosts(query: string) {
+      if (!query) {
+        setHostResults([]);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/hosts?search=${query}`);
+        const data = await response.json();
+        setHostResults(data); // data debe ser un array de hosts [{id,email}]
+      } catch (error) {
+        console.error("Error buscando hosts:", error);
+        setHostResults([]);
+      }
+    }
 
   const handleResetFilters = () => {
     onFilterChange({
@@ -91,7 +120,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     });
     setShowFuelTypeOptions(false);
     setShowTransmissionOptions(false);
-    setShowConsumoOptions(false);
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
   };
@@ -253,14 +281,14 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                   onFilterChange({ ...filters, search: "" });
                 }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 hover:text-gray-700 px-1"
-                aria-label="Borrar búsqueda"
+                  aria-label="Borrar búsqueda"
               >
                 {filters.search && (
                   <button
                     onClick={() => {
                       onFilterChange({ ...filters, search: "" });
                     }}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] hover:bg-[#f3dcae] text-gray-800 font-bold rounded px-2 py-1 text-xs shadow-sm"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#FBE7C2] hover:bg-[#f3dcae] text-gray-800 font-bold rounded px-2 py-1 text-xs shadow-sm"
                     aria-label="Borrar búsqueda"
                   >
                     ×
@@ -451,38 +479,79 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                   </div>
                 )}
               </div>
-            )}*/}
-
-            {/* HOST */}
-
-            {filters.hostId ? (
-              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
-                <span className="truncate">
-                  {filters.hostId === "1"
-                    ? "host1@example.com"
-                    : "host2@example.com"}
-                </span>
-                <button
-                  onClick={() => onFilterChange({ ...filters, hostId: "" })}
-                  className="ml-2 text-white hover:text-gray-200 font-bold"
-                >
-                  ×
-                </button>
-              </div>
-            ) : (
-              <div className="w-40">
-                <select
-                  name="hostId"
-                  value={filters.hostId || ""}
-                  onChange={handleChange}
-                  className="border p-2 rounded w-full"
-                >
-                  <option value="">Host</option>
-                  <option value="1">host1@example.com</option>
-                  <option value="2">host2@example.com</option>
-                </select>
-              </div>
             )}
+            
+            */}
+
+        {/* HOST */}
+
+        {filters.hostId ? (
+           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
+            <span className="truncate">
+        {filters.hostId === "1" ? "host1@example.com" : "host2@example.com"}
+            </span>
+         <button
+         onClick={() => onFilterChange({ ...filters, hostId: "" })}
+         className="ml-2 text-white hover:text-gray-200 font-bold"
+        >
+          ×
+       </button>
+         </div>
+       ) : (
+    <div className=" w-40 flex-shrink-0 ">
+       <button
+         type="button"
+         onClick={() => setShowHostOptions(!showHostOptions)}
+         className="border p-2 rounded flex items-center justify-between w-full"
+    >
+      {filters.hostId || "Host"}
+      <svg
+        className="w-4 h-4 ml-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </button>
+
+    {showHostOptions && (
+      <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
+         {/* Barra de búsqueda */}
+         <input
+          type="text"
+          value={hostSearch}
+          onChange={(e) => setHostSearch(e.target.value)}
+          placeholder="Buscar host..."
+          className="w-full p-2 mb-2 border rounded"
+        />
+
+        {/* Lista filtrada de hosts */}
+        <div className="max-h-40 overflow-y-auto">
+          {filteredHosts.length > 0 ? (
+            filteredHosts.map((host) => (
+              <div
+                key={host.id}
+                onClick={() => handleHostChange(host.id)}
+                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
+              >
+                {host.email}
+              </div>
+            ))
+          ) : (
+            <div className="p-2 text-gray-400">No encontrado</div>
+          )}
+        </div>
+            
+            </div>
+         )}
+           </div>
+        )}
 
             {/* TIPO DE AUTO */}
             {filters.carType ? (
