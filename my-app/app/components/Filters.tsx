@@ -23,6 +23,7 @@ interface FiltersProps {
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -334,6 +335,16 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
         <div className="overflow-x-auto w-full max-h-20">
           <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
+          <div className="flex items-center border p-2 rounded px-3 py-1 w-10 justify-between bg-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-black scale-150"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M3 6a1 1 0 0 1 1-1h3a2 2 0 0 1 4 0h10a1 1 0 1 1 0 2H11a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1zM3 12a1 1 0 0 1 1-1h9a2 2 0 0 1 4 0h4a1 1 0 1 1 0 2h-4a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1zM3 18a1 1 0 0 1 1-1h5a2 2 0 0 1 4 0h7a1 1 0 1 1 0 2h-7a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1z"/>
+            </svg>
+          </div>
 
             {/* PRECIO */}
             {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
