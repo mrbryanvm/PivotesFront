@@ -32,7 +32,12 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose }) => {
         <p className="text-sm font-medium text-gray-700 mb-1">Capacidad</p>
         {["1 a 2 personas", "3 a 5 personas", "6 o más"].map((capacidad) => (
           <label key={capacidad} className="flex items-center gap-2">
-            <input type="checkbox" name="capacidad" value={capacidad} />
+            <input
+                type="checkbox"
+                name="color"
+                value={capacidad.toLowerCase()}
+                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
+                />
             {capacidad}
           </label>
         ))}
@@ -43,7 +48,12 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose }) => {
         <p className="text-sm font-medium text-gray-700 mb-1">Maletero</p>
         {["1 a 2 maletas", "3 a 4 maletas", "5 o más"].map((maletero) => (
           <label key={maletero} className="flex items-center gap-2">
-            <input type="checkbox" name="maletero" value={maletero} />
+            <input
+                type="checkbox"
+                name="color"
+                value={maletero.toLowerCase()}
+                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
+                />
             {maletero}
           </label>
         ))}
@@ -54,7 +64,12 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose }) => {
         <p className="text-sm font-medium text-gray-700 mb-1">Color auto</p>
         {["Blanco", "Rojo", "Negro", "Gris", "Azul", "Otro"].map((color) => (
           <label key={color} className="flex items-center gap-2">
-            <input type="checkbox" name="color" value={color.toLowerCase()} />
+            <input
+                type="checkbox"
+                name="color"
+                value={color.toLowerCase()}
+                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
+                />
             {color}
           </label>
         ))}
@@ -75,7 +90,12 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose }) => {
           "Bluetooth / USB / Auxiliar",
         ].map((item) => (
           <label key={item} className="flex items-center gap-2">
-            <input type="checkbox" name="features" value={item} />
+            <input
+                type="checkbox"
+                name="color"
+                value={item.toLowerCase()}
+                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
+                />
             {item}
           </label>
         ))}
@@ -86,7 +106,12 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose }) => {
         <p className="text-sm font-medium text-gray-700 mb-1">Puertas</p>
         {["3 puertas", "5 puertas"].map((puerta) => (
           <label key={puerta} className="flex items-center gap-2">
-            <input type="checkbox" name="doors" value={puerta} />
+            <input
+                type="checkbox"
+                name="color"
+                value={puerta.toLowerCase()}
+                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
+                />
             {puerta}
           </label>
         ))}
