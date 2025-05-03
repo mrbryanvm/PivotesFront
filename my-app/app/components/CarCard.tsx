@@ -12,7 +12,7 @@ interface Car {
   rentalCount: number;
   rating: number;
   location: string;
-  imageUrl: string;
+  imageUrl: string[] | string; 
   host: {
     id: number;
     email: string;
@@ -24,14 +24,25 @@ interface CarCardProps {
 }
 
 export default function CarCard({ car }: CarCardProps) {
-  return (
-    <Link href={`/car-details/${car.id}`}>
-      <div className="border rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition-shadow">
+  const imageArray = Array.isArray(car.imageUrl)
+  ? car.imageUrl
+  : typeof car.imageUrl === 'string'
+  ? car.imageUrl.split(',').map((url) => url.trim()).filter((url) => url !== '')
+  : [];
+
+console.log("Primera imagen:", Array.isArray(car.imageUrl) ? car.imageUrl[0] : car.imageUrl);
+
+return (
+  <Link href={`/car-details/${car.id}`}>
+    <div className="border rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition-shadow">
+      <div className="w-full h-36 overflow-hidden rounded">
         <img
-          src={car.imageUrl}
+          src={imageArray[0] || 'https://via.placeholder.com/300x200?text=Sin+imagen'}
           alt={`${car.brand} ${car.model}`}
-          className="w-full h-40 object-contain rounded mb-4"
+          className="w-full h-full object-cover"
         />
+     </div>
+     
         <div className="px-2">
           <h2 className="text-xl font-semibold">{car.brand} {car.model}</h2>
           <p className="text-sm text-gray-600">Cant de rentas: {car.rentalCount}</p>
