@@ -36,8 +36,6 @@ export default function EditCar() {
     color: '',
   });
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);  // Nuevo estado para el mensaje de éxito
-
   useEffect(() => {
     const loadCar = async () => {
       if (!token) return;
@@ -62,7 +60,7 @@ export default function EditCar() {
         return `El modelo es obligatorio`;
       }
     }
-  
+
     // Validar que no contenga números ni caracteres especiales solo para la "marca"
     if (name === "brand") {
       if (/\d/.test(value)) {
@@ -72,29 +70,29 @@ export default function EditCar() {
         return `La marca no puede contener caracteres especiales`;
       }
     }
-  
+
     // Validar que no contenga caracteres especiales para el "modelo"
     if (name === "model") {
       if (/[^a-zA-Z0-9\s]/.test(value)) {
         return `El modelo no puede contener caracteres especiales`;
       }
     }
-  
+
     return '';
   };
-  
+
 
   const validateYear = (value: number) => {
     const currentYear = new Date().getFullYear();
-    
+
     // Verificar si el valor tiene exactamente 4 dígitos
     if (value.toString().length !== 4) {
       return 'El año debe tener exactamente 4 dígitos';
     }
-  
+
     if (value < 1900) return 'El año no puede ser menor a 1900';
     if (value > currentYear) return `El año no puede ser mayor a ${currentYear}`;
-    
+
     return '';
   };
 
@@ -114,13 +112,11 @@ export default function EditCar() {
     if (/[^a-zA-Z\s]/.test(value)) return 'El color no puede contener caracteres especiales';
     return '';
   };
-  
+
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target as HTMLInputElement;
-    const target = e.target as HTMLInputElement | HTMLSelectElement; // Aseguramos que e.target es un input o select
-    //const name = target.name; // Ahora podemos acceder a `name` de forma segura
-  
+
     if (name === 'brand' || name === 'model') {
       const allowedChars = /^[a-zA-Z\s]*$/; // Solo letras y espacios
       if (!allowedChars.test(e.key)) {
@@ -134,7 +130,7 @@ export default function EditCar() {
       }
     }
   };
-  
+
 
   const [yearError, setYearError] = useState('');
   const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,14 +159,14 @@ export default function EditCar() {
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-  
+
     // Si el campo es 'color', bloquear números y caracteres especiales en tiempo real
     if (name === 'color') {
       if (/\d/.test(value) || /[^a-zA-Z\s]/.test(value)) {
         return; // No actualizar el estado si contiene números o caracteres especiales
       }
     }
-  
+
     // Validar cada campo según su tipo
     let errorMessage = '';
     if (name === 'brand' || name === 'model') {
@@ -184,22 +180,22 @@ export default function EditCar() {
     } else if (name === 'color') {
       errorMessage = validateColor(value);
     }
-  
+
     // Actualizar el estado de los errores
     setFormErrors((prev) => ({
       ...prev,
       [name]: errorMessage,
     }));
-  
+
     // Actualizar los datos del formulario
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-    
+
     try {
       await updateCar(Number(id), formData, token);
       toast.success("¡Se guardo correctamente!");
@@ -207,7 +203,7 @@ export default function EditCar() {
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al actualizar el auto');
     }
-    
+
   };
 
   const isFormValid = Object.values(formErrors).every((error) => !error);
@@ -216,9 +212,9 @@ export default function EditCar() {
   if (!car) return <p className="text-center">Cargando...</p>;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-6 bg-white shadow-xl rounded-2xl">
       <h1 className="text-2xl font-bold mb-4">Editar Auto</h1>
-      <form onSubmit={handleSubmit} className="border rounded-lg shadow-md p-4 bg-white">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-2xl shadow-lg">
         <div className="mb-4">
           <label className="block text-sm font-medium">Marca</label>
           <input
@@ -226,9 +222,8 @@ export default function EditCar() {
             name="brand"
             value={formData.brand || ''}
             onChange={handleChange}
-            onKeyDown={handleKeyDown} 
-            className="border p-2 rounded w-full"
-          />
+            onKeyDown={handleKeyDown}
+            className={`mt-1 block w-full p-3 rounded-2xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${error ? 'border-red-500' : 'border-gray-300'}`} />
           {formErrors.brand && <p className="text-red-500 text-sm mt-1">{formErrors.brand}</p>}
         </div>
         <div className="mb-4">
@@ -245,24 +240,24 @@ export default function EditCar() {
         <div className="mb-4">
           <label className="block text-sm font-medium">Año</label>
           <input
-                type="number"
-                id="year"
-                name="year"
-                value={formData.year}
-                onChange={validacionAño}
-                onKeyDown={(e) => {
-                  if (["e", "E", "+", "-", "."].includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
-                required
-                min="1900"
-                max={new Date().getFullYear()}
-              />
-              {yearError && (
-                <p className="text-red-500 text-sm mt-1">{yearError}</p>
-              )}
+            type="number"
+            id="year"
+            name="year"
+            value={formData.year}
+            onChange={validacionAño}
+            onKeyDown={(e) => {
+              if (["e", "E", "+", "-", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+            required
+            min="1900"
+            max={new Date().getFullYear()}
+          />
+          {yearError && (
+            <p className="text-red-500 text-sm mt-1">{yearError}</p>
+          )}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium">Categoría</label>
@@ -317,7 +312,7 @@ export default function EditCar() {
             name="color"
             value={formData.color || ''}
             onChange={handleChange}
-            onKeyDown={handleKeyDown} 
+            onKeyDown={handleKeyDown}
             className="border p-2 rounded w-full"
           />
           {formErrors.color && <p className="text-red-500 text-sm mt-1">{formErrors.color}</p>}

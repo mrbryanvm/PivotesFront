@@ -199,13 +199,6 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     return !errores;
   };
   
-  const handleRemoveEquipment = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      extraEquipment: prev.extraEquipment.filter((_, i) => i !== index),
-    }));
-  };
-
   const [yearError, setYearError] = useState('');
   const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -419,7 +412,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                   }
                 }}
                 
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 block w-full p-2 border rounded ${brandError ? 'border-red-500' : 'border-gray-300'}`}
                 required
               />
               {brandError && (
@@ -443,7 +436,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 }}
                 
                 maxLength={30}
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 block w-full p-2 border rounded ${modelError ? 'border-red-500' : 'border-gray-300'}`}
               />
               {modelError && (
               <p className="text-red-500 text-sm mt-1">{modelError}</p>
@@ -459,7 +452,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               name="carType"
               value={formData.carType}
               onChange={handleChange}
-              className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+              className={`mt-1 block w-full p-2 border rounded ${carTypeError ? 'border-red-500' : 'border-gray-300'}`}
               required
             >
               <option value="">Seleccionar</option>
@@ -513,7 +506,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 onChange={controlarColor}
                 className={`mt-1 block w-full p-2 border rounded ${colorError ? 'border-red-500' : 'border-gray-300'}`}
               />
-              {yearError && (
+              {colorError && (
                 <p className="text-red-500 text-sm mt-1">{colorError}</p>
               )}
             </div>
@@ -559,7 +552,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 placeholder="5000 km/h"
                 value={formData.kilometers}
                 onChange={handleChange}
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 block w-full p-2 border rounded ${kilometersError ? 'border-red-500' : 'border-gray-300'}`}
                 required
               />
               { kilometersError && (
@@ -576,7 +569,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 placeholder="0000-AAA"
                 value={formData.licensePlate}
                 onChange={placa}
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 block w-full p-2 border rounded ${plateError ? 'border-red-500' : 'border-gray-300'}`}
               />
               { plateError && (
               <p className="text-red-500 text-sm mt-1">{plateError}</p>
@@ -595,7 +588,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               name="transmission"
               value={formData.transmission}
               onChange={handleChange}
-              className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+              className={`mt-1 block w-full p-2 border rounded ${transmissionError ? 'border-red-500' : 'border-gray-300'}`}
               required
             >
               <option value="">Seleccionar</option>
@@ -614,7 +607,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               name="fuelType"
               value={formData.fuelType}
               onChange={handleChange}
-              className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+              className={`mt-1 block w-full p-2 border rounded ${fuelTypeError ? 'border-red-500' : 'border-gray-300'}`}
               required
             >
               <option value="">Seleccionar</option>
@@ -665,7 +658,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 value={url}
                 onChange={(e) => handlePhotoUrlChange(idx, e.target.value)}
                 placeholder={`URL de la foto ${idx + 1}`}
-                className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 block w-full p-2 border rounded ${photoError ? 'border-red-500' : 'border-gray-300'}`}
                 required={idx < 3}
               />
             </div>
@@ -699,7 +692,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
           form="formulario"
           type="submit"
           className="bg-orange-500 text-white px-8 py-2 rounded"
-          onClick={handleSubmit}
+
         >
           Guardar
         </button>
