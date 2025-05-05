@@ -186,6 +186,21 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     );
   };
 
+  const hayFiltrosDelPanel = () => {
+    return (
+      filters.carType ||
+      filters.transmission ||
+      filters.fuelType ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.maletero ||
+      filters.color ||
+      filters.puertas ||
+      (filters.caracteristicas && filters.caracteristicas.length > 0)
+    );
+  };
+  
+  
   return (
     <div className="flex flex-col items-center gap-4 mb-6">
       {/* FILA SUPERIOR: Ubicación, De, Hasta */}
@@ -337,11 +352,14 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         <div className="overflow-x-auto w-full max-h-20">
           <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
           <div>
-            <button
-              type="button"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center border p-2 rounded px-3 py-1 w-10 justify-between bg-white"
-            >
+          <button
+            type="button"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className={`flex items-center border p-2 rounded px-3 py-1 w-10 justify-between transition ${
+              hayFiltrosDelPanel() ? 'bg-orange-500 text-white' : 'bg-white'
+            }`}
+          >
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-black scale-150"
@@ -357,7 +375,10 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           <Panel
             visible={showAdvancedFilters}
             onClose={() => setShowAdvancedFilters(false)}
+            filters={filters}
+            onFilterChange={onFilterChange}
           />
+
 
             {/* PRECIO */}
             {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
