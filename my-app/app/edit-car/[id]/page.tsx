@@ -18,7 +18,7 @@ interface Car {
   imageUrl: string;
   isAvailable: boolean;
   unavailableDates: string[];
-  extraEquipment: string[];
+  description?: string;
 }
 
 export default function EditCar() {
@@ -215,7 +215,8 @@ export default function EditCar() {
     <div className="container mx-auto p-6 bg-white shadow-xl rounded-2xl">
       <h1 className="text-2xl font-bold mb-4">Editar Auto</h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-2xl shadow-lg">
-        <div className="mb-4">
+        {/* Marca */}
+        <div>
           <label className="block text-sm font-medium">Marca</label>
           <input
             type="text"
@@ -223,50 +224,47 @@ export default function EditCar() {
             value={formData.brand || ''}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className={`mt-1 block w-full p-3 rounded-2xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${error ? 'border-red-500' : 'border-gray-300'}`} />
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
           {formErrors.brand && <p className="text-red-500 text-sm mt-1">{formErrors.brand}</p>}
         </div>
-        <div className="mb-4">
+
+        {/* Modelo */}
+        <div>
           <label className="block text-sm font-medium">Modelo</label>
           <input
             type="text"
             name="model"
             value={formData.model || ''}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            onKeyDown={handleKeyDown}
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           {formErrors.model && <p className="text-red-500 text-sm mt-1">{formErrors.model}</p>}
         </div>
-        <div className="mb-4">
+
+        {/* Año */}
+        <div>
           <label className="block text-sm font-medium">Año</label>
           <input
             type="number"
-            id="year"
             name="year"
-            value={formData.year}
+            value={formData.year || ''}
             onChange={validacionAño}
-            onKeyDown={(e) => {
-              if (["e", "E", "+", "-", "."].includes(e.key)) {
-                e.preventDefault();
-              }
-            }}
-            className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
-            required
-            min="1900"
-            max={new Date().getFullYear()}
+            onKeyDown={(e) => ["e", "E", "+", "-", "."].includes(e.key) && e.preventDefault()}
+            className={`mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${yearError ? 'border-red-500' : 'border-gray-300'}`}
           />
-          {yearError && (
-            <p className="text-red-500 text-sm mt-1">{yearError}</p>
-          )}
+          {yearError && <p className="text-red-500 text-sm mt-1">{yearError}</p>}
         </div>
-        <div className="mb-4">
+
+        {/* Categoría */}
+        <div>
           <label className="block text-sm font-medium">Categoría</label>
           <select
             name="category"
             value={formData.category || ''}
             onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            className="border p-2 rounded w-full"
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             <option value="">Selecciona una categoría</option>
             <option value="Sedan">Sedán</option>
@@ -276,36 +274,37 @@ export default function EditCar() {
             <option value="Eléctrico">Eléctrico</option>
           </select>
         </div>
-        <div className="mb-4">
+
+        {/* Precio por día */}
+        <div>
           <label className="block text-sm font-medium">Precio por Día</label>
           <input
             type="number"
             name="pricePerDay"
             value={formData.pricePerDay || ''}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
-            onKeyDown={(e) => {
-              if (e.key === '.' || e.key === ',') {
-                e.preventDefault();
-              }
-            }}
-            step="1"
+            onKeyDown={(e) => (e.key === '.' || e.key === ',') && e.preventDefault()}
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           {formErrors.pricePerDay && <p className="text-red-500 text-sm mt-1">{formErrors.pricePerDay}</p>}
         </div>
-        <div className="mb-4">
+
+        {/* Transmisión */}
+        <div>
           <label className="block text-sm font-medium">Transmisión</label>
           <select
             name="transmission"
             value={formData.transmission || ''}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             <option value="Manual">Manual</option>
             <option value="Automático">Automático</option>
           </select>
         </div>
-        <div className="mb-4">
+
+        {/* Color */}
+        <div>
           <label className="block text-sm font-medium">Color</label>
           <input
             type="text"
@@ -313,35 +312,67 @@ export default function EditCar() {
             value={formData.color || ''}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className="border p-2 rounded w-full"
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           {formErrors.color && <p className="text-red-500 text-sm mt-1">{formErrors.color}</p>}
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Asientos</label>
+
+        {/* Asientos */}
+        <div>
+          <label className="block text-sm font-medium">Número de Asientos</label>
           <input
             type="number"
             name="seats"
             value={formData.seats || ''}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           {formErrors.seats && <p className="text-red-500 text-sm mt-1">{formErrors.seats}</p>}
         </div>
-        <div className="flex gap-4">
+
+        {/* Imagen */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium">URL de la Imagen</label>
+          <input
+            type="text"
+            name="imageUrl"
+            value={formData.imageUrl || ''}
+            onChange={handleChange}
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+
+        {/* Descripción */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium">Descripción</label>
+          <input
+            type="text"
+            name="description"
+            value={formData.description || ''}  // Se usa description aquí
+            onChange={handleChange}  // Usamos el handleChange genérico
+            placeholder="Ejemplo: aire acondicionado, bluetooth, GPS"
+            className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+
+
+
+
+        {/* Botones */}
+        <div className="md:col-span-2 flex gap-4">
           <button
             type="submit"
-            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+            className="bg-orange-500 text-white px-6 py-3 rounded-2xl hover:bg-orange-600 transition"
             disabled={!isFormValid}
           >
             Guardar Cambios
           </button>
           <button
             type="button"
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="bg-gray-500 text-white px-6 py-3 rounded-2xl hover:bg-gray-600 transition"
             onClick={() => {
-              if (car) setFormData(car); // Restaurar valores originales
-              router.push('/my-cars');   // Redirigir
+              if (car) setFormData(car);
+              router.push('/my-cars');
             }}
           >
             Cancelar

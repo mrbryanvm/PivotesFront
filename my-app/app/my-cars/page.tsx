@@ -7,7 +7,7 @@ import { useAuth } from "../lib/authContext";
 import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; 
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 interface Car {
   id: number;
@@ -43,7 +43,7 @@ type FilterState = {
 };
 
 export default function MyCars() {
-  
+
 
   interface Filters {
     brand: string;
@@ -65,7 +65,7 @@ export default function MyCars() {
   });
 
 
-  
+
   const [error, setError] = useState<string | null>(null);
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
@@ -73,27 +73,27 @@ export default function MyCars() {
   const handleFilterChange = (newFilters: Partial<Filters>) => {
     setFilters((prev) => {
       const updated = { ...prev, ...newFilters, page: 1 };
-      
+
       // Si 'search' ha sido actualizado, maneja las sugerencias
       if (newFilters.search !== undefined) {
         const normalized = newFilters.search.trim().toLowerCase();
         const saved = localStorage.getItem("searchHistory");
         const prevHistory = saved ? JSON.parse(saved) : [];
-  
+
         const matched = prevHistory.filter((item: string) =>
           item.toLowerCase().includes(normalized)
         );
-  
+
         // Si la búsqueda es nueva, agregamos la entrada a la lista de sugerencias
         if (normalized && !prevHistory.includes(normalized)) {
           matched.unshift(normalized);
         }
       }
-  
+
       return updated;
     });
   };
-  
+
   const [filters, setFilters] = useState<Filters>({
     brand: "",
     model: "",
@@ -104,7 +104,7 @@ export default function MyCars() {
     limit: 4,
     search: "",
   });
-  
+
 
 
   const handlePageChange = (newPage: number) => {
@@ -193,7 +193,7 @@ export default function MyCars() {
   }
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
-  
+
 
   return (
     <div className="container mx-auto p-4">
@@ -234,68 +234,68 @@ export default function MyCars() {
 
 
 
-{/* Filtros */}
-<div className="bg-gray-100 p-4 rounded-lg mb-4">
-  <h2 className="text-lg font-semibold mb-2">Filtrar Autos</h2>
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-    <input
-      type="text"
-      placeholder="Marca"
-      className="p-2 border rounded"
-      value={filters.brand}
-      onChange={(e) => handleFilterChange({ brand: e.target.value })}
-    />
+      {/* Filtros */}
+      <div className="bg-gray-100 p-4 rounded-lg mb-4">
+        <h2 className="text-lg font-semibold mb-2">Filtrar Autos</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <input
+            type="text"
+            placeholder="Marca"
+            className="p-2 border rounded"
+            value={filters.brand}
+            onChange={(e) => handleFilterChange({ brand: e.target.value })}
+          />
 
-    <input
-      type="text"
-      placeholder="Modelo"
-      className="p-2 border rounded"
-      value={filters.model}
-      onChange={(e) => handleFilterChange({ model: e.target.value })}
-    />
+          <input
+            type="text"
+            placeholder="Modelo"
+            className="p-2 border rounded"
+            value={filters.model}
+            onChange={(e) => handleFilterChange({ model: e.target.value })}
+          />
 
-    <select
-      className="p-2 border rounded"
-      value={filters.transmission}
-      onChange={(e) => handleFilterChange({ transmission: e.target.value })}
-    >
-      <option value="">Transmisión</option>
-      <option value="Automático">Automático</option>
-      <option value="Manual">Manual</option>
-    </select>
+          <select
+            className="p-2 border rounded"
+            value={filters.transmission}
+            onChange={(e) => handleFilterChange({ transmission: e.target.value })}
+          >
+            <option value="">Transmisión</option>
+            <option value="Automático">Automático</option>
+            <option value="Manual">Manual</option>
+          </select>
 
-    <select
-      className="p-2 border rounded"
-      value={filters.sortBy}
-      onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-    >
-      <option value="">Ordenar por</option>
-      <option value="price_asc">Precio (Menor a mayor)</option>
-      <option value="price_desc">Precio (Mayor a menor)</option>
-      <option value="year_asc">Año (Antiguo primero)</option>
-      <option value="year_desc">Año (Reciente primero)</option>
-    </select>
+          <select
+            className="p-2 border rounded"
+            value={filters.sortBy}
+            onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
+          >
+            <option value="">Ordenar por</option>
+            <option value="price_asc">Precio (Menor a mayor)</option>
+            <option value="price_desc">Precio (Mayor a menor)</option>
+            <option value="year_asc">Año (Antiguo primero)</option>
+            <option value="year_desc">Año (Reciente primero)</option>
+          </select>
 
-    <button
-      className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-      onClick={() =>
-        setFilters({
-          brand: "",
-          model: "",
-          carType: "",
-          transmission: "",
-          sortBy: "",
-          search: "",
-          page: 1,
-          limit: 4,
-        })
-      }
-      
-    >
-      Limpiar filtros
-    </button>
-  </div>
-</div>
+          <button
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+            onClick={() =>
+              setFilters({
+                brand: "",
+                model: "",
+                carType: "",
+                transmission: "",
+                sortBy: "",
+                search: "",
+                page: 1,
+                limit: 4,
+              })
+            }
+
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
 
 
 
@@ -310,7 +310,7 @@ export default function MyCars() {
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (
         <p className="text-center text-gray-500 mt-10 text-xl">
-          No tienes autos Registrados <br/>
+          No tienes autos Registrados <br />
           ¡Agrega uno ahora!
         </p>
       ) : (
