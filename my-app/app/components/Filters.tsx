@@ -23,31 +23,33 @@ interface FiltersProps {
 }
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
+
+  // === ESTADOS: VISIBILIDAD DE OPCIONES DE FILTROS ===
   const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showHostOptions, setShowHostOptions] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
   const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
   const [showRatingOptions, setShowRatingOptions] = useState(false);
-  const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [showPriceOptions, setShowPriceOptions] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
-  const [showHostOptions, setShowHostOptions] = useState(false);
-  const [hostSearch, setHostSearch] = useState("");
-  const [hostResults, setHostResults] = useState<{ id: string; email: string }[]>([]); 
-  
-  const hosts = [
-    { id: "1", email: "host1@example.com" },
-    { id: "2", email: "host2@example.com" },
-   
-  ];
- 
-  const filteredHosts = hosts.filter((host) =>
-    host.email.toLowerCase().includes(hostSearch.toLowerCase())
-  );
 
+  // === ESTADOS: INTERACCIÓN Y ANIMACIONES ===
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+
+  // === ESTADOS: VALORES DE FILTRO ===
+  const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
+
+  // === ESTADOS: HOSTS (filtro por nombre) ===
+  const [hostSearch, setHostSearch] = useState("");
+  const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
+  const [selectedHost, setSelectedHost] = useState<{ id: string; name: string; location?: string } | null>(null);
+  
+  // === ESTADOS: BUSCADOR GENERAL ===
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // === EFECTOS: Acciones al presionar teclas ===
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setShowSuggestions(false);
@@ -55,6 +57,8 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // === GESTION DE FILTROS GENERALES ===
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -84,27 +88,13 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   };
 
   const handleHostChange = (hostId: string) => {
+    const host = hostResults.find((h) => h.id === hostId);
+    if (host) setSelectedHost({ id: host.id, name: host.name });
     onFilterChange({ ...filters, hostId });
     setShowHostOptions(false);
     setHostSearch("");
-    };
-
-    async function searchHosts(query: string) {
-      if (!query) {
-        setHostResults([]);
-        return;
-      }
-      
-      try {
-        const response = await fetch(`/api/hosts?search=${query}`);
-        const data = await response.json();
-        setHostResults(data); 
-      } catch (error) {
-        console.error("Error buscando hosts:", error);
-        setHostResults([]);
-      }
-    }
-
+  };
+  
   const handleResetFilters = () => {
     onFilterChange({
       location: "",
@@ -125,19 +115,74 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
   };
-  const [searchInput, setSearchInput] = useState(filters.search || ""); // Estado local para el input
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
-    setSearchInput(sanitizedValue); // Actualiza el estado local
-    onFilterChange({ ...filters, search: sanitizedValue });
+  
+  // === GESTION DE FILTROS DE BUSQUEDA ===
+  const hayFiltrosActivos = () => {
+    return (
+      filters.location ||
+      filters.startDate ||
+      filters.endDate ||
+      filters.hostId ||
+      filters.carType ||
+      filters.transmission ||
+      filters.consumo ||
+      filters.fuelType ||
+      filters.minPrice !== undefined ||
+      filters.maxPrice !== undefined ||
+      (filters.sortBy && filters.sortBy !== "relevance")
+    );
+  };
 
-    const saved = localStorage.getItem("searchHistory");
-    const previousSearches = saved ? (JSON.parse(saved) as string[]) : [];
+  // === GESTION DE FILTROS DE HOSTS ===
+  
+  useEffect(() => {
+    const cleanQuery = hostSearch
+      .trim()
+      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); // Elimina caracteres no permitidos
+  
+    if (!cleanQuery) {
+      setHostResults([]);
+      return;
+    }
+  
+    const fetchHosts = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/hosts?search=${encodeURIComponent(cleanQuery)}`);
+        if (!response.ok) {
+          throw new Error(`Error HTTP ${response.status}`);
+        }  
+        const data = await response.json();
+        console.log('RESULTADO DEL BACKEND:', data);
+        setHostResults(data.slice(0, 4)); 
+        
+      } catch (error) {
+        console.error("Error al buscar hosts:", error);
+        setHostResults([]);
+      }
+    };
+  
+    const delayDebounce = setTimeout(() => {
+      fetchHosts();
+    }, 300); // espera 300ms tras dejar de tipear
+  
+    return () => clearTimeout(delayDebounce);
+  }, [hostSearch]);
+  
 
-    const normalized = sanitizedValue.trim().toLowerCase();
+  // === GESTION DE FILTROS DE AUTOS DE BUSQUEDA ===
+   const [searchInput, setSearchInput] = useState(filters.search || ""); 
+   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+   const value = e.target.value;
+   const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
+      setSearchInput(sanitizedValue); // Actualiza el estado local
+      onFilterChange({ ...filters, search: sanitizedValue });
 
-    const matched = previousSearches.filter((item) =>
+   const saved = localStorage.getItem("searchHistory");
+   const previousSearches = saved ? (JSON.parse(saved) as string[]) : [];
+
+   const normalized = sanitizedValue.trim().toLowerCase();
+
+   const matched = previousSearches.filter((item) =>
       item.toLowerCase().includes(normalized)
     );
 
@@ -167,22 +212,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     localStorage.setItem(
       "searchHistory",
       JSON.stringify(updatedSearches.slice(0, 10))
-    );
-  };
-
-  const hayFiltrosActivos = () => {
-    return (
-      filters.location ||
-      filters.startDate ||
-      filters.endDate ||
-      filters.hostId ||
-      filters.carType ||
-      filters.transmission ||
-      filters.consumo ||
-      filters.fuelType ||
-      filters.minPrice !== undefined ||
-      filters.maxPrice !== undefined ||
-      (filters.sortBy && filters.sortBy !== "relevance")
     );
   };
 
@@ -517,76 +546,90 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             
             */}
 
-        {/* HOST */}
-
-        {filters.hostId ? (
-           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
-            <span className="truncate">
-        {filters.hostId === "1" ? "host1@example.com" : "host2@example.com"}
-            </span>
-         <button
-         onClick={() => onFilterChange({ ...filters, hostId: "" })}
-         className="ml-2 text-white hover:text-gray-200 font-bold"
-        >
-          ×
-       </button>
-         </div>
-       ) : (
-    <div className=" w-40 flex-shrink-0 ">
-       <button
-         type="button"
-         onClick={() => setShowHostOptions(!showHostOptions)}
-         className="border p-2 rounded flex items-center justify-between w-full"
-    >
-      {filters.hostId || "Host"}
-      <svg
-        className="w-4 h-4 ml-2"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
-
-    {showHostOptions && (
-      <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
-         {/* Barra de búsqueda */}
-         <input
-          type="text"
-          value={hostSearch}
-          onChange={(e) => setHostSearch(e.target.value)}
-          placeholder="Buscar host..."
-          className="w-full p-2 mb-2 border rounded"
-        />
-
-        {/* Lista filtrada de hosts */}
-        <div className="max-h-40 overflow-y-auto">
-          {filteredHosts.length > 0 ? (
-            filteredHosts.map((host) => (
-              <div
-                key={host.id}
-                onClick={() => handleHostChange(host.id)}
-                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
-              >
-                {host.email}
-              </div>
-            ))
-          ) : (
-            <div className="p-2 text-gray-400">No encontrado</div>
-          )}
-        </div>
-            
+           {/* HOST */}    
+                                        
+            {filters.hostId ? (
+             <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
+               <span className="truncate">
+                {selectedHost?.name || "Host"}
+               </span>
+            <button
+               onClick={() => onFilterChange({ ...filters, hostId: "" })}
+               className="ml-2 text-white hover:text-gray-200 font-bold"
+             >
+                 ×
+              </button>
             </div>
-         )}
-           </div>
-        )}
+          ) : (
+  
+           <div className="w-40 flex-shrink-0">
+            <button
+               type="button"
+               onClick={() => setShowHostOptions(!showHostOptions)}
+               className="border p-2 rounded flex items-center justify-between w-full"
+             >     
+          {filters.hostId ? "Host" : "Host"}
+             <svg
+               className="w-4 h-4 ml-2"
+               fill="none"
+               stroke="currentColor"
+               viewBox="0 0 24 24"
+             >
+             <path
+               strokeLinecap="round"
+               strokeLinejoin="round"
+               strokeWidth="2"
+               d="M19 9l-7 7-7-7"
+             />
+            </svg>
+           </button>
 
+           {showHostOptions && (
+            <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
+             <input
+              type="text"
+              value={hostSearch}
+              onChange={(e) => {
+               const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+               setHostSearch(value);
+              }}
+               placeholder="Buscar host..."
+               className="w-full p-2 mb-2 border rounded"
+             />
+
+            <div className="max-h-40 overflow-y-auto">
+
+           {hostSearch.trim() === "" ? null : (
+             hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase())).length > 0 ? (
+              hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase()))
+               .map((host) => (
+                <div
+                 key={host.id}
+                 onClick={() => handleHostChange(host.id)}
+                 className="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
+                >
+                <span className="truncate">{host.name}</span>
+           {host.location && (
+              <span className="ml-4 text-sm text-gray-600 flex items-center gap-1">
+                <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                </svg>
+                {host.location}
+              </span>
+            )}
+               </div>
+                  ))
+               ) : (
+                  <div className="p-2 text-gray-400">No encontrado</div>
+                   )
+               )}
+        
+                 </div>
+                </div>
+                 )}
+              </div>
+           )}
+        
             {/* TIPO DE AUTO */}
             {filters.carType ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
