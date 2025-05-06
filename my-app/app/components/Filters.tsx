@@ -152,12 +152,17 @@ async function getCarsByHost(hostId: number, token: string) {
       maxPrice: undefined,
       sortBy: "relevance",
       rating: 0,
+      capacidad: undefined,
+      color: undefined,
+      kilometrajes: undefined,
     });
     setShowFuelTypeOptions(false);
     setShowTransmissionOptions(false);
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
+    setShowAdvancedFilters(false);
   };
+  
   const [searchInput, setSearchInput] = useState(filters.search || ""); // Estado local para el input
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -215,7 +220,11 @@ async function getCarsByHost(hostId: number, token: string) {
       filters.fuelType ||
       filters.minPrice !== undefined ||
       filters.maxPrice !== undefined ||
-      (filters.sortBy && filters.sortBy !== "relevance")
+      (filters.sortBy && filters.sortBy !== "relevance") ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
     );
   };
 
