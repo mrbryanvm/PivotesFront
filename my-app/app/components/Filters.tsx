@@ -105,6 +105,33 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       }
     }
 
+
+
+    // utils/api.ts o dentro de un useEffect en tu componente
+async function getCarsByHost(hostId: number, token: string) {
+  const res = await fetch(`/api/cars/host/${hostId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'Error al obtener autos');
+  }
+
+  const data = await res.json();
+  return data.cars; // Lista de autos del host
+}
+
+
+
+
+
+
+
   const handleResetFilters = () => {
     onFilterChange({
       location: "",
