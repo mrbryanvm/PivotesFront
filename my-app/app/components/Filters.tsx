@@ -18,9 +18,15 @@ interface FiltersProps {
     maxPrice?: number;
     sortBy?: string;
     search?: string;
+
+    // Faltantes para el Panel
+    capacidad?: string;
+    color?: string;
+    kilometrajes?: string;
   };
   onFilterChange: (filters: FiltersProps["filters"]) => void;
 }
+
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
@@ -213,6 +219,19 @@ async function getCarsByHost(hostId: number, token: string) {
     );
   };
 
+  const hayFiltrosDelPanel = () => {
+    return (
+      filters.carType ||
+      filters.transmission ||
+      filters.fuelType ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
+    );
+  };
+  
+  
   return (
     <div className="flex flex-col items-center gap-4 mb-6">
       {/* FILA SUPERIOR: Ubicación, De, Hasta */}
@@ -364,11 +383,14 @@ async function getCarsByHost(hostId: number, token: string) {
         <div className="overflow-x-auto w-full max-h-20">
           <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
           <div>
-            <button
-              type="button"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center border p-2 rounded px-3 py-1 w-10 justify-between bg-white"
-            >
+          <button
+            type="button"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className={`flex items-center border p-2 rounded px-3 py-1 w-10 justify-between transition ${
+              hayFiltrosDelPanel() ? 'bg-orange-500 text-white' : 'bg-white'
+            }`}
+          >
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-black scale-150"
@@ -384,7 +406,10 @@ async function getCarsByHost(hostId: number, token: string) {
           <Panel
             visible={showAdvancedFilters}
             onClose={() => setShowAdvancedFilters(false)}
+            filters={filters}
+            onFilterChange={onFilterChange}
           />
+
 
             {/* PRECIO */}
             {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
