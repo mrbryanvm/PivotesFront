@@ -100,6 +100,16 @@ export default function MyCars() {
     }
   };
 
+  // funcion para que verifique los fltors activos
+  const hayFiltrosActivos = () => {
+    return (
+      filters.brand !== "" ||
+      filters.carType !== "" ||
+      filters.transmission !== "" ||
+      filters.sortBy !== "" ||
+      filters.carType !== ""
+    );
+  };
   // función para eliminar un auto
   const handleDeleteCar = async (carId: number) => {
     if (!token) return;
@@ -187,116 +197,99 @@ export default function MyCars() {
         {carsResponse.totalCars} autos registrados
       </p>
 
+      {/* Filtros de Autos */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+        {/* Grid de filtros */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
+          <input
+            type="text"
+            placeholder="Marca"
+            value={filters.brand}
+            onChange={(e) => handleFilterChange({ brand: e.target.value })}
+            className="p-2 border rounded"
+          />
+          <input
+            type="text"
+            placeholder="Modelo"
+            value={filters.model}
+            onChange={(e) => handleFilterChange({ model: e.target.value })}
+            className="p-2 border rounded"
+          />
 
-
-{/* Filtros de Autos */}
-<div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
-    <input
-      type="text"
-      placeholder="Marca"
-      value={filters.brand}
-      onChange={(e) => handleFilterChange({ brand: e.target.value })}
-      className="p-2 border rounded"
-    />
-    <input
-      type="text"
-      placeholder="Modelo"
-      value={filters.model}
-      onChange={(e) => handleFilterChange({ model: e.target.value })}
-      className="p-2 border rounded"
-    />
-    <select
-      value={filters.transmission}
-      onChange={(e) => handleFilterChange({ transmission: e.target.value })}
-      className="p-2 border rounded"
-    >
-      <option value="">Transmisión</option>
-      <option value="Manual">Manual</option>
-      <option value="Automático">Automático</option>
-    </select>
-    <select
-      value={filters.sortBy}
-      onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-      className="p-2 border rounded"
-    >
-      <option value="">Ordenar por</option>
-      <option value="priceAsc">Precio: menor a mayor</option>
-      <option value="priceDesc">Precio: mayor a menor</option>
-    </select>
-
-    {/* Botón para eliminar todos los filtros */}
-    <button
-      onClick={() =>
-        setFilters((prev) => ({
-          ...prev,
-          brand: "",
-          model: "",
-          carType: "",
-          transmission: "",
-          sortBy: "",
-          page: 1,
-        }))
-      }
-      className="bg-orange-500 text-white px-3 py-2 rounded hover:bg-orange-600 w-full"
-    >
-      Limpiar Filtros
-    </button>
-  </div>
-
-  {/* Filtros activos con nuevo diseño */}
-{Object.entries(filters)
-  .filter(([key, value]) => value && !["page", "limit"].includes(key))
-  .length > 0 && (
-  <div className="flex flex-wrap items-center gap-2 mt-4">
-    {Object.entries(filters)
-      .filter(([key, value]) => value && !["page", "limit"].includes(key))
-      .map(([key, value]) => (
-        <div
-          key={key}
-          className="inline-flex items-center bg-orange-50 border border-orange-200 text-orange-700 rounded-full px-3 py-1 text-sm shadow-sm"
-        >
-          <span className="mr-2 font-medium capitalize">
-            {key}: <span className="font-semibold">{value}</span>
-          </span>
-          <button
-            onClick={() => handleFilterChange({ [key]: "" })}
-            className="hover:bg-orange-200 rounded-full p-1 transition"
-            title="Eliminar filtro"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {filters.transmission ? (
+            <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
+              <span className="truncate capitalize">
+                {filters.transmission}
+              </span>
+              <button
+                onClick={() => handleFilterChange({ transmission: "" })}
+                className="ml-2 text-white hover:text-gray-200 font-bold"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <select
+              value={filters.transmission}
+              onChange={(e) =>
+                handleFilterChange({ transmission: e.target.value })
+              }
+              className="p-2 border rounded w-full"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <option value="">Transmisión</option>
+              <option value="Manual">Manual</option>
+              <option value="Automática">Automática</option>
+            </select>
+          )}
+
+          {filters.sortBy ? (
+            <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
+              <span className="truncate capitalize">
+                {filters.sortBy === "priceAsc"
+                  ? "Precio: menor a mayor"
+                  : "Precio: mayor a menor"}
+              </span>
+              <button
+                onClick={() => handleFilterChange({ sortBy: "" })}
+                className="ml-2 text-white hover:text-gray-200 font-bold"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <select
+              value={filters.sortBy}
+              onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
+              className="p-2 border rounded w-full"
+            >
+              <option value="">Ordenar por</option>
+              <option value="priceAsc">Precio: menor a mayor</option>
+              <option value="priceDesc">Precio: mayor a menor</option>
+            </select>
+          )}
+
+          {/* Botón para eliminar los filtros solo si hay filtros activos */}
+          {hayFiltrosActivos() && (
+            <button
+              type="button"
+              onClick={() =>
+                setFilters((prev) => ({
+                  ...prev,
+                  brand: "",
+                  model: "",
+                  carType: "",
+                  transmission: "",
+                  sortBy: "",
+                  page: 1,
+                }))
+              }
+              className="flex items-center justify-center gap-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition w-full"
+            >
+              <FaTrash />
+            </button>
+          )}
         </div>
-      ))}
-  </div>
-)}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-      
-
+      </div>
 
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (
@@ -321,15 +314,15 @@ export default function MyCars() {
                   src={
                     Array.isArray(car.imageUrl)
                       ? car.imageUrl[0]
-                      : typeof car.imageUrl === 'string'
-                        ? car.imageUrl.split(',')[0]?.trim()
-                        : 'https://via.placeholder.com/300x200?text=Sin+imagen'
+                      : typeof car.imageUrl === "string"
+                      ? car.imageUrl.split(",")[0]?.trim()
+                      : "https://via.placeholder.com/300x200?text=Sin+imagen"
                   }
                   alt={`${car.brand} ${car.model}`}
                   className="w-full h-40 object-cover rounded"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src =
-                      'https://via.placeholder.com/300x200?text=Sin+imagen';
+                      "https://via.placeholder.com/300x200?text=Sin+imagen";
                   }}
                 />
 
@@ -394,7 +387,6 @@ export default function MyCars() {
           ))}
         </div>
       )}
-      
 
       {/* Modal para el Calendario (HU 7) */}
       {selectedCarId && (
@@ -455,8 +447,5 @@ export default function MyCars() {
       )}
     </div>
   );
+  //corregido
 }
-
-
-
-
