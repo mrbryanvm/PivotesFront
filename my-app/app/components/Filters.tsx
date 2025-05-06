@@ -18,9 +18,15 @@ interface FiltersProps {
     maxPrice?: number;
     sortBy?: string;
     search?: string;
+
+    // Faltantes para el Panel
+    capacidad?: string;
+    color?: string;
+    kilometrajes?: string;
   };
   onFilterChange: (filters: FiltersProps["filters"]) => void;
 }
+
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
@@ -193,10 +199,8 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       filters.fuelType ||
       filters.rating > 0 ||
       filters.capacidad ||
-      filters.maletero ||
       filters.color ||
-      filters.puertas ||
-      (filters.caracteristicas && filters.caracteristicas.length > 0)
+      filters.kilometrajes
     );
   };
   

@@ -26,10 +26,8 @@ interface FiltersProps {
 
     // Agregados para el panel
     capacidad?: string;
-    maletero?: string;
     color?: string;
-    puertas?: string;
-    caracteristicas?: string[];
+    kilometrajes?: string;
   };
   onFilterChange: (filters: FiltersProps["filters"]) => void;
 }
@@ -81,32 +79,6 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose, filters, onFilterChange
         ))}
       </div>
 
-      {/* Maletero */}
-      <div className="mb-3">
-        <p className="text-sm font-medium text-gray-700 mb-1">Maletero</p>
-        {["1 a 2 maletas", "3 a 4 maletas", "5 o más"].map((maletero) => (
-          <label key={maletero} className="flex items-center gap-2">
-            <input
-                type="checkbox"
-                name="maletero"
-                value={maletero.toLowerCase()}
-                checked={filters.maletero === maletero.toLowerCase()}
-                onChange={() =>
-                  onFilterChange({
-                    ...filters,
-                    maletero:
-                      filters.maletero === maletero.toLowerCase()
-                        ? undefined
-                        : maletero.toLowerCase(),
-                  })
-                }
-                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
-                />
-            {maletero}
-          </label>
-        ))}
-      </div>
-
       {/* Colores */}
       <div className="mb-3">
         <p className="text-sm font-medium text-gray-700 mb-1">Color auto</p>
@@ -133,57 +105,21 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose, filters, onFilterChange
         ))}
       </div>
 
-      {/* Características adicionales */}
-      <div className="mb-3">
-        <p className="text-sm font-medium text-gray-700 mb-1">
-          Características adicionales
-        </p>
-        {[
-          "Aire acondicionado",
-          "Pantalla táctil",
-          "Sensor de retroceso",
-          "Cámara",
-          "Silla para niños",
-          "Permite mascotas",
-          "Bluetooth / USB / Auxiliar",
-        ].map((item) => (
-          <label key={item} className="flex items-center gap-2">
-            <input
-                type="checkbox"
-                name="color"
-                value={item.toLowerCase()}
-                onChange={() => {
-                  const valor = item.toLowerCase();
-                  const actuales = filters.caracteristicas || [];
-                  const yaTiene = actuales.includes(valor);
-                  const nuevas = yaTiene
-                    ? actuales.filter((x) => x !== valor)
-                    : [...actuales, valor];
-                
-                  onFilterChange({ ...filters, caracteristicas: nuevas });
-                }}
-                className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
-                />
-            {item}
-          </label>
-        ))}
-      </div>
-
-      {/* Puertas */}
+      {/* Kilometraje */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-1">Puertas</p>
-        {["3 puertas", "5 puertas"].map((puerta) => (
+        <p className="text-sm font-medium text-gray-700 mb-1">Kilometraje</p>
+        {["0 – 10.000 km", "10.000 – 50.000 km", "más de 50.000 km"].map((puerta) => (
           <label key={puerta} className="flex items-center gap-2">
             <input
                 type="checkbox"
-                name="puertas"
+                name="kilometrajes"
                 value={puerta.toLowerCase()}
-                checked={filters.puertas === puerta.toLowerCase()}
+                checked={filters.kilometrajes === puerta.toLowerCase()}
                 onChange={() =>
                   onFilterChange({
                     ...filters,
-                    puertas:
-                      filters.puertas === puerta.toLowerCase()
+                    kilometrajes:
+                      filters.kilometrajes === puerta.toLowerCase()
                         ? undefined
                         : puerta.toLowerCase(),
                   })
