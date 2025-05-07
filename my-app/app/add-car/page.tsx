@@ -295,12 +295,6 @@ export default function AddCar() {
     }
   };
 
-
-
-
-
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -384,8 +378,6 @@ export default function AddCar() {
               <p className="text-red-500 text-sm mt-1">{locationError}</p>
             )}
           </div>
-
-
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>

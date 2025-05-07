@@ -1,8 +1,9 @@
 "use client";
-
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import FiltrosHost from "../components/FiltrosHost";
+import Paginacion from "../components/Paginacion";
 import { useAuth } from "../lib/authContext";
 import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api";
 import DatePicker from "react-datepicker";
@@ -294,8 +295,8 @@ export default function MyCars() {
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (
         <p className="text-center text-gray-500 mt-10 text-xl">
-          No tienes autos Registrados <br />
-          ¡Agrega uno ahora!
+          No se encontró autos que coincidan  <br />
+          con estos filtros.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -423,28 +424,11 @@ export default function MyCars() {
         </div>
       )}
 
-      {/* Paginación */}
-      {carsResponse.totalPages > 1 && (
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={() => handlePageChange(carsResponse.currentPage - 1)}
-            disabled={carsResponse.currentPage === 1}
-            className="border p-2 rounded disabled:opacity-50"
-          >
-            ←
-          </button>
-          <span>
-            Página {carsResponse.currentPage} de {carsResponse.totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(carsResponse.currentPage + 1)}
-            disabled={carsResponse.currentPage === carsResponse.totalPages}
-            className="border p-2 rounded disabled:opacity-50"
-          >
-            →
-          </button>
-        </div>
-      )}
+      <Paginacion
+        currentPage={carsResponse.currentPage}
+        totalPages={carsResponse.totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
   //corregido

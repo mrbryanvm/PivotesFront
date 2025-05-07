@@ -108,25 +108,25 @@ const Panel: React.FC<PanelProps> = ({ visible, onClose, filters, onFilterChange
       {/* Kilometraje */}
       <div>
         <p className="text-sm font-medium text-gray-700 mb-1">Kilometraje</p>
-        {["0 – 10.000 km", "10.000 – 50.000 km", "más de 50.000 km"].map((puerta) => (
-          <label key={puerta} className="flex items-center gap-2">
+        {["0 – 10.000 km", "10.000 – 50.000 km", "más de 50.000 km"].map((kilometraje) => (
+          <label key={kilometraje} className="flex items-center gap-2">
             <input
                 type="checkbox"
                 name="kilometrajes"
-                value={puerta.toLowerCase()}
-                checked={filters.kilometrajes === puerta.toLowerCase()}
+                value={kilometraje.toLowerCase()}
+                checked={filters.kilometrajes === kilometraje.toLowerCase()}
                 onChange={() =>
                   onFilterChange({
                     ...filters,
                     kilometrajes:
-                      filters.kilometrajes === puerta.toLowerCase()
+                      filters.kilometrajes === kilometraje.toLowerCase()
                         ? undefined
-                        : puerta.toLowerCase(),
+                        : kilometraje.toLowerCase(),
                   })
                 }
                 className="appearance-none w-4 h-4 border border-gray-400 rounded-md checked:bg-white checked:border-orange-500 checked:before:content-['✔'] checked:before:text-orange-500 checked:before:text-xs checked:before:block checked:before:text-center"
                 />
-            {puerta}
+            {kilometraje}
           </label>
         ))}
       </div>

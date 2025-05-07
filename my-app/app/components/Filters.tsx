@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Panel from "./Panel";
+import { hostname } from "os";
 
 interface FiltersProps {
   filters: {
@@ -19,7 +20,7 @@ interface FiltersProps {
     sortBy?: string;
     search?: string;
 
-    // Faltantes para el Panel
+    // extras
     capacidad?: string;
     color?: string;
     kilometrajes?: string;
@@ -29,31 +30,32 @@ interface FiltersProps {
 
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
-  const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
-  const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
-  const [showRatingOptions, setShowRatingOptions] = useState(false);
-  const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const [showPriceOptions, setShowPriceOptions] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
-  const [showHostOptions, setShowHostOptions] = useState(false);
-  const [hostSearch, setHostSearch] = useState("");
-  const [hostResults, setHostResults] = useState<{ id: string; email: string }[]>([]); 
+  // === ESTADOS: VISIBILIDAD DE OPCIONES DE FILTROS ===
+    const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [showHostOptions, setShowHostOptions] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
+    const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
+    const [showRatingOptions, setShowRatingOptions] = useState(false);
+    const [showPriceOptions, setShowPriceOptions] = useState(false);
   
-  const hosts = [
-    { id: "1", email: "host1@example.com" },
-    { id: "2", email: "host2@example.com" },
-   
-  ];
- 
-  const filteredHosts = hosts.filter((host) =>
-    host.email.toLowerCase().includes(hostSearch.toLowerCase())
-  );
-
+  // === ESTADOS: INTERACCIÓN Y ANIMACIONES ===
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [hoverRating, setHoverRating] = useState<number | null>(null);
+  
+  // === ESTADOS: VALORES DE FILTRO ===
+    const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
+  
+  // === ESTADOS: HOSTS (filtro por nombre) ===
+    const [hostSearch, setHostSearch] = useState("");
+    const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
+    const [selectedHost, setSelectedHost] = useState<{ id: string; name: string; location?: string } | null>(null);
+    
+  // === ESTADOS: BUSCADOR GENERAL ===
+   const [suggestions, setSuggestions] = useState<string[]>([]);
+  
+  // === EFECTOS: Acciones al presionar teclas ===
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setShowSuggestions(false);
@@ -62,6 +64,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+ // === GESTION DE FILTROS GENERALES ===
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -95,26 +98,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     setHostSearch("");
     };
 
-    async function searchHosts(query: string) {
-      if (!query) {
-        setHostResults([]);
-        return;
-      }
-      
-      try {
-        const response = await fetch(`/api/hosts?search=${query}`);
-        const data = await response.json();
-        setHostResults(data); 
-      } catch (error) {
-        console.error("Error buscando hosts:", error);
-        setHostResults([]);
-      }
-    }
-
-
 
     // utils/api.ts o dentro de un useEffect en tu componente
-async function getCarsByHost(hostId: number, token: string) {
+ async function getCarsByHost(hostId: number, token: string) {
   const res = await fetch(`/api/cars/host/${hostId}`, {
     method: 'GET',
     headers: {
@@ -131,12 +117,7 @@ async function getCarsByHost(hostId: number, token: string) {
   const data = await res.json();
   return data.cars; // Lista de autos del host
 }
-
-
-
-
-
-
+ 
 
   const handleResetFilters = () => {
     onFilterChange({
@@ -152,17 +133,91 @@ async function getCarsByHost(hostId: number, token: string) {
       maxPrice: undefined,
       sortBy: "relevance",
       rating: 0,
+      capacidad: undefined,
+      color: undefined,
+      kilometrajes: undefined,
     });
     setShowFuelTypeOptions(false);
     setShowTransmissionOptions(false);
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
+    setShowAdvancedFilters(false);
   };
-  const [searchInput, setSearchInput] = useState(filters.search || ""); // Estado local para el input
+
+  // === GESTION DE FILTROS DE BUSQUEDA ===
+  const hayFiltrosActivos = () => {
+    return (
+      filters.location ||
+      filters.startDate ||
+      filters.endDate ||
+      filters.hostId ||
+      filters.carType ||
+      filters.transmission ||
+      filters.consumo ||
+      filters.fuelType ||
+      filters.minPrice !== undefined ||
+      filters.maxPrice !== undefined ||
+      (filters.sortBy && filters.sortBy !== "relevance") ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
+    );
+  };
+
+  const hayFiltrosDelPanel = () => {
+    return (
+      filters.carType ||
+      filters.transmission ||
+      filters.fuelType ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
+    );
+  };
+
+   // === GESTION DE FILTROS DE HOSTS ==
+   useEffect(() => {
+    const cleanQuery = hostSearch
+      .trim()
+      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); 
+  
+    if (!cleanQuery) {
+      setHostResults([]);
+      return;
+    }
+
+    const fetchHosts = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/hosts?search=${encodeURIComponent(cleanQuery)}`);
+        if (!response.ok) {
+          throw new Error(`Error HTTP ${response.status}`);
+        }  
+        const data = await response.json();
+        console.log('RESULTADO DEL BACKEND:', data);
+        setHostResults(data.slice(0, 4)); 
+        
+      } catch (error) {
+        console.error("Error al buscar hosts:", error);
+        setHostResults([]);
+      }
+    };
+    
+    const delayDebounce = setTimeout(() => {
+      fetchHosts();
+    }, 300); 
+  
+    return () => clearTimeout(delayDebounce);
+  }, [hostSearch]);
+
+  
+  // === GESTION DE FILTROS DE AUTOS DE BUSQUEDA ===
+  const [searchInput, setSearchInput] = useState(filters.search || ""); 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
-    setSearchInput(sanitizedValue); // Actualiza el estado local
+    setSearchInput(sanitizedValue); 
     onFilterChange({ ...filters, search: sanitizedValue });
 
     const saved = localStorage.getItem("searchHistory");
@@ -202,34 +257,7 @@ async function getCarsByHost(hostId: number, token: string) {
       JSON.stringify(updatedSearches.slice(0, 10))
     );
   };
-
-  const hayFiltrosActivos = () => {
-    return (
-      filters.location ||
-      filters.startDate ||
-      filters.endDate ||
-      filters.hostId ||
-      filters.carType ||
-      filters.transmission ||
-      filters.consumo ||
-      filters.fuelType ||
-      filters.minPrice !== undefined ||
-      filters.maxPrice !== undefined ||
-      (filters.sortBy && filters.sortBy !== "relevance")
-    );
-  };
-
-  const hayFiltrosDelPanel = () => {
-    return (
-      filters.carType ||
-      filters.transmission ||
-      filters.fuelType ||
-      filters.rating > 0 ||
-      filters.capacidad ||
-      filters.color ||
-      filters.kilometrajes
-    );
-  };
+ 
   
   
   return (
@@ -572,73 +600,100 @@ async function getCarsByHost(hostId: number, token: string) {
         {/* HOST */}
 
         {filters.hostId ? (
-           <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
-            <span className="truncate">
-        {filters.hostId === "1" ? "host1@example.com" : "host2@example.com"}
-            </span>
-         <button
-         onClick={() => onFilterChange({ ...filters, hostId: "" })}
-         className="ml-2 text-white hover:text-gray-200 font-bold"
-        >
-          ×
-       </button>
-         </div>
-       ) : (
-    <div className=" w-40 flex-shrink-0 ">
-       <button
-         type="button"
-         onClick={() => setShowHostOptions(!showHostOptions)}
-         className="border p-2 rounded flex items-center justify-between w-full"
-    >
-      {filters.hostId || "Host"}
-      <svg
-        className="w-4 h-4 ml-2"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
-
-    {showHostOptions && (
-      <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
-         {/* Barra de búsqueda */}
-         <input
-          type="text"
-          value={hostSearch}
-          onChange={(e) => setHostSearch(e.target.value)}
-          placeholder="Buscar host..."
-          className="w-full p-2 mb-2 border rounded"
-        />
-
-        {/* Lista filtrada de hosts */}
-        <div className="max-h-40 overflow-y-auto">
-          {filteredHosts.length > 0 ? (
-            filteredHosts.map((host) => (
-              <div
-                key={host.id}
-                onClick={() => handleHostChange(host.id)}
-                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
-              >
-                {host.email}
-              </div>
-            ))
-          ) : (
-            <div className="p-2 text-gray-400">No encontrado</div>
-          )}
-        </div>
-            
+             <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
+               <span className="truncate">
+                {selectedHost?.name || "Host"}
+               </span>
+            <button
+               onClick={() => onFilterChange({ ...filters, hostId: "" })}
+               className="ml-2 text-white hover:text-gray-200 font-bold"
+             >
+                 ×
+              </button>
             </div>
-         )}
-           </div>
-        )}
+          ) : (
+  
+           <div className="w-40 flex-shrink-0">
+            
+            <button
+               type="button"
+               onClick={() => setShowHostOptions(!showHostOptions)}
+               className="border p-2 rounded flex items-center justify-between w-full"
+             >     
+          {filters.hostId ? "Host" : "Host"}
+             <svg
+               className="w-4 h-4 ml-2"
+               fill="none"
+               stroke="currentColor"
+               viewBox="0 0 24 24"
+             >
+             <path
+               strokeLinecap="round"
+               strokeLinejoin="round"
+               strokeWidth="2"
+               d="M19 9l-7 7-7-7"
+             />
+            </svg>
+            
+           </button>
 
+           {showHostOptions && (
+           <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
+            <span className="truncate">
+             <h1 className="text-sm font-bold text-beige-300">Host</h1>
+             </span>
+
+               <input
+               type="text"
+               value={hostSearch}
+               onChange={(e) => {
+                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+                setHostSearch(value);
+              }}
+               placeholder="Buscar host..."
+               className="w-full p-2 mb-2 border rounded"
+             />
+
+          <div className="max-h-40 overflow-y-auto">
+            {hostSearch.trim() === "" ? null : (
+               <>
+                 {hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase())).length > 0 ? (
+                   <>
+                  <p className="px-2 text-sm text-gray-500 mb-1">Sugerencias</p>
+                  {hostResults
+                    .filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase()))
+                    .map((host) => (
+                      <div
+                        key={host.id}
+                        onClick={() => {
+                          handleHostChange(host.id);
+                          setShowHostOptions(false);
+                        }}
+                        className="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
+                      >
+                        <span className="truncate">{host.name}</span>
+                        {host.location && (
+                          <span className="ml-4 text-sm text-gray-600 flex items-center gap-1">
+                            <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                            </svg>
+                            {host.location}
+                          </span>
+                          )}
+                         </div>
+                         ))}
+                      </>
+                     ) : (
+                        <div className="p-2 text-gray-400">No se encuentran resultados!</div>
+                      )}
+                     </>
+                    )}
+                 </div>
+                </div>
+                 )}
+              </div>
+            )}
+ 
             {/* TIPO DE AUTO */}
             {filters.carType ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
