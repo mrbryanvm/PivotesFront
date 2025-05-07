@@ -65,7 +65,7 @@ const FiltrosHost: React.FC<FiltersProps> = ({
         >
           <option value="">Transmisión</option>
           <option value="Manual">Manual</option>
-          <option value="Automática">Automática</option>
+          <option value="Automático">Automático</option>
         </select>
       )}
 
@@ -73,8 +73,8 @@ const FiltrosHost: React.FC<FiltersProps> = ({
         <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
           <span className="truncate capitalize">
             {filters.sortBy === "priceAsc"
-              ? "Precio: menor a mayor"
-              : "Precio: mayor a menor"}
+              ? "Precio: Ascendente"
+              : "Precio Descendente"}
           </span>
           <button
             onClick={() => onFilterChange({ sortBy: "" })}
@@ -90,8 +90,8 @@ const FiltrosHost: React.FC<FiltersProps> = ({
           className="p-2 border rounded w-full"
         >
           <option value="">Ordenar por</option>
-          <option value="priceAsc">Precio: menor a mayor</option>
-          <option value="priceDesc">Precio: mayor a menor</option>
+          <option value="priceAsc">Precio Ascendente</option>
+          <option value="priceDesc">Precio Descendente</option>
         </select>
       )}
 

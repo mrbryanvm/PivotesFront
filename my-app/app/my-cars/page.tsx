@@ -208,8 +208,8 @@ export default function MyCars() {
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (
         <p className="text-center text-gray-500 mt-10 text-xl">
-          No tienes autos Registrados <br />
-          ¡Agrega uno ahora!
+          No se encontró autos que coincidan  <br />
+          con estos filtros.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
