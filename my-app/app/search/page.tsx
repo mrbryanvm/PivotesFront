@@ -61,6 +61,9 @@ export default function Search() {
     search: string;
     rating: number;
     limit: number;
+    capacidad?: string;
+    color?: string;
+    kilometrajes?: string;
   }>({
     location: "",
     startDate: "",
@@ -76,6 +79,9 @@ export default function Search() {
     search: "",
     rating: 0,
     limit: 6,
+    capacidad: undefined,
+    color: undefined,
+    kilometrajes: undefined,
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +101,10 @@ export default function Search() {
       filters.hostId ||
       filters.carType ||
       filters.transmission ||
-      filters.fuelType
+      filters.fuelType ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
     );
   };
 
