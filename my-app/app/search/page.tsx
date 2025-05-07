@@ -7,6 +7,7 @@ import Filters from "../components/Filters";
 import CarCard from "../components/CarCard";
 import { fetchCars } from "../lib/api";
 import NoResultModal from "../components/NoResultModal";
+import ErrorModal from "../components/ErrorModal";
 import Paginacion from "../components/Paginacion"; 
 
 
@@ -114,23 +115,26 @@ export default function Search() {
         ...filters,
         hostId: filters.hostId ? parseInt(filters.hostId) : undefined,
       };
-
-      const response = await fetchCars(adaptedFilters);
-
-      setCarsResponse(response);
-
-      // Mostrar el modal solo si no hay resultados Y hay filtros específicos (no solo búsqueda por texto)
-      if (response.cars.length === 0 && hayFiltrosEspecificos()) {
-        setShowNoResults(true);
-      } else {
-        setShowNoResults(false);
+  
+      try {
+        const response = await fetchCars(adaptedFilters);
+        setCarsResponse(response);
+  
+        if (response.cars.length === 0 && hayFiltrosEspecificos()) {
+          setShowNoResults(true);
+        } else {
+          setShowNoResults(false);
+        }
+      } catch (err) {
+        console.error("Error al filtrar:", err);
+        setError("error");
       }
     };
-
+  
     fetchFilteredCars();
-  }, [filters]);
+  }, [filters]);  
 
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  {error && <ErrorModal onClose={() => setError(null)} />}
 
   return (
     <div className="container mx-auto p-4">
