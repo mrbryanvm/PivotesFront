@@ -90,8 +90,8 @@ const FiltrosHost: React.FC<FiltersProps> = ({
           className="p-2 border rounded w-full"
         >
           <option value="">Ordenar por</option>
-          <option value="priceAsc">Precio: menor a mayor</option>
-          <option value="priceDesc">Precio: mayor a menor</option>
+          <option value="priceAsc">Precio Ascendente</option>
+          <option value="priceDesc">Precio: Descendente</option>
         </select>
       )}
 
