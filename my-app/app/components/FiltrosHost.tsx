@@ -65,7 +65,7 @@ const FiltrosHost: React.FC<FiltersProps> = ({
         >
           <option value="">Transmisión</option>
           <option value="Manual">Manual</option>
-          <option value="Automática">Automática</option>
+          <option value="Automático">Automático</option>
         </select>
       )}
 
