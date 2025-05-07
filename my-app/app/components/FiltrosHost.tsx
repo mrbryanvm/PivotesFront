@@ -73,8 +73,8 @@ const FiltrosHost: React.FC<FiltersProps> = ({
         <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
           <span className="truncate capitalize">
             {filters.sortBy === "priceAsc"
-              ? "Precio: menor a mayor"
-              : "Precio: mayor a menor"}
+              ? "Precio: Ascendente"
+              : "Precio Descendente"}
           </span>
           <button
             onClick={() => onFilterChange({ sortBy: "" })}
@@ -91,7 +91,7 @@ const FiltrosHost: React.FC<FiltersProps> = ({
         >
           <option value="">Ordenar por</option>
           <option value="priceAsc">Precio Ascendente</option>
-          <option value="priceDesc">Precio: Descendente</option>
+          <option value="priceDesc">Precio Descendente</option>
         </select>
       )}
 
