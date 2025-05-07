@@ -99,7 +99,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
 
     // utils/api.ts o dentro de un useEffect en tu componente
- {/*async function getCarsByHost(hostId: number, token: string) {
+ async function getCarsByHost(hostId: number, token: string) {
   const res = await fetch(`/api/cars/host/${hostId}`, {
     method: 'GET',
     headers: {
@@ -116,7 +116,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   const data = await res.json();
   return data.cars; // Lista de autos del host
 }
- */}
+ 
 
   const handleResetFilters = () => {
     onFilterChange({
@@ -207,17 +207,17 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     
     const delayDebounce = setTimeout(() => {
       fetchHosts();
-    }, 300); // espera 300ms tras dejar de tipear
+    }, 300); 
   
     return () => clearTimeout(delayDebounce);
   }, [hostSearch]);
   
   // === GESTION DE FILTROS DE AUTOS DE BUSQUEDA ===
-  const [searchInput, setSearchInput] = useState(filters.search || ""); // Estado local para el input
+  const [searchInput, setSearchInput] = useState(filters.search || ""); 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
-    setSearchInput(sanitizedValue); // Actualiza el estado local
+    setSearchInput(sanitizedValue); 
     onFilterChange({ ...filters, search: sanitizedValue });
 
     const saved = localStorage.getItem("searchHistory");
