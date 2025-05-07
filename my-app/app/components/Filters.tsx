@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Panel from "./Panel";
+import { hostname } from "os";
 
 interface FiltersProps {
   filters: {
@@ -176,9 +177,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     );
   };
 
-   // === GESTION DE FILTROS DE HOSTS ===
-   
-  
+   // === GESTION DE FILTROS DE HOSTS ==
    useEffect(() => {
     const cleanQuery = hostSearch
       .trim()
@@ -188,7 +187,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       setHostResults([]);
       return;
     }
-  
+
     const fetchHosts = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/hosts?search=${encodeURIComponent(cleanQuery)}`);
@@ -211,6 +210,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   
     return () => clearTimeout(delayDebounce);
   }, [hostSearch]);
+
   
   // === GESTION DE FILTROS DE AUTOS DE BUSQUEDA ===
   const [searchInput, setSearchInput] = useState(filters.search || ""); 
@@ -614,6 +614,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           ) : (
   
            <div className="w-40 flex-shrink-0">
+            
             <button
                type="button"
                onClick={() => setShowHostOptions(!showHostOptions)}
@@ -633,54 +634,66 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                d="M19 9l-7 7-7-7"
              />
             </svg>
+            
            </button>
 
            {showHostOptions && (
-            <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
-             <input
-              type="text"
-              value={hostSearch}
-              onChange={(e) => {
-               const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-               setHostSearch(value);
+           <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
+            <span className="truncate">
+             <h1 className="text-sm font-bold text-beige-300">Host</h1>
+             </span>
+
+               <input
+               type="text"
+               value={hostSearch}
+               onChange={(e) => {
+                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+                setHostSearch(value);
               }}
                placeholder="Buscar host..."
                className="w-full p-2 mb-2 border rounded"
              />
 
-            <div className="max-h-40 overflow-y-auto">
-
-           {hostSearch.trim() === "" ? null : (
-             hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase())).length > 0 ? (
-              hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase()))
-               .map((host) => (
-                <div
-                 key={host.id}
-                 onClick={() => handleHostChange(host.id)}
-                 className="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
-                >
-                <span className="truncate">{host.name}</span>
-           {host.location && (
-              <span className="ml-4 text-sm text-gray-600 flex items-center gap-1">
-                <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
-                </svg>
-                {host.location}
-              </span>
-            )}
-               </div>
-                  ))
-               ) : (
-                  <div className="p-2 text-gray-400">No encontrado</div>
-                   )
-               )}
-        
+          <div className="max-h-40 overflow-y-auto">
+            {hostSearch.trim() === "" ? null : (
+               <>
+                 {hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase())).length > 0 ? (
+                   <>
+                  <p className="px-2 text-sm text-gray-500 mb-1">Sugerencias</p>
+                  {hostResults
+                    .filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase()))
+                    .map((host) => (
+                      <div
+                        key={host.id}
+                        onClick={() => {
+                          handleHostChange(host.id);
+                          setShowHostOptions(false);
+                        }}
+                        className="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
+                      >
+                        <span className="truncate">{host.name}</span>
+                        {host.location && (
+                          <span className="ml-4 text-sm text-gray-600 flex items-center gap-1">
+                            <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                            </svg>
+                            {host.location}
+                          </span>
+                          )}
+                         </div>
+                         ))}
+                      </>
+                     ) : (
+                        <div className="p-2 text-gray-400">No se encuentran resultados!</div>
+                      )}
+                     </>
+                    )}
                  </div>
                 </div>
                  )}
               </div>
-           )}
-
+            )}
+ 
             {/* TIPO DE AUTO */}
             {filters.carType ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
