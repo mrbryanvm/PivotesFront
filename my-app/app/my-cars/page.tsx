@@ -1,8 +1,9 @@
 "use client";
-
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import FiltrosHost from "../components/FiltrosHost";
+import Paginacion from "../components/Paginacion";
 import { useAuth } from "../lib/authContext";
 import { fetchMyCars, updateCarAvailability, deleteCar } from "../lib/api";
 import DatePicker from "react-datepicker";
@@ -187,116 +188,22 @@ export default function MyCars() {
         {carsResponse.totalCars} autos registrados
       </p>
 
-
-
-{/* Filtros de Autos */}
-<div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
-    <input
-      type="text"
-      placeholder="Marca"
-      value={filters.brand}
-      onChange={(e) => handleFilterChange({ brand: e.target.value })}
-      className="p-2 border rounded"
-    />
-    <input
-      type="text"
-      placeholder="Modelo"
-      value={filters.model}
-      onChange={(e) => handleFilterChange({ model: e.target.value })}
-      className="p-2 border rounded"
-    />
-    <select
-      value={filters.transmission}
-      onChange={(e) => handleFilterChange({ transmission: e.target.value })}
-      className="p-2 border rounded"
-    >
-      <option value="">Transmisión</option>
-      <option value="Manual">Manual</option>
-      <option value="Automático">Automático</option>
-    </select>
-    <select
-      value={filters.sortBy}
-      onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-      className="p-2 border rounded"
-    >
-      <option value="">Ordenar por</option>
-      <option value="priceAsc">Precio: menor a mayor</option>
-      <option value="priceDesc">Precio: mayor a menor</option>
-    </select>
-
-    {/* Botón para eliminar todos los filtros */}
-    <button
-      onClick={() =>
-        setFilters((prev) => ({
-          ...prev,
-          brand: "",
-          model: "",
-          carType: "",
-          transmission: "",
-          sortBy: "",
-          page: 1,
-        }))
-      }
-      className="bg-orange-500 text-white px-3 py-2 rounded hover:bg-orange-600 w-full"
-    >
-      Limpiar Filtros
-    </button>
-  </div>
-
-  {/* Filtros activos con nuevo diseño */}
-{Object.entries(filters)
-  .filter(([key, value]) => value && !["page", "limit"].includes(key))
-  .length > 0 && (
-  <div className="flex flex-wrap items-center gap-2 mt-4">
-    {Object.entries(filters)
-      .filter(([key, value]) => value && !["page", "limit"].includes(key))
-      .map(([key, value]) => (
-        <div
-          key={key}
-          className="inline-flex items-center bg-orange-50 border border-orange-200 text-orange-700 rounded-full px-3 py-1 text-sm shadow-sm"
-        >
-          <span className="mr-2 font-medium capitalize">
-            {key}: <span className="font-semibold">{value}</span>
-          </span>
-          <button
-            onClick={() => handleFilterChange({ [key]: "" })}
-            className="hover:bg-orange-200 rounded-full p-1 transition"
-            title="Eliminar filtro"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-      ))}
-  </div>
-)}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-      
-
+      {/* Filtros de Autos */}
+      <FiltrosHost
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onClearFilters={() =>
+          setFilters((prev) => ({
+            ...prev,
+            brand: "",
+            model: "",
+            carType: "",
+            transmission: "",
+            sortBy: "",
+            page: 1,
+          }))
+        }
+      />
 
       {/* Lista de Autos */}
       {carsResponse.cars.length === 0 ? (
@@ -431,28 +338,11 @@ export default function MyCars() {
         </div>
       )}
 
-      {/* Paginación */}
-      {carsResponse.totalPages > 1 && (
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={() => handlePageChange(carsResponse.currentPage - 1)}
-            disabled={carsResponse.currentPage === 1}
-            className="border p-2 rounded disabled:opacity-50"
-          >
-            ←
-          </button>
-          <span>
-            Página {carsResponse.currentPage} de {carsResponse.totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(carsResponse.currentPage + 1)}
-            disabled={carsResponse.currentPage === carsResponse.totalPages}
-            className="border p-2 rounded disabled:opacity-50"
-          >
-            →
-          </button>
-        </div>
-      )}
+      <Paginacion
+        currentPage={carsResponse.currentPage}
+        totalPages={carsResponse.totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }
