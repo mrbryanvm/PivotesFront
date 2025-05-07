@@ -18,37 +18,42 @@ interface FiltersProps {
     maxPrice?: number;
     sortBy?: string;
     search?: string;
+
+    // extras
+    capacidad?: string;
+    color?: string;
+    kilometrajes?: string;
   };
   onFilterChange: (filters: FiltersProps["filters"]) => void;
 }
 
+
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
-
   // === ESTADOS: VISIBILIDAD DE OPCIONES DE FILTROS ===
-  const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [showHostOptions, setShowHostOptions] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
-  const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
-  const [showRatingOptions, setShowRatingOptions] = useState(false);
-  const [showPriceOptions, setShowPriceOptions] = useState(false);
-
-  // === ESTADOS: INTERACCIÓN Y ANIMACIONES ===
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [hoverRating, setHoverRating] = useState<number | null>(null);
-
-  // === ESTADOS: VALORES DE FILTRO ===
-  const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
-
-  // === ESTADOS: HOSTS (filtro por nombre) ===
-  const [hostSearch, setHostSearch] = useState("");
-  const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
-  const [selectedHost, setSelectedHost] = useState<{ id: string; name: string; location?: string } | null>(null);
+    const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [showHostOptions, setShowHostOptions] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
+    const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
+    const [showRatingOptions, setShowRatingOptions] = useState(false);
+    const [showPriceOptions, setShowPriceOptions] = useState(false);
   
+  // === ESTADOS: INTERACCIÓN Y ANIMACIONES ===
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [hoverRating, setHoverRating] = useState<number | null>(null);
+  
+  // === ESTADOS: VALORES DE FILTRO ===
+    const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
+  
+  // === ESTADOS: HOSTS (filtro por nombre) ===
+    const [hostSearch, setHostSearch] = useState("");
+    const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
+    const [selectedHost, setSelectedHost] = useState<{ id: string; name: string; location?: string } | null>(null);
+    
   // === ESTADOS: BUSCADOR GENERAL ===
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-
+   const [suggestions, setSuggestions] = useState<string[]>([]);
+  
   // === EFECTOS: Acciones al presionar teclas ===
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,8 +63,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // === GESTION DE FILTROS GENERALES ===
-
+ // === GESTION DE FILTROS GENERALES ===
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -88,13 +92,32 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   };
 
   const handleHostChange = (hostId: string) => {
-    const host = hostResults.find((h) => h.id === hostId);
-    if (host) setSelectedHost({ id: host.id, name: host.name });
     onFilterChange({ ...filters, hostId });
     setShowHostOptions(false);
     setHostSearch("");
-  };
-  
+    };
+
+
+    // utils/api.ts o dentro de un useEffect en tu componente
+ {/*async function getCarsByHost(hostId: number, token: string) {
+  const res = await fetch(`/api/cars/host/${hostId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'Error al obtener autos');
+  }
+
+  const data = await res.json();
+  return data.cars; // Lista de autos del host
+}
+ */}
+
   const handleResetFilters = () => {
     onFilterChange({
       location: "",
@@ -109,13 +132,17 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       maxPrice: undefined,
       sortBy: "relevance",
       rating: 0,
+      capacidad: undefined,
+      color: undefined,
+      kilometrajes: undefined,
     });
     setShowFuelTypeOptions(false);
     setShowTransmissionOptions(false);
     setShowCarTypeOptions(false);
     setShowRatingOptions(false);
+    setShowAdvancedFilters(false);
   };
-  
+
   // === GESTION DE FILTROS DE BUSQUEDA ===
   const hayFiltrosActivos = () => {
     return (
@@ -129,16 +156,33 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       filters.fuelType ||
       filters.minPrice !== undefined ||
       filters.maxPrice !== undefined ||
-      (filters.sortBy && filters.sortBy !== "relevance")
+      (filters.sortBy && filters.sortBy !== "relevance") ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
     );
   };
 
-  // === GESTION DE FILTROS DE HOSTS ===
+  const hayFiltrosDelPanel = () => {
+    return (
+      filters.carType ||
+      filters.transmission ||
+      filters.fuelType ||
+      filters.rating > 0 ||
+      filters.capacidad ||
+      filters.color ||
+      filters.kilometrajes
+    );
+  };
+
+   // === GESTION DE FILTROS DE HOSTS ===
+   
   
-  useEffect(() => {
+   useEffect(() => {
     const cleanQuery = hostSearch
       .trim()
-      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); // Elimina caracteres no permitidos
+      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); 
   
     if (!cleanQuery) {
       setHostResults([]);
@@ -160,7 +204,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         setHostResults([]);
       }
     };
-  
+    
     const delayDebounce = setTimeout(() => {
       fetchHosts();
     }, 300); // espera 300ms tras dejar de tipear
@@ -168,21 +212,20 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     return () => clearTimeout(delayDebounce);
   }, [hostSearch]);
   
-
   // === GESTION DE FILTROS DE AUTOS DE BUSQUEDA ===
-   const [searchInput, setSearchInput] = useState(filters.search || ""); 
-   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-   const value = e.target.value;
-   const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
-      setSearchInput(sanitizedValue); // Actualiza el estado local
-      onFilterChange({ ...filters, search: sanitizedValue });
+  const [searchInput, setSearchInput] = useState(filters.search || ""); // Estado local para el input
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
+    setSearchInput(sanitizedValue); // Actualiza el estado local
+    onFilterChange({ ...filters, search: sanitizedValue });
 
-   const saved = localStorage.getItem("searchHistory");
-   const previousSearches = saved ? (JSON.parse(saved) as string[]) : [];
+    const saved = localStorage.getItem("searchHistory");
+    const previousSearches = saved ? (JSON.parse(saved) as string[]) : [];
 
-   const normalized = sanitizedValue.trim().toLowerCase();
+    const normalized = sanitizedValue.trim().toLowerCase();
 
-   const matched = previousSearches.filter((item) =>
+    const matched = previousSearches.filter((item) =>
       item.toLowerCase().includes(normalized)
     );
 
@@ -214,7 +257,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       JSON.stringify(updatedSearches.slice(0, 10))
     );
   };
-
+ 
+  
+  
   return (
     <div className="flex flex-col items-center gap-4 mb-6">
       {/* FILA SUPERIOR: Ubicación, De, Hasta */}
@@ -366,11 +411,14 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         <div className="overflow-x-auto w-full max-h-20">
           <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
           <div>
-            <button
-              type="button"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center border p-2 rounded px-3 py-1 w-10 justify-between bg-white"
-            >
+          <button
+            type="button"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className={`flex items-center border p-2 rounded px-3 py-1 w-10 justify-between transition ${
+              hayFiltrosDelPanel() ? 'bg-orange-500 text-white' : 'bg-white'
+            }`}
+          >
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-black scale-150"
@@ -386,7 +434,10 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           <Panel
             visible={showAdvancedFilters}
             onClose={() => setShowAdvancedFilters(false)}
+            filters={filters}
+            onFilterChange={onFilterChange}
           />
+
 
             {/* PRECIO */}
             {filters.minPrice !== undefined || filters.maxPrice !== undefined ? (
@@ -546,9 +597,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             
             */}
 
-           {/* HOST */}    
-                                        
-            {filters.hostId ? (
+        {/* HOST */}
+
+        {filters.hostId ? (
              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
                <span className="truncate">
                 {selectedHost?.name || "Host"}
@@ -629,7 +680,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                  )}
               </div>
            )}
-        
+
             {/* TIPO DE AUTO */}
             {filters.carType ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
