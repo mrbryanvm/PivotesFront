@@ -201,23 +201,24 @@ export default function MyCars() {
       {/* Filtros de Autos */}
       <div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
         {/* Grid de filtros */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
-          <input
+        <div className="flex justify-end">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
+            <input
             type="text"
             placeholder="Marca"
             value={filters.brand}
             onChange={(e) => handleFilterChange({ brand: e.target.value })}
             className="p-2 border rounded"
-          />
-          <input
+            />
+            <input
             type="text"
             placeholder="Modelo"
             value={filters.model}
             onChange={(e) => handleFilterChange({ model: e.target.value })}
             className="p-2 border rounded"
-          />
-
-          {filters.transmission ? (
+            />
+            
+            {filters.transmission ? (
             <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
               <span className="truncate capitalize">
                 {filters.transmission}
@@ -289,6 +290,7 @@ export default function MyCars() {
               <FaTrash />
             </button>
           )}
+        </div>
         </div>
       </div>
 
