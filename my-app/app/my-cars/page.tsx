@@ -108,8 +108,8 @@ export default function MyCars() {
       filters.carType !== "" ||
       filters.transmission !== "" ||
       filters.sortBy !== "" ||
-      filters.carType !== ""
-    );
+      filters.model !== "" 
+        );
   };
   // función para eliminar un auto
   const handleDeleteCar = async (carId: number) => {
