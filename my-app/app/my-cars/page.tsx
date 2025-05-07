@@ -108,8 +108,8 @@ export default function MyCars() {
       filters.carType !== "" ||
       filters.transmission !== "" ||
       filters.sortBy !== "" ||
-      filters.model !== "" 
-        );
+      filters.model !== ""
+    );
   };
   // función para eliminar un auto
   const handleDeleteCar = async (carId: number) => {
@@ -201,237 +201,247 @@ export default function MyCars() {
       {/* Filtros de Autos */}
       <div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
         {/* Grid de filtros */}
-        <div className="flex justify-betwwen">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center max-w-6xl w-full">
             <input
-            type="text"
-            placeholder="Marca"
-            value={filters.brand}
-            onChange={(e) => handleFilterChange({ brand: e.target.value })}
-            className="p-2 border rounded "
-            />
-            <input
-            type="text"
-            placeholder="Modelo"
-            value={filters.model}
-            onChange={(e) => handleFilterChange({ model: e.target.value })}
-            className="p-2 border rounded w-75"
-            />
-            
-            {filters.transmission ? (
-            <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
-              <span className="truncate capitalize">
-                {filters.transmission}
-              </span>
-              <button
-                onClick={() => handleFilterChange({ transmission: "" })}
-                className="ml-2 text-white hover:text-gray-200 font-bold"
-              >
-                ×
-              </button>
-            </div>
-          ) : (
-            <select
-              value={filters.transmission}
-              onChange={(e) =>
-                handleFilterChange({ transmission: e.target.value })
-              }
+              type="text"
+              placeholder="Marca"
+              value={filters.brand}
+              onChange={(e) => handleFilterChange({ brand: e.target.value })}
               className="p-2 border rounded w-full"
-            >
-              <option value="">Transmisión</option>
-              <option value="Manual">Manual</option>
-              <option value="Automático">Automático</option>
-            </select>
-          )}
+            />
+            <input
+              type="text"
+              placeholder="Modelo"
+              value={filters.model}
+              onChange={(e) => handleFilterChange({ model: e.target.value })}
+              className="p-2 border rounded w-full"
+            />
 
-          {filters.sortBy ? (
-            <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
-              <span className="truncate capitalize">
-                {filters.sortBy === "priceAsc"
-                  ? "Precio: menor a mayor"
-                  : "Precio: mayor a menor"}
-              </span>
-              <button
-                onClick={() => handleFilterChange({ sortBy: "" })}
-                className="ml-2 text-white hover:text-gray-200 font-bold"
+            {filters.transmission ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
+                <span className="truncate capitalize">
+                  {filters.transmission}
+                </span>
+                <button
+                  onClick={() => handleFilterChange({ transmission: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <select
+                value={filters.transmission}
+                onChange={(e) =>
+                  handleFilterChange({ transmission: e.target.value })
+                }
+                className="p-2 border rounded w-full"
               >
-                ×
-              </button>
-            </div>
-          ) : (
-            <select
-              value={filters.sortBy}
-              onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-              className="p-2 border rounded w-80"
-            >
-              <option value="">Ordenar por</option>
-              <option value="priceAsc">Precio: menor a mayor</option>
-              <option value="priceDesc">Precio: mayor a menor</option>
-            </select>
-          )}
+                <option value="">Transmisión</option>
+                <option value="Manual">Manual</option>
+                <option value="Automático">Automático</option>
+              </select>
+            )}
 
-          {/* Botón para eliminar los filtros solo si hay filtros activos */}
-          {hayFiltrosActivos() && (
-            <button
-              type="button"
-              onClick={() =>
-                setFilters((prev) => ({
-                  ...prev,
-                  brand: "",
-                  model: "",
-                  carType: "",
-                  transmission: "",
-                  sortBy: "",
-                  page: 1,
-                }))
-              }
-              className="flex items-center justify-center gap-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition w-full"
-            >
-              <FaTrash />
-            </button>
-          )}
-        </div>
+            {filters.sortBy ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-full justify-between">
+                <span className="truncate capitalize">
+                  {filters.sortBy === "priceAsc"
+                    ? "Precio: menor a mayor"
+                    : "Precio: mayor a menor"}
+                </span>
+                <button
+                  onClick={() => handleFilterChange({ sortBy: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <select
+                value={filters.sortBy}
+                onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
+                className="p-2 border rounded w-full"
+              >
+                <option value="">Ordenar por</option>
+                <option value="priceAsc">Precio: menor a mayor</option>
+                <option value="priceDesc">Precio: mayor a menor</option>
+              </select>
+            )}
+
+            {/* Botón para eliminar los filtros solo si hay filtros activos */}
+            {hayFiltrosActivos() && (
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    brand: "",
+                    model: "",
+                    carType: "",
+                    transmission: "",
+                    sortBy: "",
+                    page: 1,
+                  }))
+                }
+                className="flex items-center justify-center gap-1 bg-orange-500 text-white px-2 py-2 rounded hover:bg-orange-600 transition w-16"
+              >
+                <FaTrash />
+              </button>
+            )}
+
+
+          </div>
+
+
+
         </div>
       </div>
 
+
       {/* Lista de Autos */}
-      {carsResponse.cars.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10 text-xl">
-          No se encontró autos que coincidan  <br />
-          con estos filtros.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {carsResponse.cars.map((car) => (
-            <div
-              key={car.id}
-              className="border rounded-lg shadow-md p-4 bg-white flex items-center gap-4"
-            >
-              {/* Imagen a la izquierda */}
-              <div className="w-1/3">
-                <p className="bg-gray-100 text-center text-sm mt-1 mb-3 py-1 rounded font-semibold">
-                  ${car.pricePerDay} / día
-                </p>
-
-                <img
-                  src={
-                    Array.isArray(car.imageUrl)
-                      ? car.imageUrl[0]
-                      : typeof car.imageUrl === "string"
-                      ? car.imageUrl.split(",")[0]?.trim()
-                      : "https://via.placeholder.com/300x200?text=Sin+imagen"
-                  }
-                  alt={`${car.brand} ${car.model}`}
-                  className="w-full h-40 object-cover rounded"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://via.placeholder.com/300x200?text=Sin+imagen";
-                  }}
-                />
-
-                <p className="text-green-600 text-sm font-medium mt-2">
-                  🟢 Disponible
-                </p>
-              </div>
-
-              {/* Información a la derecha */}
-              <div className="w-2/3">
-                <h2 className="text-lg font-semibold mb-1">
-                  {car.brand} {car.model}
-                </h2>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <p>Año: {car.year}</p>
-                  <p>{car.seats} plazas</p>
-                  <p>Transmisión: {car.transmission}</p>
-                  <p>Categoría: {car.category}</p>
-                  <p>Color: {car.color}</p>
-                </div>
-                {car.extraEquipment.length > 0 && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    Equipamiento: {car.extraEquipment.join(", ")}
+      {
+        carsResponse.cars.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10 text-xl">
+            No se encontró autos que coincidan  <br />
+            con estos filtros.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {carsResponse.cars.map((car) => (
+              <div
+                key={car.id}
+                className="border rounded-lg shadow-md p-4 bg-white flex items-center gap-4"
+              >
+                {/* Imagen a la izquierda */}
+                <div className="w-1/3">
+                  <p className="bg-gray-100 text-center text-sm mt-1 mb-3 py-1 rounded font-semibold">
+                    ${car.pricePerDay} / día
                   </p>
-                )}
 
-                {/* Acciones */}
-                <div className="flex gap-6 mt-4 text-sm text-center">
-                  {/* Info */}
-                  <div className="flex flex-col items-center">
-                    <Link href={`/car-details/${car.id}`}>
-                      <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
-                        <FaEye />
-                      </button>
-                    </Link>
-                    <span className="text-gray-700 mt-1">Info</span>
+                  <img
+                    src={
+                      Array.isArray(car.imageUrl)
+                        ? car.imageUrl[0]
+                        : typeof car.imageUrl === "string"
+                          ? car.imageUrl.split(",")[0]?.trim()
+                          : "https://via.placeholder.com/300x200?text=Sin+imagen"
+                    }
+                    alt={`${car.brand} ${car.model}`}
+                    className="w-full h-40 object-cover rounded"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://via.placeholder.com/300x200?text=Sin+imagen";
+                    }}
+                  />
+
+                  <p className="text-green-600 text-sm font-medium mt-2">
+                    🟢 Disponible
+                  </p>
+                </div>
+
+                {/* Información a la derecha */}
+                <div className="w-2/3">
+                  <h2 className="text-lg font-semibold mb-1">
+                    {car.brand} {car.model}
+                  </h2>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p>Año: {car.year}</p>
+                    <p>{car.seats} plazas</p>
+                    <p>Transmisión: {car.transmission}</p>
+                    <p>Categoría: {car.category}</p>
+                    <p>Color: {car.color}</p>
                   </div>
+                  {car.extraEquipment.length > 0 && (
+                    <p className="text-sm text-gray-600 mt-2">
+                      Equipamiento: {car.extraEquipment.join(", ")}
+                    </p>
+                  )}
 
-                  {/* Editar */}
-                  <div className="flex flex-col items-center">
-                    <Link href={`/edit-car/${car.id}`}>
-                      <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 ml-5">
-                        <FaEdit />
+                  {/* Acciones */}
+                  <div className="flex gap-6 mt-4 text-sm text-center">
+                    {/* Info */}
+                    <div className="flex flex-col items-center">
+                      <Link href={`/car-details/${car.id}`}>
+                        <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
+                          <FaEye />
+                        </button>
+                      </Link>
+                      <span className="text-gray-700 mt-1">Info</span>
+                    </div>
+
+                    {/* Editar */}
+                    <div className="flex flex-col items-center">
+                      <Link href={`/edit-car/${car.id}`}>
+                        <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 ml-5">
+                          <FaEdit />
+                        </button>
+                      </Link>
+                      <span className="text-gray-700 mt-1 ml-5">Editar</span>
+                    </div>
+
+                    {/* Eliminar */}
+                    <div className="flex flex-col items-center">
+                      <button
+                        onClick={() => handleDeleteCar(car.id)}
+                        className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5"
+                      >
+                        <FaTrash />
                       </button>
-                    </Link>
-                    <span className="text-gray-700 mt-1 ml-5">Editar</span>
-                  </div>
-
-                  {/* Eliminar */}
-                  <div className="flex flex-col items-center">
-                    <button
-                      onClick={() => handleDeleteCar(car.id)}
-                      className="bg-orange-500 text-white p-3 rounded-full hover:bg-red-600 ml-5"
-                    >
-                      <FaTrash />
-                    </button>
-                    <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
+                      <span className="text-gray-700 mt-1 ml-5">Eliminar</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )
+      }
 
       {/* Modal para el Calendario (HU 7) */}
-      {selectedCarId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">
-              Seleccionar Fechas de No Disponibilidad
-            </h2>
-            <DatePicker
-              selected={null}
-              onChange={handleDateChange}
-              inline
-              highlightDates={unavailableDates}
-              dateFormat="yyyy-MM-dd"
-            />
-            <div className="flex gap-4 mt-4">
-              <button
-                onClick={handleSaveAvailability}
-                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-              >
-                Guardar
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedCarId(null);
-                  setUnavailableDates([]);
-                }}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-              >
-                Cancelar
-              </button>
+      {
+        selectedCarId && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl font-bold mb-4">
+                Seleccionar Fechas de No Disponibilidad
+              </h2>
+              <DatePicker
+                selected={null}
+                onChange={handleDateChange}
+                inline
+                highlightDates={unavailableDates}
+                dateFormat="yyyy-MM-dd"
+              />
+              <div className="flex gap-4 mt-4">
+                <button
+                  onClick={handleSaveAvailability}
+                  className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                >
+                  Guardar
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedCarId(null);
+                    setUnavailableDates([]);
+                  }}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancelar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       <Paginacion
         currentPage={carsResponse.currentPage}
         totalPages={carsResponse.totalPages}
         onPageChange={handlePageChange}
       />
-    </div>
+    </div >
   );
   //corregido
 }

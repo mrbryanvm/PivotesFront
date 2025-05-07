@@ -17,7 +17,7 @@ interface Car {
   kilometers: string;
   fuelType: string;
   color: string;
-  imageUrl: string;
+  imageUrls: string[];
   isAvailable: boolean;
   unavailableDates: string[];
   description?: string;
@@ -28,7 +28,10 @@ export default function EditCar() {
   const router = useRouter();
   const { token } = useAuth();
   const [car, setCar] = useState<Car | null>(null);
-  const [formData, setFormData] = useState<Partial<Car>>({});
+  const [formData, setFormData] = useState<Partial<Car>>({
+    imageUrls: [], 
+  });
+
   const [formErrors, setFormErrors] = useState({
     brand: "",
     model: "",
@@ -46,16 +49,34 @@ export default function EditCar() {
       if (!token) return;
       try {
         const response = await fetchCarById(Number(id), token);
-        setCar(response);
-        setFormData(response);
+  
+        // Verifica si la respuesta tiene `imageUrl` y convierte a un arreglo de URLs
+        const imageUrls = Array.isArray(response.imageUrl) 
+          ? response.imageUrl // Si ya es un arreglo, lo dejamos tal cual
+          : response.imageUrl 
+          ? [response.imageUrl] // Si es un solo string, lo convertimos en un arreglo
+          : []; // Si es undefined o null, usamos un arreglo vacío
+  
+        // Asegúrate de que imageUrls tenga al menos 5 elementos
+        const transformedResponse: Car = {
+          ...response,
+          imageUrls: imageUrls.length >= 5
+            ? imageUrls // Si ya tiene 5 o más, lo dejamos igual
+            : [...imageUrls, ...new Array(5 - imageUrls.length).fill('')], // Rellenamos hasta tener 5
+        };
+  
+        setCar(transformedResponse);
+        setFormData(transformedResponse);
       } catch (err: any) {
         setError(err.response?.data?.error || "Error al cargar el auto");
       }
     };
-
+  
     loadCar();
   }, [id, token]);
   
+  
+
   const validatePricePerDay = (value: number) => {
     if (value <= 0) return "El precio debe ser mayor a 0";
     return "";
@@ -71,7 +92,7 @@ export default function EditCar() {
     if (isNaN(value) || value < 0) return "El kilometraje debe ser un número válido";
     return "";
   };
-  
+
 
   const validateColor = (value: string) => {
     if (!value.trim()) return "El color es obligatorio";
@@ -122,7 +143,7 @@ export default function EditCar() {
       errorMessage = validateColor(value);
     } else if (name === "kilometers") {
       errorMessage = validateKilometers(Number(value));
-    }else if (name === "transmission") {
+    } else if (name === "transmission") {
       errorMessage = value ? "" : "La transmisión es obligatoria";
     } else if (name === "fuelType") {
       errorMessage = value ? "" : "El combustible es obligatorio";
@@ -141,16 +162,30 @@ export default function EditCar() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-
+  
+    // Asegurarse de que imageUrls siempre sea un arreglo de cadenas
+    const validImageUrls = Array.isArray(formData.imageUrls)
+      ? formData.imageUrls // Si ya es un arreglo de cadenas, lo dejamos tal cual
+      : formData.imageUrls
+      ? [formData.imageUrls] // Si es un string, lo convertimos en un arreglo
+      : []; // Si es undefined, usamos un arreglo vacío
+  
+    const updatedFormData = {
+      ...formData,
+      imageUrls: validImageUrls, // Aseguramos que imageUrls sea siempre un arreglo de cadenas
+    };
+  
     try {
-      console.log("Datos a enviar:", formData);
-      await updateCar(Number(id), formData, token);
-      toast.success("¡Se guardo correctamente!");
+      console.log("Datos a enviar:", updatedFormData);
+      await updateCar(Number(id), updatedFormData, token);
+      toast.success("¡Se guardó correctamente!");
       router.push("/my-cars");
     } catch (err: any) {
       setError(err.response?.data?.error || "Error al actualizar el auto");
     }
   };
+  
+  
 
   const isFormValid = Object.values(formErrors).every((error) => !error);
 
@@ -262,9 +297,9 @@ export default function EditCar() {
                 className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 "
               >
                 <option value="">Seleccionar</option>
-              <option value="Gas">Gas</option>
-              <option value="Gasolina">Gasolina</option>
-              <option value="Eléctrico">Eléctrico</option>
+                <option value="Gas">Gas</option>
+                <option value="Gasolina">Gasolina</option>
+                <option value="Eléctrico">Eléctrico</option>
               </select>
               {formErrors.fuelType && (
                 <p className="text-red-500 text-sm mt-1">
@@ -287,20 +322,26 @@ export default function EditCar() {
                 className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
             </div>
-            {/* Imagen */}
+            {/* Imágenes */}
             <div className="md:col-span-2">
-              <label className="text-xl font-bold mb-7 uppercase">
-                {" "}
-                FOTOS(URL)
-              </label>
-              <input
-                type="text"
-                name="imageUrl"
-                value={formData.imageUrl || ""}
-                onChange={handleChange}
-                className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-              />
+              <label className="text-xl font-bold mb-7 uppercase">FOTOS (URL)</label>
+              {(formData.imageUrls ?? []).map((url, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  value={url}
+                  onChange={(e) => {
+                    const updatedUrls = [...(formData.imageUrls ?? [])]; // Usamos un arreglo vacío si es undefined
+                    updatedUrls[index] = e.target.value;
+                    setFormData({ ...formData, imageUrls: updatedUrls });
+                  }}
+                  className="mt-2 block w-full p-3 border rounded-2xl shadow-sm"
+                />
+              ))}
+
             </div>
+
+
           </div>
           {/* Botones */}
           <div className="flex justify-end gap-4 mt-6">
