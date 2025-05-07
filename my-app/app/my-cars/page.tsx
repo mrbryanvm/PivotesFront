@@ -221,8 +221,8 @@ export default function MyCars() {
       className="p-2 border rounded"
     >
       <option value="">Ordenar por</option>
-      <option value="priceAsc">Precio: menor a mayor</option>
-      <option value="priceDesc">Precio: mayor a menor</option>
+      <option value="priceAsc">Precio Ascendente </option>
+      <option value="priceDesc">Precio Descendente </option>
     </select>
 
     {/* Botón para eliminar todos los filtros */}
