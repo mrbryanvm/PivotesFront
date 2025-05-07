@@ -201,21 +201,21 @@ export default function MyCars() {
       {/* Filtros de Autos */}
       <div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
         {/* Grid de filtros */}
-        <div className="flex justify-end">
+        <div className="flex justify-betwwen">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center">
             <input
             type="text"
             placeholder="Marca"
             value={filters.brand}
             onChange={(e) => handleFilterChange({ brand: e.target.value })}
-            className="p-2 border rounded"
+            className="p-2 border rounded "
             />
             <input
             type="text"
             placeholder="Modelo"
             value={filters.model}
             onChange={(e) => handleFilterChange({ model: e.target.value })}
-            className="p-2 border rounded"
+            className="p-2 border rounded w-75"
             />
             
             {filters.transmission ? (
@@ -262,7 +262,7 @@ export default function MyCars() {
             <select
               value={filters.sortBy}
               onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-              className="p-2 border rounded w-full"
+              className="p-2 border rounded w-80"
             >
               <option value="">Ordenar por</option>
               <option value="priceAsc">Precio: menor a mayor</option>
