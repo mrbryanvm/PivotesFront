@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchCarById } from '../../lib/api';
 import { useAuth } from '../../lib/authContext';
+import { useRouter } from 'next/navigation';
+
 
 interface Car {
   id: number;
@@ -62,6 +64,8 @@ export default function CarDetails() {
 
   console.log('car.imageUrl:', car.imageUrl);
   console.log('imageArray:', imageArray);
+  const router = useRouter();
+
 
   return (
 
@@ -201,6 +205,15 @@ export default function CarDetails() {
           </span>
         </div>
       </div>
+      
+      {/*Boton para volver a la lista de autos*/}
+      
+      <button
+       onClick={() => router.push('/search')} 
+       className="mt-4 px-6 py-2 rounded-full shadow-md bg-white text-black hover:bg-orange-500 hover:text-white hover:shadow-lg active:scale-95 transition-all duration-300"
+      >
+        Volver a la lista
+     </button>
 
     </div>
   );
