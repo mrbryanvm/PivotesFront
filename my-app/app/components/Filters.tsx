@@ -188,9 +188,11 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       return;
     }
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
+
     const fetchHosts = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/hosts?search=${encodeURIComponent(cleanQuery)}`);
+        const response = await fetch(`${API_URL}/hosts?search=${encodeURIComponent(cleanQuery)}`);
         if (!response.ok) {
           throw new Error(`Error HTTP ${response.status}`);
         }  
