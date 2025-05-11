@@ -340,8 +340,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             Buscar
           </button>
 
-          {/* Campo de texto */}
-          {/* <div className="flex flex-col space-y-1"> */}
           <div className="relative w-full">
             <input
               type="text"
