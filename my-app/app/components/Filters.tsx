@@ -686,7 +686,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                          ))}
                       </>
                      ) : (
-                        <div className="p-2 text-gray-400">No se encuentran resultados!</div>
+                        <div className="p-2 text-gray-400">Host no encontrado</div>
                       )}
                      </>
                     )}
