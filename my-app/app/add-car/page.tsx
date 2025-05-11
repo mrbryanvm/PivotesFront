@@ -237,7 +237,7 @@ export default function AddCar() {
       setColorError('El color solo puede contener letras sin espacios ni caracteres especiales');
       return;
     } else if (value.length > 10) {
-      setColorError('El color no puede tener más de 15 caracteres');
+      setColorError('El color no puede tener más de 10 caracteres');
       return;
     } else {
       setColorError('');

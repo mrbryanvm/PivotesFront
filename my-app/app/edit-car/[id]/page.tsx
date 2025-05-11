@@ -178,7 +178,7 @@ export default function EditCar() {
     try {
       console.log("Datos a enviar:", updatedFormData);
       await updateCar(Number(id), updatedFormData, token);
-      toast.success("¡Se guardó correctamente!");
+      toast.success("Auto editado con éxito !!");
       router.push("/my-cars");
     } catch (err: any) {
       setError(err.response?.data?.error || "Error al actualizar el auto");
