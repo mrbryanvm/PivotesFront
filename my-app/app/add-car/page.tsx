@@ -6,7 +6,7 @@ import { useAuth } from '../lib/authContext';
 
 export default function AddCar() {
 
-  
+
   const router = useRouter();
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -15,7 +15,7 @@ export default function AddCar() {
       router.push("/login");
     }
   }, []);
-  
+
 
   const [formData, setFormData] = useState({
     location: "",
@@ -38,7 +38,7 @@ export default function AddCar() {
   const [equipmentInput, setEquipmentInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
-  
+
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -91,19 +91,19 @@ export default function AddCar() {
     }
   };
 
-const [brandError, setBrandError] = useState('');
-const [modelError, setModelError] = useState('');
-const [kilometersError, setKilometersError] = useState('');
-const [plateError, setPlateError] = useState('');
-const [transmissionError, setTransmissionError] = useState('');
-const [fuelTypeError, setFuelTypeError] = useState('');
-const [photoError, setPhotoError] = useState('');
-const [carTypeError, setCarTypeError] = useState<string>('');
+  const [brandError, setBrandError] = useState('');
+  const [modelError, setModelError] = useState('');
+  const [kilometersError, setKilometersError] = useState('');
+  const [plateError, setPlateError] = useState('');
+  const [transmissionError, setTransmissionError] = useState('');
+  const [fuelTypeError, setFuelTypeError] = useState('');
+  const [photoError, setPhotoError] = useState('');
+  const [carTypeError, setCarTypeError] = useState<string>('');
 
 
   const validarCamposObligatorios = () => {
     let errores = false;
-  
+
     if (!formData.carType) {
       setCarTypeError('El tipo de auto es obligatorio');
       errores = true;
@@ -116,78 +116,78 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     } else {
       setLocationError('');
     }
-  
+
     if (!formData.brand) {
       setBrandError('La marca es obligatoria');
       errores = true;
     } else {
       setBrandError('');
     }
-  
+
     if (!formData.model) {
       setModelError('El modelo es obligatorio');
       errores = true;
     } else {
       setModelError('');
     }
-  
+
     if (!formData.year) {
       setYearError('El año es obligatorio');
       errores = true;
     } else {
       setYearError('');
     }
-    
-  
+
+
     if (!formData.color || colorError) {
       setColorError('El color es obligatorio');
       errores = true;
     } else {
       setColorError('');
     }
-  
+
     if (!formData.pricePerDay) {
       setPriceError('La tarifa por día es obligatoria');
       errores = true;
     } else {
       setPriceError('');
     }
-  
+
     if (!formData.seats) {
       setSeatsError('La capacidad es obligatoria');
       errores = true;
     } else {
       setSeatsError('');
     }
-  
+
     if (!formData.transmission) {
       setTransmissionError('La transmisión es obligatoria');
       errores = true;
     } else {
       setTransmissionError('');
     }
-  
+
     if (!formData.fuelType) {
       setFuelTypeError('El tipo de combustible es obligatorio');
       errores = true;
     } else {
       setFuelTypeError('');
     }
-  
+
     if (!formData.kilometers || parseInt(formData.kilometers.toString()) <= 0) {
       setKilometersError('Kilometraje inválido');
       errores = true;
     } else {
       setKilometersError('');
     }
-  
+
     if (!formData.licensePlate) {
       setPlateError('La placa es obligatoria');
       errores = true;
     } else {
       setPlateError('');
     }
-  
+
     const validPhotos = formData.photoUrls.filter((url) => url.trim() !== '');
     if (validPhotos.length < 3) {
       setPhotoError('Debes proporcionar al menos 3 URLs de fotos');
@@ -195,10 +195,10 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     } else {
       setPhotoError('');
     }
-  
+
     return !errores;
   };
-  
+
   const [yearError, setYearError] = useState('');
   const validacionAño = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -261,7 +261,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
         setSeatsError('La capacidad máxima es 20');
         return; // No actualizamos el valor en el estado
       } else {
-        setSeatsError(''); 
+        setSeatsError('');
       }
     } else {
       setSeatsError('Ingrese un número válido');
@@ -295,12 +295,6 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     }
   };
 
-
-  
-  
-
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -308,17 +302,17 @@ const [carTypeError, setCarTypeError] = useState<string>('');
     if (!camposValidos) {
       return;
     }
-  
+
     if (!token) {
       setError("Debes iniciar sesión para añadir un auto");
       return;
     }
-  
+
     if (formData.photoUrls.filter((url) => url.trim() !== "").length < 3) {
       setError("Debes proporcionar al menos 3 URLs de fotos");
       return;
     }
-  
+
     try {
       const yearGreaterThan = parseInt(formData.year) > new Date().getFullYear();
       const yearLessThan = parseInt(formData.year) < 1900;
@@ -332,7 +326,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
         throw new Error('El año no puede ser menor a 1900')
       }
 
-      const response = await fetch("http://localhost:5000/api/cars", {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+      const response = await fetch(`${API_URL}/cars`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -340,9 +336,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
         },
         body: JSON.stringify(formData),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.error || "Error al añadir el auto");
       }
@@ -352,7 +348,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
       setError(err.message);
     }
   };
-  
+
 
   return (
     <div className="container mx-auto p-4">
@@ -373,26 +369,17 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               value={formData.location}
               onChange={validarCaracteres}
               className={`border p-3 rounded w-full ${locationError ? 'border-red-500' : 'border-gray-300'}`}
-              required
+
             >
               <option value="">Selecciona una ubicación</option>
               <option value="Santa Cruz">Santa Cruz</option>
               <option value="Cochabamba">Cochabamba</option>
               <option value="La Paz">La Paz</option>
-              {/*<option value="Tarija">Tarija</option>
-              <option value="Sucre">Sucre</option>
-              <option value="Oruro">Oruro</option>
-              <option value="Pando">Pando</option>
-              <option value="Beni">Beni</option>
-              <option value="Potosi">Potosi</option>*/}
-
             </select>
             {locationError && (
               <p className="text-red-500 text-sm mt-1">{locationError}</p>
             )}
           </div>
-
-
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -411,13 +398,13 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                     setFormData({ ...formData, brand: value });
                   }
                 }}
-                
+
                 className={`mt-1 block w-full p-2 border rounded ${brandError ? 'border-red-500' : 'border-gray-300'}`}
-                required
+
               />
               {brandError && (
-              <p className="text-red-500 text-sm mt-1">{brandError}</p>
-            )}
+                <p className="text-red-500 text-sm mt-1">{brandError}</p>
+              )}
             </div>
             <div>
               <label className="block text-gray-600 mb-1">Modelo <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
@@ -434,13 +421,13 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                     setFormData({ ...formData, model: value });
                   }
                 }}
-                
+
                 maxLength={30}
                 className={`mt-1 block w-full p-2 border rounded ${modelError ? 'border-red-500' : 'border-gray-300'}`}
               />
               {modelError && (
-              <p className="text-red-500 text-sm mt-1">{modelError}</p>
-            )}
+                <p className="text-red-500 text-sm mt-1">{modelError}</p>
+              )}
             </div>
           </div>
 
@@ -453,7 +440,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               value={formData.carType}
               onChange={handleChange}
               className={`mt-1 block w-full p-2 border rounded ${carTypeError ? 'border-red-500' : 'border-gray-300'}`}
-              required
+
             >
               <option value="">Seleccionar</option>
               <option value="Sedan">Sedán</option>
@@ -462,7 +449,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               <option value="Deportivo">Deportivo</option>
               <option value="Eléctrico">Eléctrico</option>
             </select>
-            { carTypeError && (
+            {carTypeError && (
               <p className="text-red-500 text-sm mt-1">{carTypeError}</p>
             )}
           </div>
@@ -484,7 +471,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                   }
                 }}
                 className={`mt-1 block w-full p-2 border rounded ${yearError ? 'border-red-500' : 'border-gray-300'}`}
-                required
+
                 min="1900"
                 max={new Date().getFullYear()}
               />
@@ -530,7 +517,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 }
               }}
               className={`border p-3 rounded w-full ${priceError ? 'border-red-500' : 'border-gray-300'}`}
-              required
+
               min="0"
               max="999"
             />
@@ -553,11 +540,11 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 value={formData.kilometers}
                 onChange={handleChange}
                 className={`mt-1 block w-full p-2 border rounded ${kilometersError ? 'border-red-500' : 'border-gray-300'}`}
-                required
+
               />
-              { kilometersError && (
-              <p className="text-red-500 text-sm mt-1">{kilometersError}</p>
-            )}
+              {kilometersError && (
+                <p className="text-red-500 text-sm mt-1">{kilometersError}</p>
+              )}
             </div>
             <div>
               <label className="block text-gray-600 mb-1">Placa <span className="text-red-500 text-[1.5rem] font-semibold">*</span>
@@ -571,9 +558,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 onChange={placa}
                 className={`mt-1 block w-full p-2 border rounded ${plateError ? 'border-red-500' : 'border-gray-300'}`}
               />
-              { plateError && (
-              <p className="text-red-500 text-sm mt-1">{plateError}</p>
-            )}
+              {plateError && (
+                <p className="text-red-500 text-sm mt-1">{plateError}</p>
+              )}
             </div>
           </div>
         </div>
@@ -589,13 +576,13 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               value={formData.transmission}
               onChange={handleChange}
               className={`mt-1 block w-full p-2 border rounded ${transmissionError ? 'border-red-500' : 'border-gray-300'}`}
-              required
+
             >
               <option value="">Seleccionar</option>
               <option value="Manual">Manual</option>
               <option value="Automático">Automático</option>
             </select>
-            { transmissionError && (
+            {transmissionError && (
               <p className="text-red-500 text-sm mt-1">{transmissionError}</p>
             )}
           </div>
@@ -608,14 +595,14 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               value={formData.fuelType}
               onChange={handleChange}
               className={`mt-1 block w-full p-2 border rounded ${fuelTypeError ? 'border-red-500' : 'border-gray-300'}`}
-              required
+
             >
               <option value="">Seleccionar</option>
               <option value="Gas">Gas</option>
               <option value="Gasolina">Gasolina</option>
               <option value="Eléctrico">Eléctrico</option>
             </select>
-            { fuelTypeError && (
+            {fuelTypeError && (
               <p className="text-red-500 text-sm mt-1">{fuelTypeError}</p>
             )}
           </div>
@@ -630,7 +617,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               onChange={limiteAsientos}
               className={`border p-3 rounded w-full ${seatsError ? 'border-red-500' : 'border-gray-300'}`}
               max="20"
-              required
+
             />
             {seatsError && (
               <p className="text-red-500 text-sm mt-1">{seatsError}</p>
@@ -659,7 +646,7 @@ const [carTypeError, setCarTypeError] = useState<string>('');
                 onChange={(e) => handlePhotoUrlChange(idx, e.target.value)}
                 placeholder={`URL de la foto ${idx + 1}`}
                 className={`mt-1 block w-full p-2 border rounded ${photoError ? 'border-red-500' : 'border-gray-300'}`}
-                required={idx < 3}
+                // required={idx < 3}
               />
             </div>
           ))}
@@ -674,9 +661,9 @@ const [carTypeError, setCarTypeError] = useState<string>('');
               + Agregar otra foto
             </button>
           )}
-          { photoError && (
-              <p className="text-red-500 text-sm mt-1">{photoError}</p>
-            )}
+          {photoError && (
+            <p className="text-red-500 text-sm mt-1">{photoError}</p>
+          )}
         </div>
       </form>
 
