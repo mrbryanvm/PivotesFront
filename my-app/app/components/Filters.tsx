@@ -340,8 +340,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             Buscar
           </button>
 
-          {/* Campo de texto */}
-          {/* <div className="flex flex-col space-y-1"> */}
           <div className="relative w-full">
             <input
               type="text"
@@ -649,21 +647,21 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                type="text"
                value={hostSearch}
                onChange={(e) => {
-                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "").slice(0, 50);
                 setHostSearch(value);
               }}
                placeholder="Buscar host..."
-               className="w-full p-2 mb-2 border rounded"
+               className={`w-full p-2 mb-2 rounded ${hostSearch.length >= 50 ? 'border-red-500' : 'border-gray-300'} border transition-colors duration-300`}
              />
 
           <div className="max-h-40 overflow-y-auto">
             {hostSearch.trim() === "" ? null : (
                <>
-                 {hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase())).length > 0 ? (
+                 {hostResults.filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase())).length > 0 ? (
                    <>
                   <p className="px-2 text-sm text-gray-500 mb-1">Sugerencias</p>
                   {hostResults
-                    .filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase()))
+                    .filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase()))
                     .map((host) => (
                       <div
                         key={host.id}
@@ -686,7 +684,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                          ))}
                       </>
                      ) : (
-                        <div className="p-2 text-gray-400">No se encuentran resultados!</div>
+                        <div className="p-2 text-gray-400">Host no encontrado!</div>
                       )}
                      </>
                     )}
