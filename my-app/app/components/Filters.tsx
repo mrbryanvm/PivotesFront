@@ -647,7 +647,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                type="text"
                value={hostSearch}
                onChange={(e) => {
-                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "").slice(0, 50);
+                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "").slice(0, 50); //control de caracteres
                 setHostSearch(value);
               }}
                placeholder="Buscar host..."
