@@ -131,20 +131,56 @@ export default function MyCars() {
     }
   };
 
+
+
+  const [isOnline, setIsOnline] = useState(true);
+
   useEffect(() => {
-    if (!token || role !== "host") return;
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => {
+      setIsOnline(false);
+      setError("Error al filtrar. Intenta de nuevo");
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Estado inicial
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      setError("Error al filtrar. Intenta de nuevo");
+    }
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+
+
+  useEffect(() => {
+    if (!token || role !== "host" || !isOnline) return;
 
     const loadCars = async () => {
       try {
         const response = await fetchMyCars(filters, token);
         setCarsResponse(response);
+        setError(""); // limpiar errores anteriores
       } catch (err: any) {
         setError(err.response?.data?.error || "Error al cargar los autos");
       }
     };
 
     loadCars();
-  }, [filters, token, role]);
+  }, [filters, token, role, isOnline]);
+
+
+
+  
+
+
+
 
   if (!token || role !== "host") {
     return (
@@ -278,7 +314,7 @@ export default function MyCars() {
                   <div className="flex gap-6 mt-4 text-sm text-center">
                     {/* Info */}
                     <div className="flex flex-col items-center">
-                      <Link href={`/car-details/${car.id}`}>
+                      <Link href={`/car-details-host/${car.id}`}>
                         <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
                           <FaEye />
                         </button>
