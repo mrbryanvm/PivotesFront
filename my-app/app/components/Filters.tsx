@@ -47,6 +47,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
   // === ESTADOS: VALORES DE FILTRO ===
   const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
 
+  // activar un solo filtro a la vez
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+
   // === ESTADOS: HOSTS (filtro por nombre) ===
   const [hostSearch, setHostSearch] = useState("");
   const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
@@ -461,7 +464,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               <div className="w-40">
                 <button
                   type="button"
-                  onClick={() => setShowPriceOptions(!showPriceOptions)}
+                  onClick={() => setActiveFilter(activeFilter === 'price' ? null : 'price')}
                   className="border p-2 rounded flex items-center justify-between w-full"
                 >
                   Precio
@@ -480,7 +483,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                   </svg>
                 </button>
 
-                {showPriceOptions && (
+                {activeFilter === 'price' && (
                   <div className="absolute mt-2 bg-white border rounded p-4 shadow-lg z-10 w-64">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       ${priceRange[0]} - ${priceRange[1]} /por día
@@ -616,7 +619,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
                 <button
                   type="button"
-                  onClick={() => setShowHostOptions(!showHostOptions)}
+                  onClick={() => setActiveFilter(activeFilter === 'showHostOptions' ? null : 'showHostOptions')}
                   className="border p-2 rounded flex items-center justify-between w-full"
                 >
                   {filters.hostId ? "Host" : "Host"}
@@ -636,7 +639,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
                 </button>
 
-                {showHostOptions && (
+                {activeFilter === 'showHostOptions' && (
                   <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
                     <span className="truncate">
                       <h1 className="text-sm font-bold text-beige-300">Host</h1>
@@ -709,7 +712,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               <div className="w-40">
                 <button
                   type="button"
-                  onClick={() => setShowCarTypeOptions(!showCarTypeOptions)}
+                  onClick={() => setActiveFilter(activeFilter === 'showCarTypeOptions' ? null : 'showCarTypeOptions')}
                   className="border p-2 rounded flex items-center justify-between w-full"
                 >
                   {filters.carType || "Tipo de Auto"}
@@ -727,7 +730,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                     />
                   </svg>
                 </button>
-                {showCarTypeOptions && (
+                {activeFilter === 'showCarTypeOptions' && (
                   <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
                     <label className="flex items-center gap-2">
                       <input
@@ -789,9 +792,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               <div className="w-40">
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowTransmissionOptions(!showTransmissionOptions)
-                  }
+                  onClick={() => setActiveFilter(activeFilter === 'showTransmissionOptions' ? null : 'showTransmissionOptions') }
                   className="border p-2 rounded flex items-center justify-between w-full"
                 >
                   {filters.transmission || "Transmisión"}
@@ -809,7 +810,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                     />
                   </svg>
                 </button>
-                {showTransmissionOptions && (
+                {activeFilter==='showTransmissionOptions' && (
                   <div className="absolute bg-white border rounded mt-2 p-2 shadow-lg z-10">
                     <label className="flex items-center gap-2">
                       <input
@@ -847,7 +848,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               <div className="w-40">
                 <button
                   type="button"
-                  onClick={() => setShowFuelTypeOptions(!showFuelTypeOptions)}
+                  onClick={() => setActiveFilter(activeFilter === 'showFuelTypeOptions' ? null : 'showFuelTypeOptions')}
                   className="border p-2 rounded flex items-center justify-between w-full"
                 >
                   {filters.fuelType || "Consumo"}
@@ -855,7 +856,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {showFuelTypeOptions && (
+                {activeFilter === 'showFuelTypeOptions' && (
                   <div className="absolute mt-2 bg-white border rounded p-1 shadow-lg z-10 w-auto max-w-max">
 
                     <label
