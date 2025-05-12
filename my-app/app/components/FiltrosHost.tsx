@@ -31,7 +31,7 @@ const FiltrosHost: React.FC<FiltersProps> = ({
   };
 
   return (
-    <div className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+    <div className=" p-4 rounded-lg mb-4 shadow-sm">
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-2 items-center max-w-6xl w-full">
           <input
