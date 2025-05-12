@@ -340,8 +340,6 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             Buscar
           </button>
 
-          {/* Campo de texto */}
-          {/* <div className="flex flex-col space-y-1"> */}
           <div className="relative w-full">
             <input
               type="text"
@@ -659,11 +657,11 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                     <div className="max-h-40 overflow-y-auto">
                       {hostSearch.trim() === "" ? null : (
                         <>
-                          {hostResults.filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase())).length > 0 ? (
+                          {hostResults.filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase())).length > 0 ? (
                             <>
                               <p className="px-2 text-sm text-gray-500 mb-1">Sugerencias</p>
                               {hostResults
-                                .filter(h => h.name?.toLowerCase().includes(hostSearch.toLowerCase()))
+                                .filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase()))
                                 .map((host) => (
                                   <div
                                     key={host.id}
