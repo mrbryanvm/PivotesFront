@@ -29,7 +29,7 @@ export default function EditCar() {
   const { token } = useAuth();
   const [car, setCar] = useState<Car | null>(null);
   const [formData, setFormData] = useState<Partial<Car>>({
-    imageUrls: [], 
+    imageUrls: [],
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -49,33 +49,32 @@ export default function EditCar() {
       if (!token) return;
       try {
         const response = await fetchCarById(Number(id), token);
-  
+
         // Verifica si la respuesta tiene `imageUrl` y convierte a un arreglo de URLs
-        const imageUrls = Array.isArray(response.imageUrl) 
+        const imageUrls = Array.isArray(response.imageUrl)
           ? response.imageUrl // Si ya es un arreglo, lo dejamos tal cual
-          : response.imageUrl 
+          : response.imageUrl
           ? [response.imageUrl] // Si es un solo string, lo convertimos en un arreglo
           : []; // Si es undefined o null, usamos un arreglo vacío
-  
+
         // Asegúrate de que imageUrls tenga al menos 5 elementos
         const transformedResponse: Car = {
           ...response,
-          imageUrls: imageUrls.length >= 5
-            ? imageUrls // Si ya tiene 5 o más, lo dejamos igual
-            : [...imageUrls, ...new Array(5 - imageUrls.length).fill('')], // Rellenamos hasta tener 5
+          imageUrls:
+            imageUrls.length >= 5
+              ? imageUrls // Si ya tiene 5 o más, lo dejamos igual
+              : [...imageUrls, ...new Array(5 - imageUrls.length).fill("")], // Rellenamos hasta tener 5
         };
-  
+
         setCar(transformedResponse);
         setFormData(transformedResponse);
       } catch (err: any) {
         setError(err.response?.data?.error || "Error al cargar el auto");
       }
     };
-  
+
     loadCar();
   }, [id, token]);
-  
-  
 
   const validatePricePerDay = (value: number) => {
     if (value <= 0) return "El precio debe ser mayor a 0";
@@ -89,25 +88,27 @@ export default function EditCar() {
   };
 
   const validateKilometers = (value: number) => {
-    if (isNaN(value) || value < 0) return "El kilometraje debe ser un número válido";
+    if (isNaN(value) || value < 0)
+      return "El kilometraje debe ser un número válido";
     return "";
   };
-
 
   const validateColor = (value: string) => {
     if (!value.trim()) return "El color es obligatorio";
     if (/\d/.test(value)) return "El color no puede contener números";
-    if (/[^a-zA-Z\s]/.test(value))
-      return "El color no puede contener caracteres especiales";
+    if (/[^a-zA-Z\s]/.test(value)) return "El color no puede contener caracteres especiales";
+    if (value.length > 10) return "El color no puede tener más de 10 caracteres";
     return "";
   };
+
+
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target as HTMLInputElement;
 
-    if (name === "brand" || name === "model") {
+    if (name === "brand" || name === "model" || name === "color") {
       const allowedChars = /^[a-zA-Z\s]*$/; // Solo letras y espacios
       if (!allowedChars.test(e.key)) {
         e.preventDefault(); // Bloquear tecla no permitida
@@ -122,17 +123,11 @@ export default function EditCar() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
-
-    // Si el campo es 'color', bloquear números y caracteres especiales en tiempo real
-    if (name === "color") {
-      if (/\d/.test(value) || /[^a-zA-Z\s]/.test(value)) {
-        return; // No actualizar el estado si contiene números o caracteres especiales
-      }
-    }
-
     // Validar cada campo según su tipo
     let errorMessage = "";
     if (name === "pricePerDay") {
@@ -162,19 +157,19 @@ export default function EditCar() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-  
+
     // Asegurarse de que imageUrls siempre sea un arreglo de cadenas
     const validImageUrls = Array.isArray(formData.imageUrls)
       ? formData.imageUrls // Si ya es un arreglo de cadenas, lo dejamos tal cual
       : formData.imageUrls
-      ? [formData.imageUrls] // Si es un string, lo convertimos en un arreglo
+      ? [formData.imageUrls] // vaSi es un string, lo convertimos en un arreglo
       : []; // Si es undefined, usamos un arreglo vacío
-  
+
     const updatedFormData = {
       ...formData,
       imageUrls: validImageUrls, // Aseguramos que imageUrls sea siempre un arreglo de cadenas
     };
-  
+
     try {
       console.log("Datos a enviar:", updatedFormData);
       await updateCar(Number(id), updatedFormData, token);
@@ -184,8 +179,6 @@ export default function EditCar() {
       setError(err.response?.data?.error || "Error al actualizar el auto");
     }
   };
-  
-  
 
   const isFormValid = Object.values(formErrors).every((error) => !error);
 
@@ -209,14 +202,17 @@ export default function EditCar() {
                 <input
                   type="text"
                   name="color"
+                  maxLength={10}
                   value={formData.color || ""}
-                  onChange={controlarColor}
+                  onChange={handleChange}
                   onKeyDown={handleKeyDown}
-                className={`mt-1 block w-full p-2 border rounded ${colorError ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`mt-1 block w-full p-2 border rounded ${
+                    formErrors.color ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
-                {colorError && (
-                <p className="text-red-500 text-sm mt-1">{colorError}</p>
-              )}
+                {formErrors.color && (
+                  <p className="text-red-500 text-sm mt-1">{formErrors.color}</p>
+                )}
               </div>
 
               {/* Precio por día */}
@@ -259,8 +255,7 @@ export default function EditCar() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4"></div>
 
             <h2 className="text-xl font-bold mb-4 uppercase">EQUIPAMIENTO</h2>
             {/* Transmision */}
@@ -322,7 +317,9 @@ export default function EditCar() {
             </div>
             {/* Imágenes */}
             <div className="md:col-span-2">
-              <label className="text-xl font-bold mb-7 uppercase">FOTOS (URL)</label>
+              <label className="text-xl font-bold mb-7 uppercase">
+                FOTOS (URL)
+              </label>
               {(formData.imageUrls ?? []).map((url, index) => (
                 <input
                   key={index}
@@ -336,10 +333,7 @@ export default function EditCar() {
                   className="mt-2 block w-full p-3 border rounded-2xl shadow-sm"
                 />
               ))}
-
             </div>
-
-
           </div>
           {/* Botones */}
           <div className="flex justify-end gap-4 mt-6">
