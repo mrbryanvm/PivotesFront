@@ -37,6 +37,7 @@ export default function CarDetails() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const loadCar = async () => {
@@ -64,8 +65,6 @@ export default function CarDetails() {
 
   console.log('car.imageUrl:', car.imageUrl);
   console.log('imageArray:', imageArray);
-  const router = useRouter();
-
 
   return (
 
@@ -77,8 +76,9 @@ export default function CarDetails() {
         {/* Imagen principal */}
         <div className="col-span-2">
           <img
-            src={imageArray[0]}
+            src={imageArray[0]} 
             alt="Imagen principal"
+            onClick={() => setZoomImage(imageArray[0])} 
             className="w-full h-[320px] object-cover rounded-xl shadow"
           />
         </div>
@@ -89,6 +89,7 @@ export default function CarDetails() {
             <img
               src={imageArray[1]}
               alt="Vista 2"
+              onClick={() => setZoomImage(imageArray[1])} 
               className="w-full h-[150px] object-cover rounded-xl shadow"
             />
           )}
@@ -142,7 +143,7 @@ export default function CarDetails() {
                       <div className="relative max-w-3xl w-full p-4">
                         <button
                           onClick={() => setZoomImage(null)}
-                          className="absolute top-1 right-4 text-black text-2xl hover:text-red-100"
+                          className="absolute top-4 right-4 w-10 h-10 bg-white/70 rounded-md flex items-center justify-center text-black text-2xl hover:bg-white hover:text-red-500 transition-all duration-300 shadow-md"
                         >
                           x
                         </button>
@@ -206,15 +207,14 @@ export default function CarDetails() {
         </div>
       </div>
       
-      {/*Boton para volver a la lista de autos*/}
-      
-      <button
-       onClick={() => router.push('/search')} 
-       className="mt-4 px-6 py-2 rounded-full shadow-md bg-white text-black hover:bg-orange-500 hover:text-white hover:shadow-lg active:scale-95 transition-all duration-300"
-      >
-        Volver a la lista
-     </button>
+        {/*Boton para volver a la lista de autos*/}
+          <button
+            onClick={() => router.push('/search')} 
+            className="mt-4 px-6 py-2 rounded-full shadow-md bg-white text-black hover:bg-orange-500 hover:text-white hover:shadow-lg active:scale-95 transition-all duration-300"
+           >
+             Volver a la lista
+          </button>
 
-    </div>
+      </div>
   );
 }
