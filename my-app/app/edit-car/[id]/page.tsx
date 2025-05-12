@@ -178,7 +178,7 @@ export default function EditCar() {
     try {
       console.log("Datos a enviar:", updatedFormData);
       await updateCar(Number(id), updatedFormData, token);
-      toast.success("¡Se guardó correctamente!");
+      toast.success("Auto editado con éxito !!");
       router.push("/my-cars");
     } catch (err: any) {
       setError(err.response?.data?.error || "Error al actualizar el auto");
@@ -210,15 +210,13 @@ export default function EditCar() {
                   type="text"
                   name="color"
                   value={formData.color || ""}
-                  onChange={handleChange}
+                  onChange={controlarColor}
                   onKeyDown={handleKeyDown}
-                  className="mt-1 block w-full p-3 border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className={`mt-1 block w-full p-2 border rounded ${colorError ? 'border-red-500' : 'border-gray-300'}`}
                 />
-                {formErrors.color && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {formErrors.color}
-                  </p>
-                )}
+                {colorError && (
+                <p className="text-red-500 text-sm mt-1">{colorError}</p>
+              )}
               </div>
 
               {/* Precio por día */}

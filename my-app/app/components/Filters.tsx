@@ -31,30 +31,30 @@ interface FiltersProps {
 
 export default function Filters({ filters, onFilterChange }: FiltersProps) {
   // === ESTADOS: VISIBILIDAD DE OPCIONES DE FILTROS ===
-    const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
-    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-    const [showHostOptions, setShowHostOptions] = useState(false);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
-    const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
-    const [showRatingOptions, setShowRatingOptions] = useState(false);
-    const [showPriceOptions, setShowPriceOptions] = useState(false);
-  
+  const [showFuelTypeOptions, setShowFuelTypeOptions] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showHostOptions, setShowHostOptions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showTransmissionOptions, setShowTransmissionOptions] = useState(false);
+  const [showCarTypeOptions, setShowCarTypeOptions] = useState(false);
+  const [showRatingOptions, setShowRatingOptions] = useState(false);
+  const [showPriceOptions, setShowPriceOptions] = useState(false);
+
   // === ESTADOS: INTERACCIÓN Y ANIMACIONES ===
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const [hoverRating, setHoverRating] = useState<number | null>(null);
-  
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+
   // === ESTADOS: VALORES DE FILTRO ===
-    const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
-  
+  const [priceRange, setPriceRange] = useState<[number, number]>([15, 100]);
+
   // === ESTADOS: HOSTS (filtro por nombre) ===
-    const [hostSearch, setHostSearch] = useState("");
-    const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
-    const [selectedHost, setSelectedHost] = useState<{ id: string; name: string; location?: string } | null>(null);
-    
+  const [hostSearch, setHostSearch] = useState("");
+  const [hostResults, setHostResults] = useState<{ id: string; name: string; location?: string }[]>([]);
+  const [selectedHost, setSelectedHost] = useState<{ id: string; name: string; location?: string } | null>(null);
+
   // === ESTADOS: BUSCADOR GENERAL ===
-   const [suggestions, setSuggestions] = useState<string[]>([]);
-  
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
   // === EFECTOS: Acciones al presionar teclas ===
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -64,7 +64,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
- // === GESTION DE FILTROS GENERALES ===
+  // === GESTION DE FILTROS GENERALES ===
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -96,28 +96,28 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     onFilterChange({ ...filters, hostId });
     setShowHostOptions(false);
     setHostSearch("");
-    };
+  };
 
 
-    // utils/api.ts o dentro de un useEffect en tu componente
- async function getCarsByHost(hostId: number, token: string) {
-  const res = await fetch(`/api/cars/host/${hostId}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  // utils/api.ts o dentro de un useEffect en tu componente
+  async function getCarsByHost(hostId: number, token: string) {
+    const res = await fetch(`/api/cars/host/${hostId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'Error al obtener autos');
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Error al obtener autos');
+    }
+
+    const data = await res.json();
+    return data.cars; // Lista de autos del host
   }
 
-  const data = await res.json();
-  return data.cars; // Lista de autos del host
-}
- 
 
   const handleResetFilters = () => {
     onFilterChange({
@@ -177,12 +177,12 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     );
   };
 
-   // === GESTION DE FILTROS DE HOSTS ==
-   useEffect(() => {
+  // === GESTION DE FILTROS DE HOSTS ==
+  useEffect(() => {
     const cleanQuery = hostSearch
       .trim()
-      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); 
-  
+      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+
     if (!cleanQuery) {
       setHostResults([]);
       return;
@@ -195,31 +195,31 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
         const response = await fetch(`${API_URL}/hosts?search=${encodeURIComponent(cleanQuery)}`);
         if (!response.ok) {
           throw new Error(`Error HTTP ${response.status}`);
-        }  
+        }
         const data = await response.json();
         console.log('RESULTADO DEL BACKEND:', data);
-        setHostResults(data.slice(0, 4)); 
-        
+        setHostResults(data.slice(0, 4));
+
       } catch (error) {
         console.error("Error al buscar hosts:", error);
         setHostResults([]);
       }
     };
-    
+
     const delayDebounce = setTimeout(() => {
       fetchHosts();
-    }, 300); 
-  
+    }, 300);
+
     return () => clearTimeout(delayDebounce);
   }, [hostSearch]);
 
-  
+
   // === GESTION DE FILTROS DE AUTOS DE BUSQUEDA ===
-  const [searchInput, setSearchInput] = useState(filters.search || ""); 
+  const [searchInput, setSearchInput] = useState(filters.search || "");
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
-    setSearchInput(sanitizedValue); 
+    setSearchInput(sanitizedValue);
     onFilterChange({ ...filters, search: sanitizedValue });
 
     const saved = localStorage.getItem("searchHistory");
@@ -259,9 +259,9 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
       JSON.stringify(updatedSearches.slice(0, 10))
     );
   };
- 
-  
-  
+
+
+
   return (
     <div className="flex flex-col items-center gap-4 mb-6">
       {/* FILA SUPERIOR: Ubicación, De, Hasta */}
@@ -351,41 +351,41 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               maxLength={50}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.75rem] text-orange-500">
-              
-              </span>
-  
-              
-        {/* Botón "X" para borrar el texto */}
-        {filters.search && (
-          
-          <button
-            type="button"
-            onClick={() => {
-              // Limpiar búsqueda y ocultar sugerencias
-              onFilterChange({ ...filters, search: "" });
-              setShowSuggestions(false);  
-            }}
-            className="absolute right-0.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] px-6 py-2 text-gray-900 hover:bg-[#FBE7C2] cursor-pointer rounded-md"
-            style={{ padding: '11px 20px' }}
-          >
-              <svg
-                 xmlns="http://www.w3.org/2000/svg"
-                 className="h-4 w-4"
-                 fill="none"
-                 viewBox="0 0 24 24"
-                 stroke="currentColor"
-               >
-                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                   />
-                   </svg>
-                 </button>
-                )}
-             </div>
-         </div>
+
+            </span>
+
+
+            {/* Botón "X" para borrar el texto */}
+            {filters.search && (
+
+              <button
+                type="button"
+                onClick={() => {
+                  // Limpiar búsqueda y ocultar sugerencias
+                  onFilterChange({ ...filters, search: "" });
+                  setShowSuggestions(false);
+                }}
+                className="absolute right-0.5 top-1/2 -translate-y-1/2 bg-[#FBE7C2] px-6 py-2 text-gray-900 hover:bg-[#FBE7C2] cursor-pointer rounded-md"
+                style={{ padding: '11px 20px' }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
 
         {showSuggestions && suggestions.length > 0 && (
           <ul className="absolute top-full left-0 w-full bg-white border mt-1 z-50 shadow-lg max-h-60 overflow-y-auto rounded-md">
@@ -410,33 +410,32 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
 
         <div className="overflow-x-auto w-full max-h-20">
           <div className="flex space-x-4 px-6 py-4 bg-white rounded-lg shadow-md">
-          <div>
-          <button
-            type="button"
-            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className={`flex items-center border p-2 rounded px-3 py-1 w-10 justify-between transition ${
-              hayFiltrosDelPanel() ? 'bg-orange-500 text-white' : 'bg-white'
-            }`}
-          >
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-black scale-150"
-                viewBox="0 0 24 24"
-                fill="currentColor"
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className={`flex items-center border p-2 rounded px-3 py-1 w-10 justify-between transition ${hayFiltrosDelPanel() ? 'bg-orange-500 text-white' : 'bg-white'
+                  }`}
               >
-                <path d="M3 6a1 1 0 0 1 1-1h3a2 2 0 0 1 4 0h10a1 1 0 1 1 0 2H11a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1zM3 12a1 1 0 0 1 1-1h9a2 2 0 0 1 4 0h4a1 1 0 1 1 0 2h-4a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1zM3 18a1 1 0 0 1 1-1h5a2 2 0 0 1 4 0h7a1 1 0 1 1 0 2h-7a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1z" />
-              </svg>
-            </button>
-          </div>
 
-          {/* Panel flotante sobre los autos */}
-          <Panel
-            visible={showAdvancedFilters}
-            onClose={() => setShowAdvancedFilters(false)}
-            filters={filters}
-            onFilterChange={onFilterChange}
-          />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-black scale-150"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M3 6a1 1 0 0 1 1-1h3a2 2 0 0 1 4 0h10a1 1 0 1 1 0 2H11a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1zM3 12a1 1 0 0 1 1-1h9a2 2 0 0 1 4 0h4a1 1 0 1 1 0 2h-4a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1zM3 18a1 1 0 0 1 1-1h5a2 2 0 0 1 4 0h7a1 1 0 1 1 0 2h-7a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1z" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Panel flotante sobre los autos */}
+            <Panel
+              visible={showAdvancedFilters}
+              onClose={() => setShowAdvancedFilters(false)}
+              filters={filters}
+              onFilterChange={onFilterChange}
+            />
 
 
             {/* PRECIO */}
@@ -524,7 +523,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               </div>
             )}
 
-           {/* CALIFICACIÓN 
+            {/* CALIFICACIÓN 
             {filters.rating > 0 ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
                 <div className="flex gap-1">
@@ -597,103 +596,104 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             
             */}
 
-        {/* HOST */}
+            {/* HOST */}
 
-        {filters.hostId ? (
-             <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
-               <span className="truncate">
-                {selectedHost?.name || "Host"}
-               </span>
-            <button
-               onClick={() => onFilterChange({ ...filters, hostId: "" })}
-               className="ml-2 text-white hover:text-gray-200 font-bold"
-             >
-                 ×
-              </button>
-            </div>
-          ) : (
-  
-           <div className="w-40 flex-shrink-0">
-            
-            <button
-               type="button"
-               onClick={() => setShowHostOptions(!showHostOptions)}
-               className="border p-2 rounded flex items-center justify-between w-full"
-             >     
-          {filters.hostId ? "Host" : "Host"}
-             <svg
-               className="w-4 h-4 ml-2"
-               fill="none"
-               stroke="currentColor"
-               viewBox="0 0 24 24"
-             >
-             <path
-               strokeLinecap="round"
-               strokeLinejoin="round"
-               strokeWidth="2"
-               d="M19 9l-7 7-7-7"
-             />
-            </svg>
-            
-           </button>
+            {filters.hostId ? (
+              <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-60 justify-between flex-shrink-0">
+                <span className="truncate">
+                  {selectedHost?.name || "Host"}
+                </span>
+                <button
+                  onClick={() => onFilterChange({ ...filters, hostId: "" })}
+                  className="ml-2 text-white hover:text-gray-200 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
 
-           {showHostOptions && (
-           <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
-            <span className="truncate">
-             <h1 className="text-sm font-bold text-beige-300">Host</h1>
-             </span>
+              <div className="w-40 flex-shrink-0">
 
-               <input
-               type="text"
-               value={hostSearch}
-               onChange={(e) => {
-                const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "").slice(0, 50); //control de caracteres
-                setHostSearch(value);
-              }}
-               placeholder="Buscar host..."
-               className={`w-full p-2 mb-2 rounded ${hostSearch.length >= 50 ? 'border-red-500' : 'border-gray-300'} border transition-colors duration-300`}
-             />
+                <button
+                  type="button"
+                  onClick={() => setShowHostOptions(!showHostOptions)}
+                  className="border p-2 rounded flex items-center justify-between w-full"
+                >
+                  {filters.hostId ? "Host" : "Host"}
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
 
-          <div className="max-h-40 overflow-y-auto">
-            {hostSearch.trim() === "" ? null : (
-               <>
-                 {hostResults.filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase())).length > 0 ? (
-                   <>
-                  <p className="px-2 text-sm text-gray-500 mb-1">Sugerencias</p>
-                  {hostResults
-                    .filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase()))
-                    .map((host) => (
-                      <div
-                        key={host.id}
-                        onClick={() => {
-                          handleHostChange(host.id);
-                          setShowHostOptions(false);
-                        }}
-                        className="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
-                      >
-                        <span className="truncate">{host.name}</span>
-                        {host.location && (
-                          <span className="ml-4 text-sm text-gray-600 flex items-center gap-1">
-                            <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
-                            </svg>
-                            {host.location}
-                          </span>
+                </button>
+
+                {showHostOptions && (
+                  <div className="absolute mt-2 bg-white border rounded p-2 shadow-lg z-30 w-auto">
+                    <span className="truncate">
+                      <h1 className="text-sm font-bold text-beige-300">Host</h1>
+                    </span>
+
+                    <input
+                      type="text"
+                      value={hostSearch}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+                        setHostSearch(value);
+                      }}
+                      placeholder="Buscar host..."
+                      className="w-full p-2 mb-2 border rounded"
+                      maxLength={50}
+                    />
+
+                    <div className="max-h-40 overflow-y-auto">
+                      {hostSearch.trim() === "" ? null : (
+                        <>
+                          {hostResults.filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase())).length > 0 ? (
+                            <>
+                              <p className="px-2 text-sm text-gray-500 mb-1">Sugerencias</p>
+                              {hostResults
+                                .filter(h => h.name?.toLowerCase().startsWith(hostSearch.toLowerCase()))
+                                .map((host) => (
+                                  <div
+                                    key={host.id}
+                                    onClick={() => {
+                                      handleHostChange(host.id);
+                                      setShowHostOptions(false);
+                                    }}
+                                    className="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
+                                  >
+                                    <span className="truncate">{host.name}</span>
+                                    {host.location && (
+                                      <span className="ml-4 text-sm text-gray-600 flex items-center gap-1">
+                                        <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                                        </svg>
+                                        {host.location}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                            </>
+                          ) : (
+                            <div className="p-2 text-gray-400">Host no encontrado</div>
                           )}
-                         </div>
-                         ))}
-                      </>
-                     ) : (
-                        <div className="p-2 text-gray-400">Host no encontrado!</div>
+                        </>
                       )}
-                     </>
-                    )}
-                 </div>
-                </div>
-                 )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
- 
+
             {/* TIPO DE AUTO */}
             {filters.carType ? (
               <div className="flex items-center bg-orange-500 text-white rounded-full px-3 py-1 w-40 justify-between">
