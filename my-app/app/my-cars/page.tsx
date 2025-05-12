@@ -314,7 +314,7 @@ export default function MyCars() {
                   <div className="flex gap-6 mt-4 text-sm text-center">
                     {/* Info */}
                     <div className="flex flex-col items-center">
-                      <Link href={`/car-details/${car.id}`}>
+                      <Link href={`/car-details-host/${car.id}`}>
                         <button className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600">
                           <FaEye />
                         </button>
