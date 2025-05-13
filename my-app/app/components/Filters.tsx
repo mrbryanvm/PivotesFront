@@ -223,7 +223,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     const value = e.target.value;
     const sanitizedValue = value.replace(/['";\\/*<>&|^$~@!{}[\]()=+]/g, "");
     setSearchInput(sanitizedValue);
-    onFilterChange({ ...filters, search: sanitizedValue });
+    
 
     const saved = localStorage.getItem("searchHistory");
     const previousSearches = saved ? (JSON.parse(saved) as string[]) : [];
@@ -337,7 +337,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
           {/* Botón de búsqueda */}
           <button
             type="button"
-            onClick={() => console.log("Buscar:", filters.search)}
+            onClick={() => onFilterChange({ ...filters, search: searchInput.trim() })}
             className="bg-[#FBE7C2] px-6 py-2 font-semibold text-xs text-gray-700"
           >
             Buscar
@@ -348,7 +348,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
               type="text"
               name="search"
               placeholder="Buscar"
-              value={filters.search || ""}
+              value={searchInput}
               onChange={handleSearchInput}
               className="w-full px-4 py-2 bg-[#F9F1E7] text-xs text-gray-800 placeholder-gray-400 focus:outline-none"
               maxLength={50}
