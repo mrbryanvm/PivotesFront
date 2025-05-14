@@ -589,13 +589,6 @@ export default function AddCar() {
           )}
           {photoError && <p className="text-red-500 text-sm mt-1">{photoError}</p>}
         </div>
-            <button
-                type="button"
-                onClick={() => setIsCalendarOpen(true)}
-                className="border border-black-500 text-black-500 px-8 py-2 rounded mt-4 ml-0"
-              >
-                Calendario
-              </button>
       </form>
 
       {/* Modal del calendario */}
